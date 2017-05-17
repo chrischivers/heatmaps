@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="default"
+		module="heatmaps-build"
+		revision="0.1-SNAPSHOT"
+		extra-scalaVersion="2.10"
+		extra-sbtVersion="0.13"
+		conf="test"
+		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
+		date="20170513143459"/>
+	<dependencies>
+		<module organisation="org.scala-sbt" name="global-plugins">
+			<revision name="0.0" status="integration" pubdate="20170513143459" resolver="inter-project" artresolver="inter-project" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="false" searched="false" default="false" conf="compile, default(compile)" position="0">
+				<metadata-artifact status="failed" details="" size="0" time="0" searched="false"/>
+				<caller organisation="default" name="heatmaps-build" conf="test, compile, runtime" rev="0.0" rev-constraint-default="0.0" rev-constraint-dynamic="0.0" callerrev="0.1-SNAPSHOT" extra-scalaVersion="2.10" extra-sbtVersion="0.13"/>
+				<artifacts>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.timushev.sbt" name="sbt-updates">
+			<revision name="0.3.0" status="release" pubdate="20161125210447" resolver="sbt-chain" artresolver="sbt-chain" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="false" searched="false" default="false" conf="compile, default(compile)" position="1">
+				<metadata-artifact status="no" details="" size="1640" time="0" location="/Users/chrichiv/.ivy2/cache/scala_2.10/sbt_0.13/com.timushev.sbt/sbt-updates/ivy-0.3.0.xml" searched="false" origin-is-local="false" origin-location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/com.timushev.sbt/sbt-updates/scala_2.10/sbt_0.13/0.3.0/ivys/ivy.xml"/>
+				<caller organisation="org.scala-sbt" name="global-plugins" conf="compile" rev="0.3.0" rev-constraint-default="0.3.0" rev-constraint-dynamic="0.3.0" callerrev="0.0" extra-scalaVersion="2.10" extra-sbtVersion="0.13"/>
+				<artifacts>
+					<artifact name="sbt-updates" type="jar" ext="jar" status="no" details="" size="196732" time="0" location="/Users/chrichiv/.ivy2/cache/scala_2.10/sbt_0.13/com.timushev.sbt/sbt-updates/jars/sbt-updates-0.3.0.jar">
+						<origin-location is-local="false" location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/com.timushev.sbt/sbt-updates/scala_2.10/sbt_0.13/0.3.0/jars/sbt-updates.jar"/>
+					</artifact>
+					<artifact name="sbt-updates" type="src" ext="jar" extra-classifier="sources" status="no" details="" size="11531" time="0" location="/Users/chrichiv/.ivy2/cache/scala_2.10/sbt_0.13/com.timushev.sbt/sbt-updates/srcs/sbt-updates-0.3.0-sources.jar">
+						<origin-location is-local="false" location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/com.timushev.sbt/sbt-updates/scala_2.10/sbt_0.13/0.3.0/srcs/sbt-updates-sources.jar"/>
+					</artifact>
+					<artifact name="sbt-updates" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="472131" time="0" location="/Users/chrichiv/.ivy2/cache/scala_2.10/sbt_0.13/com.timushev.sbt/sbt-updates/docs/sbt-updates-0.3.0-javadoc.jar">
+						<origin-location is-local="false" location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/com.timushev.sbt/sbt-updates/scala_2.10/sbt_0.13/0.3.0/docs/sbt-updates-javadoc.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>
