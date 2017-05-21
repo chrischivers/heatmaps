@@ -3,11 +3,13 @@ package heatmaps
 import com.google.maps.model.{LatLng, PlaceType}
 import heatmaps.db.{FusionTable, PlaceTableSchema}
 import org.scalatest.FunSuite
+import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.fixture
 
 import scala.concurrent.duration._
 
-class FusionTableTest extends FunSuite with ScalaFutures {
+class FusionTableTest extends fixture.FunSuite with ScalaFutures {
 
   val config = ConfigLoader.defaultConfig
 
@@ -16,20 +18,52 @@ class FusionTableTest extends FunSuite with ScalaFutures {
     interval = scaled(500 millis)
   )
 
-  test("heatmaps.db.Place results persisted to heatmaps.db.FusionTable should match those retrieved") {
+  case class FixtureParam(placesApiRetriever: PlacesApiRetriever, locationScanner: LocationScanner, fusionTable: FusionTable, requestsPerMinute: Double)
+
+  def withFixture(test: OneArgTest) = {
     val placesApiRetriever = new PlacesApiRetriever(config)
-    val ls = new LocationScanner(placesApiRetriever)
-    val ft = new FusionTable(PlaceTableSchema())
-    ft.dropPlacesTable
+    val requestsPerMinute = 29.0
+    val locationScanner = new LocationScanner(placesApiRetriever)
+    val fusionTable = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), requestsPerMinute)
+    fusionTable.dropPlacesTable
+    val testFixture = FixtureParam(placesApiRetriever, locationScanner, fusionTable, requestsPerMinute)
 
-    val latLngBounds = LatLngBounds(new LatLng(51.509482, -0.138981), new LatLng(51.516319, -0.131428))
-    val city = City("TestCity", latLngBounds)
-    val locationScanResult = ls.scanCity(city, 500, PlaceType.RESTAURANT, narrowRadiusIfReturnLimitReached = false)
-    ft.insertPlaces(locationScanResult, city, PlaceType.RESTAURANT.name())
+    try {
+      withFixture(test.toNoArgTest(testFixture))
+    }
+    finally {
+      //fusionTable.dropPlacesTable
+    }
+  }
 
-    ft.getPlacesForCity(city)
-    //    resultsFromDB.size should be > 0
-    //    resultsFromDB.map(_.place_id) == locationScanResult.map(_.placeId)
 
+  test("heatmaps.db.Place results persisted to FusionTable should match those retrieved") { f =>
+    {
+
+      val latLngBounds = LatLngBounds(new LatLng(51.509482, -0.138981), new LatLng(51.516319, -0.131428))
+      val city = City("TestCity", latLngBounds)
+
+      val locationScanResult = f.locationScanner.scanCity(city, 500, PlaceType.RESTAURANT, narrowRadiusIfReturnLimitReached = false)
+      f.fusionTable.insertPlaces(locationScanResult, city, PlaceType.RESTAURANT.name())
+
+      val results = f.fusionTable.getPlacesForCity(city).futureValue
+      results.size should be > 0
+      results.map(_.placeId) == locationScanResult.map(_.placeId)
+
+    }
+  }
+
+  test ("requests per minute throttle is adhered to") { f =>
+    {
+      val latLngBounds = LatLngBounds(new LatLng(51.509482, -0.138981), new LatLng(51.516319, -0.131428))
+      val city = City("TestCity", latLngBounds)
+
+      val locationScanResultExtract = f.locationScanner.scanCity(city, 500, PlaceType.RESTAURANT, narrowRadiusIfReturnLimitReached = false).take(f.requestsPerMinute.toInt)
+      val startTime = System.currentTimeMillis()
+      f.fusionTable.insertPlaces(locationScanResultExtract, city, PlaceType.RESTAURANT.name())
+      val finishTime = System.currentTimeMillis()
+
+      (finishTime - startTime) should be >= (60 * 1000).toLong
+    }
   }
 }

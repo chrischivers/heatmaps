@@ -2,22 +2,28 @@ package heatmaps
 
 import com.typesafe.config.ConfigFactory
 
-case class Config(dBConfig: DBConfig, placesApiKey: String)
+case class Config(postgresDBConfig: postgresDBConfig, fusionDBConfig: FusionDBConfig, placesApiKey: String)
+case class postgresDBConfig(host: String, port: Int, username: String, password: String, dbName: String)
+case class FusionDBConfig(clientSecretsFileName: String, numberRetries: Int)
 
-case class DBConfig(host: String, port: Int, username: String, password: String, dbName: String)
 object ConfigLoader {
 
   private val defaultConfigFactory = ConfigFactory.load()
 
   val defaultConfig: Config = {
-    val dbParamsPrefix = "heatmaps.db."
+    val postgresDBParamsPrefix = "db.postgres."
+    val fusionDBParamsPrefix = "db.fusion."
     Config(
-      DBConfig(
-        defaultConfigFactory.getString(dbParamsPrefix + "host"),
-        defaultConfigFactory.getInt(dbParamsPrefix + "port"),
-        defaultConfigFactory.getString(dbParamsPrefix + "username"),
-        defaultConfigFactory.getString(dbParamsPrefix + "password"),
-        defaultConfigFactory.getString(dbParamsPrefix + "dbName")
+      postgresDBConfig(
+        defaultConfigFactory.getString(postgresDBParamsPrefix + "host"),
+        defaultConfigFactory.getInt(postgresDBParamsPrefix + "port"),
+        defaultConfigFactory.getString(postgresDBParamsPrefix + "username"),
+        defaultConfigFactory.getString(postgresDBParamsPrefix + "password"),
+        defaultConfigFactory.getString(postgresDBParamsPrefix + "dbName")
+      ),
+      FusionDBConfig(
+        defaultConfigFactory.getString(fusionDBParamsPrefix + "client-secrets-file-name"),
+        defaultConfigFactory.getInt(fusionDBParamsPrefix + "number-of-retries")
       ),
       defaultConfigFactory.getString("placesApi.key")
     )

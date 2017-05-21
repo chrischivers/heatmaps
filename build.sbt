@@ -3,8 +3,9 @@ name := "heatmaps"
 version := "1.0"
 
 scalaVersion := "2.12.2"
-
+val Http4sVersion = "0.15.11a"
 val circeVersion = "0.8.0"
+val rhoVersion = "0.15.0a"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -22,3 +23,12 @@ libraryDependencies += "com.typesafe" % "config" % "1.3.1"
 libraryDependencies += "com.google.apis" % "google-api-services-fusiontables" % "v2-rev18-1.21.0"
 libraryDependencies += "com.google.oauth-client" % "google-oauth-client-java6" % "1.22.0"
 libraryDependencies += "com.google.oauth-client" % "google-oauth-client-jetty" % "1.22.0"
+
+libraryDependencies ++= Seq(
+  "org.http4s"     %% "http4s-blaze-server" % Http4sVersion,
+  "org.http4s"     %% "http4s-circe"        % Http4sVersion,
+  "org.http4s"     %% "http4s-twirl"        % Http4sVersion,
+  "org.http4s"     %% "http4s-dsl"          % Http4sVersion
+)
+
+lazy val root = (project in file(".")).enablePlugins(SbtTwirl)

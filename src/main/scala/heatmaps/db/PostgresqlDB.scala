@@ -6,12 +6,12 @@ import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import com.github.mauricio.async.db.{Configuration, QueryResult}
 import com.google.maps.model.{LatLng, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.{City, DBConfig}
+import heatmaps.{City, postgresDBConfig}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PostgresqlDB(dBConfig: DBConfig, val schema: PlaceTableSchema)(implicit ec: ExecutionContext) extends PlacesDatabase {
+class PostgresqlDB(dBConfig: postgresDBConfig, val schema: PlaceTableSchema)(implicit ec: ExecutionContext) extends PlacesDatabase {
 
   private val connectionConfiguration = Configuration(
     username = dBConfig.username,
@@ -30,7 +30,7 @@ class PostgresqlDB(dBConfig: DBConfig, val schema: PlaceTableSchema)(implicit ec
 
 //  private def disconnectFromDB = connectionPool.disconnect
 
-  private def createPlacesTableIfNotExisting: Future[QueryResult] = {
+  def createPlacesTableIfNotExisting: Future[QueryResult] = {
     logger.info(s"Creating Places Table if not existing")
     for {
       _ <- connectToDB

@@ -6,7 +6,7 @@ import heatmaps.City
 
 import scala.concurrent.Future
 
-case class Place(place_id: String, placeType: String, latLng: LatLng)
+case class Place(placeId: String, placeType: String, latLng: LatLng)
 
 case class PlaceTableSchema(
                              tableName: String = "places",

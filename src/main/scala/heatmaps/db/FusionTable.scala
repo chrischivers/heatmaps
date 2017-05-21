@@ -11,16 +11,17 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.fusiontables.{Fusiontables, FusiontablesScopes}
-import com.google.api.services.fusiontables.model.{Column, Table}
-import com.google.maps.model.PlacesSearchResult
-import heatmaps.City
+import com.google.api.services.fusiontables.model.{Column, Sqlresponse, Table}
+import com.google.maps.model.{LatLng, PlacesSearchResult}
+import heatmaps.{City, FusionDBConfig}
 import org.joda.time.DateTime
+
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class FusionTable(val schema: PlaceTableSchema) extends PlacesDatabase {
+class FusionTable(fusionDBConfig: FusionDBConfig, val schema: PlaceTableSchema, requestsPerMinuteThrottle: Double) extends PlacesDatabase {
 
   private val DATA_STORE_DIR = new File(System.getProperty("user.home"), ".store/fusion_tables_sample")
   private val JSON_FACTORY = JacksonFactory.getDefaultInstance
@@ -28,7 +29,7 @@ class FusionTable(val schema: PlaceTableSchema) extends PlacesDatabase {
   private val dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR)
 
   private val credential: Credential = { // load client secrets
-    val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(getClass.getResourceAsStream("/client_secrets.json")))
+    val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(getClass.getResourceAsStream("/" + fusionDBConfig.clientSecretsFileName)))
     val flow = new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, Collections.singleton(FusiontablesScopes.FUSIONTABLES)).setDataStoreFactory(dataStoreFactory).build
     new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver.Builder().setPort(58008).build()).authorize("user")
   }
@@ -37,9 +38,9 @@ class FusionTable(val schema: PlaceTableSchema) extends PlacesDatabase {
 
   private def getPlacesTable: Table = {
 
-    val existingTables = fusiontables.table().list().execute().getItems.asScala
-    logger.info(s"The following fusion tables already exist $existingTables")
-    val tableOpt = fusiontables.table().list().execute().getItems.asScala.find(table => table.getName == schema.tableName)
+    val existingTables = fusiontables.table().list().execute().getItems.asScala.toList
+    logger.info(s"The following fusion tables exist ${existingTables.map(_.getName)}")
+    val tableOpt = existingTables.find(table => table.getName == schema.tableName)
 
     tableOpt.getOrElse {
 
@@ -60,9 +61,15 @@ class FusionTable(val schema: PlaceTableSchema) extends PlacesDatabase {
   }
 
   override def insertPlaces(placeSearchResults: List[PlacesSearchResult], city: City, placeType: String): Future[Unit] = {
-    val placesTable = getPlacesTable
-    placeSearchResults.foreach(result => insertPlace(placesTable.getTableId, result, city, placeType))
-    Future(())
+    Future {
+      logger.info(s"Starting insert of ${placeSearchResults.size} places into DB")
+      val placesTable = getPlacesTable
+      placeSearchResults.foldLeft(1)((acc, result) => {
+        logger.info(s"Inserting place $acc of ${placeSearchResults.size} into DB")
+        retry(fusionDBConfig.numberRetries)(insertPlace(placesTable.getTableId, result, city, placeType))
+        acc + 1
+      })
+    }
   }
 
   private def insertPlace(placesTableID: String, placeSearchResult: PlacesSearchResult, city: City, placeType: String) = {
@@ -73,43 +80,54 @@ class FusionTable(val schema: PlaceTableSchema) extends PlacesDatabase {
          |    VALUES ('${placeSearchResult.placeId}','$placeType','${city.name}','${placeSearchResult.geometry.location.lat} ${placeSearchResult.geometry.location.lng}','${new DateTime(new Date())}');
          |
       """.stripMargin
-
-
-    logger.info("executing statement")
+    val startTime = System.currentTimeMillis()
     val sqlResponse = fusiontables.query.sql(statement).execute()
     println(sqlResponse.toPrettyString)
+
+    Thread.sleep(calculateSleepTime)
+
+    def calculateSleepTime = {
+      val sleepTime = ((60.0 / requestsPerMinuteThrottle) * 1000).toLong - (System.currentTimeMillis() - startTime)
+      if (sleepTime < 0) 0L else sleepTime
+    }
   }
+
 
   override def getPlacesForCity(city: City): Future[List[Place]] = {
     logger.info(s"getting places for city: $city")
     val placesTable = getPlacesTable
-    val query = s"SELECT * FROM ${placesTable.getTableId} WHERE ${schema.cityName} = ${city.name}"
-    val sqlResponse = fusiontables.query().sql(query).execute()
-    println(sqlResponse.getRows)
-    Future(List())
-//
-//    for {
-//      _ <- connectToDB
-//      queryResult <- connectionPool.sendPreparedStatement(query, List(city.name))
-//    // _ <- disconnectFromDB
-//    } yield {
-//      queryResult.rows match {
-//        case Some(resultSet) => resultSet.map(res => {
-//          heatmaps.db.Place(
-//            res.apply(schema.placeId).asInstanceOf[String],
-//            res.apply(schema.placeType).asInstanceOf[String],
-//            new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble)
-//          )
-//        }).toList
-//        case None => List.empty
-//      }
-//    }
+    val query = s"SELECT * FROM ${placesTable.getTableId} WHERE ${schema.cityName} = '${city.name}'"
+    val sqlResponse: Sqlresponse = fusiontables.query().sql(query).execute()
+    val columns = sqlResponse.getColumns.asScala.toList
+    val rows = sqlResponse.getRows.asScala.toList
+    Future(rows.map(row => {
+      val fields = row.asScala.toList
+      val latLng = fields(columns.indexOf("location")).asInstanceOf[String].split(" ")
+      Place(
+        placeId = fields(columns.indexOf(schema.placeId)).asInstanceOf[String],
+        placeType = fields(columns.indexOf(schema.placeType)).asInstanceOf[String],
+        latLng = new LatLng(latLng(0).toDouble, latLng(1).toDouble)
+      )
+    }))
   }
 
   override def dropPlacesTable: Future[Unit] = {
+    logger.info("Dropping Places Table")
     val placesTable = getPlacesTable
-    fusiontables.table.delete(placesTable.getTableId)
+    fusiontables.table.delete(placesTable.getTableId).execute()
     Future(())
+  }
+
+  @annotation.tailrec
+  // Code borrowed from http://stackoverflow.com/questions/7930814/whats-the-scala-way-to-implement-a-retry-able-call-like-this-one
+  private def retry[T](n: Int)(fn: => T): T = {
+    util.Try {
+      fn
+    } match {
+      case util.Success(x) => x
+      case _ if n > 1 => retry(n - 1)(fn)
+      case util.Failure(e) => throw e
+    }
   }
 }
 
