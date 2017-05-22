@@ -14,8 +14,8 @@ class FusionTableTest extends fixture.FunSuite with ScalaFutures {
   val config = ConfigLoader.defaultConfig
 
   override implicit val patienceConfig = PatienceConfig(
-    timeout = scaled(5 minutes),
-    interval = scaled(500 millis)
+    timeout = scaled(10 minutes),
+    interval = scaled(1 seconds)
   )
 
   case class FixtureParam(placesApiRetriever: PlacesApiRetriever, locationScanner: LocationScanner, fusionTable: FusionTable, requestsPerMinute: Double)
@@ -24,8 +24,7 @@ class FusionTableTest extends fixture.FunSuite with ScalaFutures {
     val placesApiRetriever = new PlacesApiRetriever(config)
     val requestsPerMinute = 29.0
     val locationScanner = new LocationScanner(placesApiRetriever)
-    val fusionTable = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), requestsPerMinute)
-    fusionTable.dropPlacesTable
+    val fusionTable = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), requestsPerMinute, recreateTableIfExists = true)
     val testFixture = FixtureParam(placesApiRetriever, locationScanner, fusionTable, requestsPerMinute)
 
     try {
@@ -44,11 +43,16 @@ class FusionTableTest extends fixture.FunSuite with ScalaFutures {
       val city = City("TestCity", latLngBounds)
 
       val locationScanResult = f.locationScanner.scanCity(city, 500, PlaceType.RESTAURANT, narrowRadiusIfReturnLimitReached = false)
-      f.fusionTable.insertPlaces(locationScanResult, city, PlaceType.RESTAURANT.name())
+      f.fusionTable.insertPlaces(locationScanResult, city, PlaceType.RESTAURANT.name()).futureValue
 
       val results = f.fusionTable.getPlacesForCity(city).futureValue
       results.size should be > 0
-      results.map(_.placeId) == locationScanResult.map(_.placeId)
+      results.map(_.placeId) should equal (locationScanResult.map(_.placeId))
+      results.foreach(returnedRes => {
+        val locScanResultForPlace = locationScanResult.find(res => res.placeId == returnedRes.placeId).get
+        locScanResultForPlace.geometry.location.lat should equal (returnedRes.latLng.lat)
+        locScanResultForPlace.geometry.location.lng should equal (returnedRes.latLng.lng)
+      })
 
     }
   }
@@ -60,7 +64,7 @@ class FusionTableTest extends fixture.FunSuite with ScalaFutures {
 
       val locationScanResultExtract = f.locationScanner.scanCity(city, 500, PlaceType.RESTAURANT, narrowRadiusIfReturnLimitReached = false).take(f.requestsPerMinute.toInt)
       val startTime = System.currentTimeMillis()
-      f.fusionTable.insertPlaces(locationScanResultExtract, city, PlaceType.RESTAURANT.name())
+      f.fusionTable.insertPlaces(locationScanResultExtract, city, PlaceType.RESTAURANT.name()).futureValue
       val finishTime = System.currentTimeMillis()
 
       (finishTime - startTime) should be >= (60 * 1000).toLong

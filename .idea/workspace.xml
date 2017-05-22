@@ -2,108 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b98b2f2a-d226-44e3-bfa1-5aeb9c844491" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/project/plugins.sbt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/twirl/index.scala.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/twirl/map.scala.html" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/SBT__ch_qos_logback_logback_classic_1_1_9_jar.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/SBT__ch_qos_logback_logback_core_1_1_9_jar.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/SBT__org_scala_lang_modules_scala_xml_2_12_1_0_5_jar.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules/heatmaps-build.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules/heatmaps.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$0d3591090a6c75b34778$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$0d3591090a6c75b34778$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$0d3591090a6c75b34778.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$0d3591090a6c75b34778.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$22d2d9a2bb0d6e362312$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$22d2d9a2bb0d6e362312$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$22d2d9a2bb0d6e362312.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$22d2d9a2bb0d6e362312.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$39b184b3a0633de3a32b$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$39b184b3a0633de3a32b.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$39b184b3a0633de3a32b.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8061b02a8f0f4db81ead$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8061b02a8f0f4db81ead$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8061b02a8f0f4db81ead.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8061b02a8f0f4db81ead.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$860f6a760aa2c189c8af$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$860f6a760aa2c189c8af$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$860f6a760aa2c189c8af.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$860f6a760aa2c189c8af.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8aa329d18398dc1c9e18$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8aa329d18398dc1c9e18$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8aa329d18398dc1c9e18.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8aa329d18398dc1c9e18.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8f36af8dea47da9864a2$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8f36af8dea47da9864a2$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8f36af8dea47da9864a2.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$8f36af8dea47da9864a2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c$$anonfun$$sbtdef$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c$$anonfun$$sbtdef$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c$$anonfun$$sbtdef$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$917c7f7badbcd239d48c.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$b87926ddcb938d9ad528$$anonfun$$sbtdef$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$b87926ddcb938d9ad528$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$b87926ddcb938d9ad528$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$b87926ddcb938d9ad528.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$b87926ddcb938d9ad528.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$be76dcf2c6a4a5f33f28$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$be76dcf2c6a4a5f33f28$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$be76dcf2c6a4a5f33f28.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$be76dcf2c6a4a5f33f28.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$e5b4e6dc3704bd9afc10$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$e5b4e6dc3704bd9afc10$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$e5b4e6dc3704bd9afc10.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$e5b4e6dc3704bd9afc10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$f541da8543054e920105$$anonfun$$sbtdef$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$f541da8543054e920105$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$f541da8543054e920105.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project/target/config-classes/$f541da8543054e920105.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/scala-2.12/test-classes/london-data.dat" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/$global/dependencyPositions/$global/streams/update_cache_2.10/input_dsp" afterPath="$PROJECT_DIR$/project/target/streams/$global/dependencyPositions/$global/streams/update_cache_2.10/input_dsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/$global/dependencyPositions/$global/streams/update_cache_2.10/output_dsp" afterPath="$PROJECT_DIR$/project/target/streams/$global/dependencyPositions/$global/streams/update_cache_2.10/output_dsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.10/inputs" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.10/inputs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.10/output" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.10/output" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/scala-2.12/classes/googleutils/MathUtil.class" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/googleutils/MathUtil.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/scala-2.12/classes/googleutils/SphericalUtil.class" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/googleutils/SphericalUtil.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/scala_compiler.xml" afterPath="$PROJECT_DIR$/.idea/scala_compiler.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.sbt" afterPath="$PROJECT_DIR$/build.sbt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/default/heatmaps-build/scala_2.10/sbt_0.13/0.1-SNAPSHOT/resolved.xml.properties" afterPath="$PROJECT_DIR$/project/target/resolution-cache/default/heatmaps-build/scala_2.10/sbt_0.13/0.1-SNAPSHOT/resolved.xml.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/default/heatmaps-build/scala_2.10/sbt_0.13/0.1-SNAPSHOT/resolved.xml.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/default/heatmaps-build/scala_2.10/sbt_0.13/0.1-SNAPSHOT/resolved.xml.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-compile-internal.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-compile-internal.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-compile.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-compile.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-docs.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-docs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-optional.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-optional.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-plugin.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-plugin.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-pom.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-provided.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-provided.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-runtime-internal.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-runtime-internal.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-runtime.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-runtime.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-scala-tool.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-scala-tool.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-sources.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-sources.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-test-internal.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-test-internal.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-test.xml" afterPath="$PROJECT_DIR$/project/target/resolution-cache/reports/default-heatmaps-build-test.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/out" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/compile/compileIncremental/$global/streams/out" afterPath="$PROJECT_DIR$/project/target/streams/compile/compileIncremental/$global/streams/out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/compile/copyResources/$global/streams/out" afterPath="$PROJECT_DIR$/project/target/streams/compile/copyResources/$global/streams/out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/compile/dependencyClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/compile/dependencyClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/compile/externalDependencyClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/compile/externalDependencyClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/compile/managedClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/compile/managedClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/runtime/dependencyClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/runtime/dependencyClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/runtime/externalDependencyClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/runtime/externalDependencyClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/runtime/fullClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/runtime/fullClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/target/streams/runtime/managedClasspath/$global/streams/export" afterPath="$PROJECT_DIR$/project/target/streams/runtime/managedClasspath/$global/streams/export" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/application.conf" afterPath="$PROJECT_DIR$/src/main/resources/application.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/heatmaps/Config.scala" afterPath="$PROJECT_DIR$/src/main/scala/heatmaps/Config.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala" afterPath="$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala" afterPath="$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala" afterPath="$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala" afterPath="$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala" afterPath="$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/twirl/map.scala.html" afterPath="$PROJECT_DIR$/src/main/twirl/map.scala.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala" afterPath="$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala" afterPath="$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala" />
     </list>
@@ -149,8 +54,8 @@
       <file leaf-file-name="Main.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-110">
-              <caret line="18" column="9" lean-forward="false" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
+            <state relative-caret-position="335">
+              <caret line="33" column="23" lean-forward="false" selection-start-line="33" selection-start-column="23" selection-end-line="33" selection-end-column="23" />
               <folding>
                 <element signature="e#18#74#0" expanded="true" />
               </folding>
@@ -158,84 +63,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+      <file leaf-file-name="LocationScanner.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/LocationScanner.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="66" column="6" lean-forward="false" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
+            <state relative-caret-position="410">
+              <caret line="62" column="24" lean-forward="false" selection-start-line="62" selection-start-column="24" selection-end-line="62" selection-end-column="24" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.sbt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build.sbt">
+      <file leaf-file-name="PlaceRetrieverTest.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/PlaceRetrieverTest.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="plugins.sbt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/project/plugins.sbt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="City.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/City.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="11" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="build.properties" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/project/build.properties">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HelloWorld.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
+            <state relative-caret-position="135">
+              <caret line="12" column="22" lean-forward="false" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="22" />
               <folding>
-                <element signature="e#26#45#0" expanded="true" />
+                <element signature="e#18#66#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="map.scala.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/twirl/map.scala.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.scala.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/twirl/index.scala.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -243,8 +88,78 @@
       <file leaf-file-name="PostgresqlDBTest.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="394">
-              <caret line="35" column="3" lean-forward="false" selection-start-line="35" selection-start-column="3" selection-end-line="35" selection-end-column="3" />
+            <state relative-caret-position="115">
+              <caret line="12" column="18" lean-forward="false" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
+              <folding>
+                <element signature="e#18#66#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FusionTableTest.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="127">
+              <caret line="11" column="6" lean-forward="false" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+              <folding>
+                <element signature="e#18#66#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FusionTable.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+              <folding>
+                <element signature="e#21#61#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HelloWorld.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="10" column="27" lean-forward="false" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
+              <folding>
+                <element signature="e#26#61#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PlacesDatabase.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="10" column="11" lean-forward="false" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PostgresqlDB.scala" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1016">
+              <caret line="69" column="56" lean-forward="false" selection-start-line="69" selection-start-column="56" selection-end-line="69" selection-end-column="56" />
+              <folding>
+                <element signature="e#21#97#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Net.class" pinned="false" current-in-tab="false">
+        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/rt.jar!/sun/nio/ch/Net.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="146">
+              <caret line="370" column="0" lean-forward="false" selection-start-line="370" selection-start-column="0" selection-end-line="370" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -279,6 +194,10 @@
       <find>i</find>
       <find>getting</find>
       <find>fold</find>
+      <find>public</find>
+      <find>table cre</find>
+      <find>Getting Pla</find>
+      <find>LatLng</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -295,7 +214,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/MathUtil.java" />
         <option value="$PROJECT_DIR$/src/main/scala/test/test.scala" />
         <option value="$PROJECT_DIR$/src/main/java/SphericalUtil.java" />
         <option value="$PROJECT_DIR$/src/main/java/googleutils/SphericalUtil.java" />
@@ -326,26 +244,27 @@
         <option value="$PROJECT_DIR$/src/main/scala/db/LatLngBounds.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/LatLngBounds.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/City.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/LocationScanner.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/heatmaps/PlacesApiRetriever.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/heatmaps/LocationScannerTest.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/heatmaps/PlaceRetrieverTest.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala" />
-        <option value="$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/application.conf" />
         <option value="$PROJECT_DIR$/src/main/scala/heatmaps/Config.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala" />
-        <option value="$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/heatmaps/servlet/Server.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala" />
         <option value="$PROJECT_DIR$/src/main/twirl.heatmaps/index.scala.html" />
         <option value="$PROJECT_DIR$/project/plugins.sbt" />
         <option value="$PROJECT_DIR$/src/main/scala/heatmaps/HelloWorld.scala" />
         <option value="$PROJECT_DIR$/build.sbt" />
-        <option value="$PROJECT_DIR$/src/main/twirl/index.scala.html" />
-        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/main/twirl/index.scala.html" />
+        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/LocationScanner.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala" />
+        <option value="$PROJECT_DIR$/src/main/twirl/map.scala.html" />
+        <option value="$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala" />
       </list>
     </option>
   </component>
@@ -371,9 +290,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -535,6 +451,92 @@
               <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PlacesDatabase.scala" />
+              <option name="myItemType" value="org.jetbrains.plugins.scala.components.ScalaDefsProjectViewProvider$ScalaFileTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="heatmaps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -570,6 +572,9 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -603,63 +608,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Application.Main">
-    <configuration default="false" name="FusionTableTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="heatmaps" />
-      <setting name="path" value="FusionTableTest" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="testName" value="" />
-      <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
-      <setting name="useSbt" value="false" />
-      <setting name="useUiWithSbt" value="false" />
-      <classRegexps />
-      <testRegexps />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="false" name="FusionTableTest (1)" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="heatmaps" />
-      <setting name="path" value="heatmaps.FusionTableTest" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="testName" value="" />
-      <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
-      <setting name="useSbt" value="false" />
-      <setting name="useUiWithSbt" value="false" />
-      <classRegexps />
-      <testRegexps />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="false" name="LocationScannerTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="heatmaps" />
-      <setting name="path" value="heatmaps.LocationScannerTest" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="testName" value="" />
-      <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
-      <setting name="useSbt" value="false" />
-      <setting name="useUiWithSbt" value="false" />
-      <classRegexps />
-      <testRegexps />
-      <envs />
-      <method />
-    </configuration>
     <configuration default="false" name="FusionTableTest.requests per minute throttle is adhered to" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="heatmaps" />
@@ -696,6 +644,63 @@
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="root" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="FusionTableTest.heatmaps.db.Place results persisted to FusionTable should match those retrieved" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="root" />
+      <setting name="path" value="heatmaps.FusionTableTest" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="heatmaps.db.Place results persisted to FusionTable should match those retrieved" />
+      <setting name="testKind" value="Test name" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <classRegexps />
+      <testRegexps />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="FusionTableTest (1)" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="root" />
+      <setting name="path" value="heatmaps.FusionTableTest" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <classRegexps />
+      <testRegexps />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="PostgresqlDBTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="root" />
+      <setting name="path" value="heatmaps.PostgresqlDBTest" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <classRegexps />
+      <testRegexps />
       <envs />
       <method />
     </configuration>
@@ -961,19 +966,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest" />
-      <item index="1" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest (1)" />
-      <item index="2" class="java.lang.String" itemvalue="ScalaTest.LocationScannerTest" />
-      <item index="3" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest.requests per minute throttle is adhered to" />
-      <item index="4" class="java.lang.String" itemvalue="Application.Main" />
+      <item index="0" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest.requests per minute throttle is adhered to" />
+      <item index="1" class="java.lang.String" itemvalue="Application.Main" />
+      <item index="2" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest.heatmaps.db.Place results persisted to FusionTable should match those retrieved" />
+      <item index="3" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest (1)" />
+      <item index="4" class="java.lang.String" itemvalue="ScalaTest.PostgresqlDBTest" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Application.Main" />
-        <item index="1" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest (1)" />
-        <item index="2" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest.requests per minute throttle is adhered to" />
-        <item index="3" class="java.lang.String" itemvalue="ScalaTest.LocationScannerTest" />
-        <item index="4" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest" />
+        <item index="1" class="java.lang.String" itemvalue="ScalaTest.PostgresqlDBTest" />
+        <item index="2" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest (1)" />
+        <item index="3" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest.heatmaps.db.Place results persisted to FusionTable should match those retrieved" />
+        <item index="4" class="java.lang.String" itemvalue="ScalaTest.FusionTableTest.requests per minute throttle is adhered to" />
       </list>
     </recent_temporary>
   </component>
@@ -1048,35 +1053,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 10h 36m 46s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 15h 49m 44s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 10h 45m 36s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 15h 50m 18s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 10h 52m 41s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 15h 54m 28s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 11h 22m 13s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 15h 56m 18s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 11h 31m 47s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 15h 58m 06s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 11h 39m 29s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 15h 58m 46s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 12h 19m 09s.xml">
+    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 16h 10m 40s.xml">
       <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_(1) - 2017.05.21 at 12h 38m 35s.xml">
-      <configuration name="FusionTableTest (1)" configurationId="ScalaTestRunConfiguration" />
+    <history-entry file="FusionTableTest_heatmaps_db_Place_results_persisted_to_FusionTable_should_match_those_retrieved - 2017.05.21 at 15h 07m 38s.xml">
+      <configuration name="FusionTableTest.heatmaps.db.Place results persisted to FusionTable should match those retrieved" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_requests_per_minute_throttle_is_adhered_to - 2017.05.21 at 11h 54m 58s.xml">
-      <configuration name="FusionTableTest.requests per minute throttle is adhered to" configurationId="ScalaTestRunConfiguration" />
+    <history-entry file="FusionTableTest_heatmaps_db_Place_results_persisted_to_FusionTable_should_match_those_retrieved - 2017.05.21 at 15h 09m 30s.xml">
+      <configuration name="FusionTableTest.heatmaps.db.Place results persisted to FusionTable should match those retrieved" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
-    <history-entry file="FusionTableTest_requests_per_minute_throttle_is_adhered_to - 2017.05.21 at 11h 57m 04s.xml">
-      <configuration name="FusionTableTest.requests per minute throttle is adhered to" configurationId="ScalaTestRunConfiguration" />
+    <history-entry file="PostgresqlDBTest - 2017.05.22 at 22h 32m 19s.xml">
+      <configuration name="PostgresqlDBTest" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
@@ -1087,20 +1092,19 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49713877" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="SBT" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07224607" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="SBT" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07081545" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5028612" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40422887" sideWeight="0.49713877" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.40422887" sideWeight="0.49713877" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22246066" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22818312" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1112,6 +1116,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -1128,41 +1133,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scalatest/scalatest_2.12/srcs/scalatest_2.12-3.0.1-sources.jar!/org/scalatest/concurrent/AbstractPatienceConfiguration.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="90" column="19" lean-forward="false" selection-start-line="90" selection-start-column="19" selection-end-line="90" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scalatest/scalatest_2.12/srcs/scalatest_2.12-3.0.1-sources.jar!/org/scalatest/concurrent/Futures.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="474" column="8" lean-forward="false" selection-start-line="474" selection-start-column="8" selection-end-line="474" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.github.mauricio/db-async-common_2.12/srcs/db-async-common_2.12-0.2.21-sources.jar!/com/github/mauricio/async/db/pool/ConnectionPool.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="80" column="6" lean-forward="false" selection-start-line="80" selection-start-column="6" selection-end-line="80" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.api-client/google-api-client/srcs/google-api-client-1.21.0-sources.jar!/com/google/api/client/googleapis/auth/oauth2/GoogleClientSecrets.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="46" column="19" lean-forward="false" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.oauth-client/google-oauth-client/srcs/google-oauth-client-1.21.0-sources.jar!/com/google/api/client/auth/oauth2/Credential.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="190" column="15" lean-forward="false" selection-start-line="190" selection-start-column="15" selection-end-line="190" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.oauth-client/google-oauth-client/srcs/google-oauth-client-1.21.0-sources.jar!/com/google/api/client/auth/oauth2/CredentialStore.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
@@ -1212,13 +1182,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/model/Table.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="246" column="2" lean-forward="false" selection-start-line="246" selection-start-column="2" selection-end-line="246" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-reflect/srcs/scala-reflect-2.12.2-sources.jar!/scala/reflect/internal/util/TableDef.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="915">
@@ -1264,68 +1227,10 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala/PlacesDatabase.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/db/Place.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/db/PlaceTableSchema.scala" />
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/Fusiontables.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="1405" column="56" lean-forward="false" selection-start-line="1405" selection-start-column="50" selection-end-line="1405" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/client_secrets.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="46" lean-forward="false" selection-start-line="3" selection-start-column="46" selection-end-line="3" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/model/TableList.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
           <caret line="67" column="31" lean-forward="false" selection-start-line="67" selection-start-column="31" selection-end-line="67" selection-end-column="31" />
-          <folding>
-            <element signature="e#2363#2364#0" expanded="false" />
-            <element signature="e#2385#2386#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/LatLngBounds.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="11" lean-forward="false" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/PlacesApiRetriever.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="59">
-          <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/LocationScannerTest.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/PlaceRetrieverTest.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="12" column="22" lean-forward="false" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="13" column="18" lean-forward="false" selection-start-line="13" selection-start-column="18" selection-end-line="13" selection-end-column="18" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1333,70 +1238,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="350">
           <caret line="82" column="22" lean-forward="false" selection-start-line="82" selection-start-column="22" selection-end-line="82" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.api-client/google-api-client/srcs/google-api-client-1.21.0-sources.jar!/com/google/api/client/googleapis/services/AbstractGoogleClientRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="468" column="42" lean-forward="false" selection-start-line="468" selection-start-column="42" selection-end-line="468" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/Config.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="42" lean-forward="false" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/model/Sqlresponse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="99" column="58" lean-forward="false" selection-start-line="99" selection-start-column="58" selection-end-line="99" selection-end-column="58" />
-          <folding>
-            <element signature="e#3279#3280#0" expanded="false" />
-            <element signature="e#3300#3301#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="8" column="24" lean-forward="false" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="123">
-          <caret line="48" column="40" lean-forward="false" selection-start-line="48" selection-start-column="40" selection-end-line="48" selection-end-column="40" />
-          <folding>
-            <element signature="e#18#66#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/LocationScanner.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-426">
-          <caret line="14" column="6" lean-forward="false" selection-start-line="14" selection-start-column="6" selection-end-line="14" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="64" column="6" lean-forward="false" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
-          <folding>
-            <element signature="e#21#61#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1408,22 +1249,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="18" lean-forward="false" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/servlet/Server.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/servlet/Server.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/City.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -1436,15 +1262,58 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala">
+    <entry file="file://$PROJECT_DIR$/build.sbt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="394">
-          <caret line="35" column="3" lean-forward="false" selection-start-line="35" selection-start-column="3" selection-end-line="35" selection-end-column="3" />
-          <folding />
+        <state relative-caret-position="400">
+          <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="66" column="6" lean-forward="false" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/twirl/index.scala.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="6" lean-forward="false" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/PlacesApiRetriever.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="7" column="24" lean-forward="false" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/model/Table.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="25" column="5" lean-forward="false" selection-start-line="25" selection-start-column="5" selection-end-line="25" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.api-client/google-api-client/srcs/google-api-client-1.21.0-sources.jar!/com/google/api/client/googleapis/services/AbstractGoogleClientRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6105">
+          <caret line="467" column="11" lean-forward="false" selection-start-line="467" selection-start-column="11" selection-end-line="467" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/LocationScannerTest.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding>
+            <element signature="e#18#66#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1456,55 +1325,878 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala">
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/model/Sqlresponse.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-110">
-          <caret line="18" column="9" lean-forward="false" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
-          <folding>
-            <element signature="e#18#74#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-792">
+          <caret line="33" column="19" lean-forward="false" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.sbt">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/client_secrets.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
+        <state relative-caret-position="45">
+          <caret line="3" column="46" lean-forward="false" selection-start-line="3" selection-start-column="46" selection-end-line="3" selection-end-column="46" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/twirl/index.scala.html">
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.http-client/google-http-client/srcs/google-http-client-1.22.0-sources.jar!/com/google/api/client/util/store/FileDataStoreFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+        <state relative-caret-position="420">
+          <caret line="51" column="9" lean-forward="false" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#5886#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#2313#2314#0" expanded="false" />
+            <element signature="e#2343#2344#0" expanded="false" />
+            <element signature="e#3840#3841#0" expanded="false" />
+            <element signature="e#3911#3912#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.oauth-client/google-oauth-client-java6/srcs/google-oauth-client-java6-1.22.0-sources.jar!/com/google/api/client/extensions/java6/auth/oauth2/AuthorizationCodeInstalledApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="67" column="20" lean-forward="false" selection-start-line="67" selection-start-column="20" selection-end-line="67" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#5421#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#5265#5266#0" expanded="false" />
+            <element signature="e#5286#5287#0" expanded="false" />
+            <element signature="e#5392#5393#0" expanded="false" />
+            <element signature="e#5417#5418#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.apis/google-api-services-fusiontables/srcs/google-api-services-fusiontables-v2-rev18-1.21.0-sources.jar!/com/google/api/services/fusiontables/Fusiontables.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="43" column="13" lean-forward="false" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#167829#0" expanded="false" />
+            <element signature="e#4205#4206#0" expanded="false" />
+            <element signature="e#4229#4230#0" expanded="false" />
+            <element signature="e#4804#4805#0" expanded="false" />
+            <element signature="e#4833#4834#0" expanded="false" />
+            <element signature="e#7001#7002#0" expanded="false" />
+            <element signature="e#7052#7053#0" expanded="false" />
+            <element signature="e#7126#7127#0" expanded="false" />
+            <element signature="e#7183#7184#0" expanded="false" />
+            <element signature="e#7251#7252#0" expanded="false" />
+            <element signature="e#7302#7303#0" expanded="false" />
+            <element signature="e#7384#7385#0" expanded="false" />
+            <element signature="e#7449#7450#0" expanded="false" />
+            <element signature="e#7534#7535#0" expanded="false" />
+            <element signature="e#7601#7602#0" expanded="false" />
+            <element signature="e#7681#7682#0" expanded="false" />
+            <element signature="e#7744#7745#0" expanded="false" />
+            <element signature="e#7818#7819#0" expanded="false" />
+            <element signature="e#7875#7876#0" expanded="false" />
+            <element signature="e#8125#8126#0" expanded="false" />
+            <element signature="e#8157#8158#0" expanded="false" />
+            <element signature="e#8595#8596#0" expanded="false" />
+            <element signature="e#8628#8629#0" expanded="false" />
+            <element signature="e#8894#8895#0" expanded="false" />
+            <element signature="e#8959#8960#0" expanded="false" />
+            <element signature="e#11463#11464#0" expanded="false" />
+            <element signature="e#11511#11512#0" expanded="false" />
+            <element signature="e#11582#11583#0" expanded="false" />
+            <element signature="e#11636#11637#0" expanded="false" />
+            <element signature="e#11701#11702#0" expanded="false" />
+            <element signature="e#11749#11750#0" expanded="false" />
+            <element signature="e#11828#11829#0" expanded="false" />
+            <element signature="e#11890#11891#0" expanded="false" />
+            <element signature="e#11972#11973#0" expanded="false" />
+            <element signature="e#12036#12037#0" expanded="false" />
+            <element signature="e#12113#12114#0" expanded="false" />
+            <element signature="e#12173#12174#0" expanded="false" />
+            <element signature="e#12244#12245#0" expanded="false" />
+            <element signature="e#12298#12299#0" expanded="false" />
+            <element signature="e#12526#12527#0" expanded="false" />
+            <element signature="e#12558#12559#0" expanded="false" />
+            <element signature="e#13002#13003#0" expanded="false" />
+            <element signature="e#13035#13036#0" expanded="false" />
+            <element signature="e#13305#13306#0" expanded="false" />
+            <element signature="e#13367#13368#0" expanded="false" />
+            <element signature="e#15738#15739#0" expanded="false" />
+            <element signature="e#15789#15790#0" expanded="false" />
+            <element signature="e#15863#15864#0" expanded="false" />
+            <element signature="e#15920#15921#0" expanded="false" />
+            <element signature="e#15988#15989#0" expanded="false" />
+            <element signature="e#16039#16040#0" expanded="false" />
+            <element signature="e#16121#16122#0" expanded="false" />
+            <element signature="e#16186#16187#0" expanded="false" />
+            <element signature="e#16271#16272#0" expanded="false" />
+            <element signature="e#16338#16339#0" expanded="false" />
+            <element signature="e#16418#16419#0" expanded="false" />
+            <element signature="e#16481#16482#0" expanded="false" />
+            <element signature="e#16555#16556#0" expanded="false" />
+            <element signature="e#16612#16613#0" expanded="false" />
+            <element signature="e#16860#16861#0" expanded="false" />
+            <element signature="e#16892#16893#0" expanded="false" />
+            <element signature="e#17150#17151#0" expanded="false" />
+            <element signature="e#17215#17216#0" expanded="false" />
+            <element signature="e#19345#19346#0" expanded="false" />
+            <element signature="e#19394#19395#0" expanded="false" />
+            <element signature="e#19466#19467#0" expanded="false" />
+            <element signature="e#19521#19522#0" expanded="false" />
+            <element signature="e#19587#19588#0" expanded="false" />
+            <element signature="e#19636#19637#0" expanded="false" />
+            <element signature="e#19716#19717#0" expanded="false" />
+            <element signature="e#19779#19780#0" expanded="false" />
+            <element signature="e#19862#19863#0" expanded="false" />
+            <element signature="e#19927#19928#0" expanded="false" />
+            <element signature="e#20005#20006#0" expanded="false" />
+            <element signature="e#20066#20067#0" expanded="false" />
+            <element signature="e#20138#20139#0" expanded="false" />
+            <element signature="e#20193#20194#0" expanded="false" />
+            <element signature="e#20427#20428#0" expanded="false" />
+            <element signature="e#20459#20460#0" expanded="false" />
+            <element signature="e#20910#20911#0" expanded="false" />
+            <element signature="e#20945#20946#0" expanded="false" />
+            <element signature="e#21418#21419#0" expanded="false" />
+            <element signature="e#21452#21453#0" expanded="false" />
+            <element signature="e#21728#21729#0" expanded="false" />
+            <element signature="e#21791#21792#0" expanded="false" />
+            <element signature="e#24389#24390#0" expanded="false" />
+            <element signature="e#24439#24440#0" expanded="false" />
+            <element signature="e#24512#24513#0" expanded="false" />
+            <element signature="e#24568#24569#0" expanded="false" />
+            <element signature="e#24635#24636#0" expanded="false" />
+            <element signature="e#24685#24686#0" expanded="false" />
+            <element signature="e#24766#24767#0" expanded="false" />
+            <element signature="e#24830#24831#0" expanded="false" />
+            <element signature="e#24914#24915#0" expanded="false" />
+            <element signature="e#24980#24981#0" expanded="false" />
+            <element signature="e#25059#25060#0" expanded="false" />
+            <element signature="e#25121#25122#0" expanded="false" />
+            <element signature="e#25194#25195#0" expanded="false" />
+            <element signature="e#25250#25251#0" expanded="false" />
+            <element signature="e#25498#25499#0" expanded="false" />
+            <element signature="e#25530#25531#0" expanded="false" />
+            <element signature="e#25982#25983#0" expanded="false" />
+            <element signature="e#26015#26016#0" expanded="false" />
+            <element signature="e#26287#26288#0" expanded="false" />
+            <element signature="e#26351#26352#0" expanded="false" />
+            <element signature="e#28883#28884#0" expanded="false" />
+            <element signature="e#28934#28935#0" expanded="false" />
+            <element signature="e#29008#29009#0" expanded="false" />
+            <element signature="e#29065#29066#0" expanded="false" />
+            <element signature="e#29133#29134#0" expanded="false" />
+            <element signature="e#29184#29185#0" expanded="false" />
+            <element signature="e#29266#29267#0" expanded="false" />
+            <element signature="e#29331#29332#0" expanded="false" />
+            <element signature="e#29416#29417#0" expanded="false" />
+            <element signature="e#29483#29484#0" expanded="false" />
+            <element signature="e#29563#29564#0" expanded="false" />
+            <element signature="e#29626#29627#0" expanded="false" />
+            <element signature="e#29700#29701#0" expanded="false" />
+            <element signature="e#29757#29758#0" expanded="false" />
+            <element signature="e#30005#30006#0" expanded="false" />
+            <element signature="e#30037#30038#0" expanded="false" />
+            <element signature="e#30490#30491#0" expanded="false" />
+            <element signature="e#30523#30524#0" expanded="false" />
+            <element signature="e#30797#30798#0" expanded="false" />
+            <element signature="e#30862#30863#0" expanded="false" />
+            <element signature="e#31236#31237#0" expanded="false" />
+            <element signature="e#31264#31265#0" expanded="false" />
+            <element signature="e#34492#34493#0" expanded="false" />
+            <element signature="e#34540#34541#0" expanded="false" />
+            <element signature="e#34611#34612#0" expanded="false" />
+            <element signature="e#34665#34666#0" expanded="false" />
+            <element signature="e#34730#34731#0" expanded="false" />
+            <element signature="e#34778#34779#0" expanded="false" />
+            <element signature="e#34857#34858#0" expanded="false" />
+            <element signature="e#34919#34920#0" expanded="false" />
+            <element signature="e#35001#35002#0" expanded="false" />
+            <element signature="e#35065#35066#0" expanded="false" />
+            <element signature="e#35142#35143#0" expanded="false" />
+            <element signature="e#35202#35203#0" expanded="false" />
+            <element signature="e#35273#35274#0" expanded="false" />
+            <element signature="e#35327#35328#0" expanded="false" />
+            <element signature="e#35735#35736#0" expanded="false" />
+            <element signature="e#35763#35764#0" expanded="false" />
+            <element signature="e#36309#36310#0" expanded="false" />
+            <element signature="e#36338#36339#0" expanded="false" />
+            <element signature="e#36993#36994#0" expanded="false" />
+            <element signature="e#37023#37024#0" expanded="false" />
+            <element signature="e#37388#37389#0" expanded="false" />
+            <element signature="e#37450#37451#0" expanded="false" />
+            <element signature="e#40700#40701#0" expanded="false" />
+            <element signature="e#40751#40752#0" expanded="false" />
+            <element signature="e#40825#40826#0" expanded="false" />
+            <element signature="e#40882#40883#0" expanded="false" />
+            <element signature="e#40950#40951#0" expanded="false" />
+            <element signature="e#41001#41002#0" expanded="false" />
+            <element signature="e#41083#41084#0" expanded="false" />
+            <element signature="e#41148#41149#0" expanded="false" />
+            <element signature="e#41233#41234#0" expanded="false" />
+            <element signature="e#41300#41301#0" expanded="false" />
+            <element signature="e#41380#41381#0" expanded="false" />
+            <element signature="e#41443#41444#0" expanded="false" />
+            <element signature="e#41517#41518#0" expanded="false" />
+            <element signature="e#41574#41575#0" expanded="false" />
+            <element signature="e#41866#41867#0" expanded="false" />
+            <element signature="e#41894#41895#0" expanded="false" />
+            <element signature="e#42387#42388#0" expanded="false" />
+            <element signature="e#42416#42417#0" expanded="false" />
+            <element signature="e#43076#43077#0" expanded="false" />
+            <element signature="e#43106#43107#0" expanded="false" />
+            <element signature="e#43477#43478#0" expanded="false" />
+            <element signature="e#43542#43543#0" expanded="false" />
+            <element signature="e#43916#43917#0" expanded="false" />
+            <element signature="e#43944#43945#0" expanded="false" />
+            <element signature="e#46084#46085#0" expanded="false" />
+            <element signature="e#46135#46136#0" expanded="false" />
+            <element signature="e#46209#46210#0" expanded="false" />
+            <element signature="e#46266#46267#0" expanded="false" />
+            <element signature="e#46334#46335#0" expanded="false" />
+            <element signature="e#46385#46386#0" expanded="false" />
+            <element signature="e#46467#46468#0" expanded="false" />
+            <element signature="e#46532#46533#0" expanded="false" />
+            <element signature="e#46617#46618#0" expanded="false" />
+            <element signature="e#46684#46685#0" expanded="false" />
+            <element signature="e#46764#46765#0" expanded="false" />
+            <element signature="e#46827#46828#0" expanded="false" />
+            <element signature="e#46901#46902#0" expanded="false" />
+            <element signature="e#46958#46959#0" expanded="false" />
+            <element signature="e#47204#47205#0" expanded="false" />
+            <element signature="e#47236#47237#0" expanded="false" />
+            <element signature="e#47686#47687#0" expanded="false" />
+            <element signature="e#47718#47719#0" expanded="false" />
+            <element signature="e#47988#47989#0" expanded="false" />
+            <element signature="e#48053#48054#0" expanded="false" />
+            <element signature="e#50531#50532#0" expanded="false" />
+            <element signature="e#50579#50580#0" expanded="false" />
+            <element signature="e#50650#50651#0" expanded="false" />
+            <element signature="e#50704#50705#0" expanded="false" />
+            <element signature="e#50769#50770#0" expanded="false" />
+            <element signature="e#50817#50818#0" expanded="false" />
+            <element signature="e#50896#50897#0" expanded="false" />
+            <element signature="e#50958#50959#0" expanded="false" />
+            <element signature="e#51040#51041#0" expanded="false" />
+            <element signature="e#51104#51105#0" expanded="false" />
+            <element signature="e#51181#51182#0" expanded="false" />
+            <element signature="e#51241#51242#0" expanded="false" />
+            <element signature="e#51312#51313#0" expanded="false" />
+            <element signature="e#51366#51367#0" expanded="false" />
+            <element signature="e#51610#51611#0" expanded="false" />
+            <element signature="e#51642#51643#0" expanded="false" />
+            <element signature="e#52082#52083#0" expanded="false" />
+            <element signature="e#52114#52115#0" expanded="false" />
+            <element signature="e#52375#52376#0" expanded="false" />
+            <element signature="e#52437#52438#0" expanded="false" />
+            <element signature="e#54591#54592#0" expanded="false" />
+            <element signature="e#54642#54643#0" expanded="false" />
+            <element signature="e#54716#54717#0" expanded="false" />
+            <element signature="e#54773#54774#0" expanded="false" />
+            <element signature="e#54841#54842#0" expanded="false" />
+            <element signature="e#54892#54893#0" expanded="false" />
+            <element signature="e#54974#54975#0" expanded="false" />
+            <element signature="e#55039#55040#0" expanded="false" />
+            <element signature="e#55124#55125#0" expanded="false" />
+            <element signature="e#55191#55192#0" expanded="false" />
+            <element signature="e#55271#55272#0" expanded="false" />
+            <element signature="e#55334#55335#0" expanded="false" />
+            <element signature="e#55408#55409#0" expanded="false" />
+            <element signature="e#55465#55466#0" expanded="false" />
+            <element signature="e#55709#55710#0" expanded="false" />
+            <element signature="e#55741#55742#0" expanded="false" />
+            <element signature="e#55997#55998#0" expanded="false" />
+            <element signature="e#56062#56063#0" expanded="false" />
+            <element signature="e#58195#58196#0" expanded="false" />
+            <element signature="e#58244#58245#0" expanded="false" />
+            <element signature="e#58316#58317#0" expanded="false" />
+            <element signature="e#58371#58372#0" expanded="false" />
+            <element signature="e#58437#58438#0" expanded="false" />
+            <element signature="e#58486#58487#0" expanded="false" />
+            <element signature="e#58566#58567#0" expanded="false" />
+            <element signature="e#58629#58630#0" expanded="false" />
+            <element signature="e#58712#58713#0" expanded="false" />
+            <element signature="e#58777#58778#0" expanded="false" />
+            <element signature="e#58855#58856#0" expanded="false" />
+            <element signature="e#58916#58917#0" expanded="false" />
+            <element signature="e#58988#58989#0" expanded="false" />
+            <element signature="e#59043#59044#0" expanded="false" />
+            <element signature="e#59273#59274#0" expanded="false" />
+            <element signature="e#59305#59306#0" expanded="false" />
+            <element signature="e#59772#59773#0" expanded="false" />
+            <element signature="e#59807#59808#0" expanded="false" />
+            <element signature="e#60309#60310#0" expanded="false" />
+            <element signature="e#60343#60344#0" expanded="false" />
+            <element signature="e#60629#60630#0" expanded="false" />
+            <element signature="e#60692#60693#0" expanded="false" />
+            <element signature="e#63256#63257#0" expanded="false" />
+            <element signature="e#63306#63307#0" expanded="false" />
+            <element signature="e#63379#63380#0" expanded="false" />
+            <element signature="e#63435#63436#0" expanded="false" />
+            <element signature="e#63502#63503#0" expanded="false" />
+            <element signature="e#63552#63553#0" expanded="false" />
+            <element signature="e#63633#63634#0" expanded="false" />
+            <element signature="e#63697#63698#0" expanded="false" />
+            <element signature="e#63781#63782#0" expanded="false" />
+            <element signature="e#63847#63848#0" expanded="false" />
+            <element signature="e#63926#63927#0" expanded="false" />
+            <element signature="e#63988#63989#0" expanded="false" />
+            <element signature="e#64061#64062#0" expanded="false" />
+            <element signature="e#64117#64118#0" expanded="false" />
+            <element signature="e#64347#64348#0" expanded="false" />
+            <element signature="e#64379#64380#0" expanded="false" />
+            <element signature="e#64822#64823#0" expanded="false" />
+            <element signature="e#64854#64855#0" expanded="false" />
+            <element signature="e#65123#65124#0" expanded="false" />
+            <element signature="e#65187#65188#0" expanded="false" />
+            <element signature="e#67685#67686#0" expanded="false" />
+            <element signature="e#67736#67737#0" expanded="false" />
+            <element signature="e#67810#67811#0" expanded="false" />
+            <element signature="e#67867#67868#0" expanded="false" />
+            <element signature="e#67935#67936#0" expanded="false" />
+            <element signature="e#67986#67987#0" expanded="false" />
+            <element signature="e#68068#68069#0" expanded="false" />
+            <element signature="e#68133#68134#0" expanded="false" />
+            <element signature="e#68218#68219#0" expanded="false" />
+            <element signature="e#68285#68286#0" expanded="false" />
+            <element signature="e#68365#68366#0" expanded="false" />
+            <element signature="e#68428#68429#0" expanded="false" />
+            <element signature="e#68502#68503#0" expanded="false" />
+            <element signature="e#68559#68560#0" expanded="false" />
+            <element signature="e#68789#68790#0" expanded="false" />
+            <element signature="e#68821#68822#0" expanded="false" />
+            <element signature="e#69265#69266#0" expanded="false" />
+            <element signature="e#69297#69298#0" expanded="false" />
+            <element signature="e#69568#69569#0" expanded="false" />
+            <element signature="e#69633#69634#0" expanded="false" />
+            <element signature="e#70007#70008#0" expanded="false" />
+            <element signature="e#70035#70036#0" expanded="false" />
+            <element signature="e#71845#71846#0" expanded="false" />
+            <element signature="e#71894#71895#0" expanded="false" />
+            <element signature="e#71966#71967#0" expanded="false" />
+            <element signature="e#72021#72022#0" expanded="false" />
+            <element signature="e#72087#72088#0" expanded="false" />
+            <element signature="e#72136#72137#0" expanded="false" />
+            <element signature="e#72216#72217#0" expanded="false" />
+            <element signature="e#72279#72280#0" expanded="false" />
+            <element signature="e#72362#72363#0" expanded="false" />
+            <element signature="e#72427#72428#0" expanded="false" />
+            <element signature="e#72505#72506#0" expanded="false" />
+            <element signature="e#72566#72567#0" expanded="false" />
+            <element signature="e#72638#72639#0" expanded="false" />
+            <element signature="e#72693#72694#0" expanded="false" />
+            <element signature="e#72927#72928#0" expanded="false" />
+            <element signature="e#72959#72960#0" expanded="false" />
+            <element signature="e#73443#73444#0" expanded="false" />
+            <element signature="e#73484#73485#0" expanded="false" />
+            <element signature="e#73798#73799#0" expanded="false" />
+            <element signature="e#73861#73862#0" expanded="false" />
+            <element signature="e#75530#75531#0" expanded="false" />
+            <element signature="e#75581#75582#0" expanded="false" />
+            <element signature="e#75655#75656#0" expanded="false" />
+            <element signature="e#75712#75713#0" expanded="false" />
+            <element signature="e#75780#75781#0" expanded="false" />
+            <element signature="e#75831#75832#0" expanded="false" />
+            <element signature="e#75913#75914#0" expanded="false" />
+            <element signature="e#75978#75979#0" expanded="false" />
+            <element signature="e#76063#76064#0" expanded="false" />
+            <element signature="e#76130#76131#0" expanded="false" />
+            <element signature="e#76210#76211#0" expanded="false" />
+            <element signature="e#76273#76274#0" expanded="false" />
+            <element signature="e#76347#76348#0" expanded="false" />
+            <element signature="e#76404#76405#0" expanded="false" />
+            <element signature="e#76624#76625#0" expanded="false" />
+            <element signature="e#76656#76657#0" expanded="false" />
+            <element signature="e#76900#76901#0" expanded="false" />
+            <element signature="e#76965#76966#0" expanded="false" />
+            <element signature="e#79089#79090#0" expanded="false" />
+            <element signature="e#79137#79138#0" expanded="false" />
+            <element signature="e#79208#79209#0" expanded="false" />
+            <element signature="e#79262#79263#0" expanded="false" />
+            <element signature="e#79327#79328#0" expanded="false" />
+            <element signature="e#79375#79376#0" expanded="false" />
+            <element signature="e#79454#79455#0" expanded="false" />
+            <element signature="e#79516#79517#0" expanded="false" />
+            <element signature="e#79598#79599#0" expanded="false" />
+            <element signature="e#79662#79663#0" expanded="false" />
+            <element signature="e#79739#79740#0" expanded="false" />
+            <element signature="e#79799#79800#0" expanded="false" />
+            <element signature="e#79870#79871#0" expanded="false" />
+            <element signature="e#79924#79925#0" expanded="false" />
+            <element signature="e#80166#80167#0" expanded="false" />
+            <element signature="e#80198#80199#0" expanded="false" />
+            <element signature="e#80447#80448#0" expanded="false" />
+            <element signature="e#80509#80510#0" expanded="false" />
+            <element signature="e#84704#84705#0" expanded="false" />
+            <element signature="e#84759#84760#0" expanded="false" />
+            <element signature="e#84837#84838#0" expanded="false" />
+            <element signature="e#84898#84899#0" expanded="false" />
+            <element signature="e#84970#84971#0" expanded="false" />
+            <element signature="e#85025#85026#0" expanded="false" />
+            <element signature="e#85424#85425#0" expanded="false" />
+            <element signature="e#85491#85492#0" expanded="false" />
+            <element signature="e#85569#85570#0" expanded="false" />
+            <element signature="e#85630#85631#0" expanded="false" />
+            <element signature="e#85888#85889#0" expanded="false" />
+            <element signature="e#85920#85921#0" expanded="false" />
+            <element signature="e#86506#86507#0" expanded="false" />
+            <element signature="e#86540#86541#0" expanded="false" />
+            <element signature="e#87195#87196#0" expanded="false" />
+            <element signature="e#87228#87229#0" expanded="false" />
+            <element signature="e#88135#88136#0" expanded="false" />
+            <element signature="e#88167#88168#0" expanded="false" />
+            <element signature="e#89069#89070#0" expanded="false" />
+            <element signature="e#89102#89103#0" expanded="false" />
+            <element signature="e#89761#89762#0" expanded="false" />
+            <element signature="e#89795#89796#0" expanded="false" />
+            <element signature="e#90109#90110#0" expanded="false" />
+            <element signature="e#90178#90179#0" expanded="false" />
+            <element signature="e#94229#94230#0" expanded="false" />
+            <element signature="e#94285#94286#0" expanded="false" />
+            <element signature="e#94364#94365#0" expanded="false" />
+            <element signature="e#94426#94427#0" expanded="false" />
+            <element signature="e#94499#94500#0" expanded="false" />
+            <element signature="e#94555#94556#0" expanded="false" />
+            <element signature="e#95106#95107#0" expanded="false" />
+            <element signature="e#95168#95169#0" expanded="false" />
+            <element signature="e#95404#95405#0" expanded="false" />
+            <element signature="e#95433#95434#0" expanded="false" />
+            <element signature="e#96000#96001#0" expanded="false" />
+            <element signature="e#96034#96035#0" expanded="false" />
+            <element signature="e#96690#96691#0" expanded="false" />
+            <element signature="e#96723#96724#0" expanded="false" />
+            <element signature="e#99147#99148#0" expanded="false" />
+            <element signature="e#99198#99199#0" expanded="false" />
+            <element signature="e#99272#99273#0" expanded="false" />
+            <element signature="e#99329#99330#0" expanded="false" />
+            <element signature="e#99397#99398#0" expanded="false" />
+            <element signature="e#99448#99449#0" expanded="false" />
+            <element signature="e#99530#99531#0" expanded="false" />
+            <element signature="e#99595#99596#0" expanded="false" />
+            <element signature="e#99680#99681#0" expanded="false" />
+            <element signature="e#99747#99748#0" expanded="false" />
+            <element signature="e#99827#99828#0" expanded="false" />
+            <element signature="e#99890#99891#0" expanded="false" />
+            <element signature="e#99964#99965#0" expanded="false" />
+            <element signature="e#100021#100022#0" expanded="false" />
+            <element signature="e#100100#100101#0" expanded="false" />
+            <element signature="e#100165#100166#0" expanded="false" />
+            <element signature="e#101982#101983#0" expanded="false" />
+            <element signature="e#102031#102032#0" expanded="false" />
+            <element signature="e#102103#102104#0" expanded="false" />
+            <element signature="e#102158#102159#0" expanded="false" />
+            <element signature="e#102224#102225#0" expanded="false" />
+            <element signature="e#102273#102274#0" expanded="false" />
+            <element signature="e#102353#102354#0" expanded="false" />
+            <element signature="e#102416#102417#0" expanded="false" />
+            <element signature="e#102499#102500#0" expanded="false" />
+            <element signature="e#102564#102565#0" expanded="false" />
+            <element signature="e#102642#102643#0" expanded="false" />
+            <element signature="e#102703#102704#0" expanded="false" />
+            <element signature="e#102775#102776#0" expanded="false" />
+            <element signature="e#102830#102831#0" expanded="false" />
+            <element signature="e#103109#103110#0" expanded="false" />
+            <element signature="e#103144#103145#0" expanded="false" />
+            <element signature="e#103616#103617#0" expanded="false" />
+            <element signature="e#103650#103651#0" expanded="false" />
+            <element signature="e#103926#103927#0" expanded="false" />
+            <element signature="e#103989#103990#0" expanded="false" />
+            <element signature="e#106337#106338#0" expanded="false" />
+            <element signature="e#106387#106388#0" expanded="false" />
+            <element signature="e#106460#106461#0" expanded="false" />
+            <element signature="e#106516#106517#0" expanded="false" />
+            <element signature="e#106583#106584#0" expanded="false" />
+            <element signature="e#106633#106634#0" expanded="false" />
+            <element signature="e#106714#106715#0" expanded="false" />
+            <element signature="e#106778#106779#0" expanded="false" />
+            <element signature="e#106862#106863#0" expanded="false" />
+            <element signature="e#106928#106929#0" expanded="false" />
+            <element signature="e#107007#107008#0" expanded="false" />
+            <element signature="e#107069#107070#0" expanded="false" />
+            <element signature="e#107142#107143#0" expanded="false" />
+            <element signature="e#107198#107199#0" expanded="false" />
+            <element signature="e#107434#107435#0" expanded="false" />
+            <element signature="e#107466#107467#0" expanded="false" />
+            <element signature="e#108160#108161#0" expanded="false" />
+            <element signature="e#108206#108207#0" expanded="false" />
+            <element signature="e#108651#108652#0" expanded="false" />
+            <element signature="e#108715#108716#0" expanded="false" />
+            <element signature="e#113150#113151#0" expanded="false" />
+            <element signature="e#113206#113207#0" expanded="false" />
+            <element signature="e#113285#113286#0" expanded="false" />
+            <element signature="e#113347#113348#0" expanded="false" />
+            <element signature="e#113420#113421#0" expanded="false" />
+            <element signature="e#113476#113477#0" expanded="false" />
+            <element signature="e#114027#114028#0" expanded="false" />
+            <element signature="e#114089#114090#0" expanded="false" />
+            <element signature="e#114317#114318#0" expanded="false" />
+            <element signature="e#114349#114350#0" expanded="false" />
+            <element signature="e#114921#114922#0" expanded="false" />
+            <element signature="e#114955#114956#0" expanded="false" />
+            <element signature="e#115615#115616#0" expanded="false" />
+            <element signature="e#115648#115649#0" expanded="false" />
+            <element signature="e#116558#116559#0" expanded="false" />
+            <element signature="e#116590#116591#0" expanded="false" />
+            <element signature="e#117699#117700#0" expanded="false" />
+            <element signature="e#117732#117733#0" expanded="false" />
+            <element signature="e#118497#118498#0" expanded="false" />
+            <element signature="e#118531#118532#0" expanded="false" />
+            <element signature="e#121459#121460#0" expanded="false" />
+            <element signature="e#121510#121511#0" expanded="false" />
+            <element signature="e#121584#121585#0" expanded="false" />
+            <element signature="e#121641#121642#0" expanded="false" />
+            <element signature="e#121709#121710#0" expanded="false" />
+            <element signature="e#121760#121761#0" expanded="false" />
+            <element signature="e#121842#121843#0" expanded="false" />
+            <element signature="e#121907#121908#0" expanded="false" />
+            <element signature="e#121992#121993#0" expanded="false" />
+            <element signature="e#122059#122060#0" expanded="false" />
+            <element signature="e#122139#122140#0" expanded="false" />
+            <element signature="e#122202#122203#0" expanded="false" />
+            <element signature="e#122276#122277#0" expanded="false" />
+            <element signature="e#122333#122334#0" expanded="false" />
+            <element signature="e#122569#122570#0" expanded="false" />
+            <element signature="e#122601#122602#0" expanded="false" />
+            <element signature="e#123296#123297#0" expanded="false" />
+            <element signature="e#123342#123343#0" expanded="false" />
+            <element signature="e#123789#123790#0" expanded="false" />
+            <element signature="e#123854#123855#0" expanded="false" />
+            <element signature="e#124223#124224#0" expanded="false" />
+            <element signature="e#124250#124251#0" expanded="false" />
+            <element signature="e#126466#126467#0" expanded="false" />
+            <element signature="e#126517#126518#0" expanded="false" />
+            <element signature="e#126591#126592#0" expanded="false" />
+            <element signature="e#126648#126649#0" expanded="false" />
+            <element signature="e#126716#126717#0" expanded="false" />
+            <element signature="e#126767#126768#0" expanded="false" />
+            <element signature="e#126849#126850#0" expanded="false" />
+            <element signature="e#126914#126915#0" expanded="false" />
+            <element signature="e#126999#127000#0" expanded="false" />
+            <element signature="e#127066#127067#0" expanded="false" />
+            <element signature="e#127146#127147#0" expanded="false" />
+            <element signature="e#127209#127210#0" expanded="false" />
+            <element signature="e#127283#127284#0" expanded="false" />
+            <element signature="e#127340#127341#0" expanded="false" />
+            <element signature="e#127586#127587#0" expanded="false" />
+            <element signature="e#127618#127619#0" expanded="false" />
+            <element signature="e#128028#128029#0" expanded="false" />
+            <element signature="e#128059#128060#0" expanded="false" />
+            <element signature="e#128306#128307#0" expanded="false" />
+            <element signature="e#128371#128372#0" expanded="false" />
+            <element signature="e#130791#130792#0" expanded="false" />
+            <element signature="e#130839#130840#0" expanded="false" />
+            <element signature="e#130910#130911#0" expanded="false" />
+            <element signature="e#130964#130965#0" expanded="false" />
+            <element signature="e#131029#131030#0" expanded="false" />
+            <element signature="e#131077#131078#0" expanded="false" />
+            <element signature="e#131156#131157#0" expanded="false" />
+            <element signature="e#131218#131219#0" expanded="false" />
+            <element signature="e#131300#131301#0" expanded="false" />
+            <element signature="e#131364#131365#0" expanded="false" />
+            <element signature="e#131441#131442#0" expanded="false" />
+            <element signature="e#131501#131502#0" expanded="false" />
+            <element signature="e#131572#131573#0" expanded="false" />
+            <element signature="e#131626#131627#0" expanded="false" />
+            <element signature="e#131850#131851#0" expanded="false" />
+            <element signature="e#131882#131883#0" expanded="false" />
+            <element signature="e#132272#132273#0" expanded="false" />
+            <element signature="e#132303#132304#0" expanded="false" />
+            <element signature="e#132541#132542#0" expanded="false" />
+            <element signature="e#132603#132604#0" expanded="false" />
+            <element signature="e#134715#134716#0" expanded="false" />
+            <element signature="e#134764#134765#0" expanded="false" />
+            <element signature="e#134836#134837#0" expanded="false" />
+            <element signature="e#134891#134892#0" expanded="false" />
+            <element signature="e#134957#134958#0" expanded="false" />
+            <element signature="e#135006#135007#0" expanded="false" />
+            <element signature="e#135086#135087#0" expanded="false" />
+            <element signature="e#135149#135150#0" expanded="false" />
+            <element signature="e#135232#135233#0" expanded="false" />
+            <element signature="e#135297#135298#0" expanded="false" />
+            <element signature="e#135375#135376#0" expanded="false" />
+            <element signature="e#135436#135437#0" expanded="false" />
+            <element signature="e#135508#135509#0" expanded="false" />
+            <element signature="e#135563#135564#0" expanded="false" />
+            <element signature="e#135793#135794#0" expanded="false" />
+            <element signature="e#135825#135826#0" expanded="false" />
+            <element signature="e#136270#136271#0" expanded="false" />
+            <element signature="e#136305#136306#0" expanded="false" />
+            <element signature="e#136776#136777#0" expanded="false" />
+            <element signature="e#136810#136811#0" expanded="false" />
+            <element signature="e#137281#137282#0" expanded="false" />
+            <element signature="e#137316#137317#0" expanded="false" />
+            <element signature="e#137591#137592#0" expanded="false" />
+            <element signature="e#137654#137655#0" expanded="false" />
+            <element signature="e#138043#138044#0" expanded="false" />
+            <element signature="e#138074#138075#0" expanded="false" />
+            <element signature="e#140256#140257#0" expanded="false" />
+            <element signature="e#140307#140308#0" expanded="false" />
+            <element signature="e#140381#140382#0" expanded="false" />
+            <element signature="e#140438#140439#0" expanded="false" />
+            <element signature="e#140506#140507#0" expanded="false" />
+            <element signature="e#140557#140558#0" expanded="false" />
+            <element signature="e#140639#140640#0" expanded="false" />
+            <element signature="e#140704#140705#0" expanded="false" />
+            <element signature="e#140789#140790#0" expanded="false" />
+            <element signature="e#140856#140857#0" expanded="false" />
+            <element signature="e#140936#140937#0" expanded="false" />
+            <element signature="e#140999#141000#0" expanded="false" />
+            <element signature="e#141073#141074#0" expanded="false" />
+            <element signature="e#141130#141131#0" expanded="false" />
+            <element signature="e#141382#141383#0" expanded="false" />
+            <element signature="e#141414#141415#0" expanded="false" />
+            <element signature="e#141863#141864#0" expanded="false" />
+            <element signature="e#141898#141899#0" expanded="false" />
+            <element signature="e#142175#142176#0" expanded="false" />
+            <element signature="e#142240#142241#0" expanded="false" />
+            <element signature="e#144764#144765#0" expanded="false" />
+            <element signature="e#144812#144813#0" expanded="false" />
+            <element signature="e#144883#144884#0" expanded="false" />
+            <element signature="e#144937#144938#0" expanded="false" />
+            <element signature="e#145002#145003#0" expanded="false" />
+            <element signature="e#145050#145051#0" expanded="false" />
+            <element signature="e#145129#145130#0" expanded="false" />
+            <element signature="e#145191#145192#0" expanded="false" />
+            <element signature="e#145273#145274#0" expanded="false" />
+            <element signature="e#145337#145338#0" expanded="false" />
+            <element signature="e#145414#145415#0" expanded="false" />
+            <element signature="e#145474#145475#0" expanded="false" />
+            <element signature="e#145545#145546#0" expanded="false" />
+            <element signature="e#145599#145600#0" expanded="false" />
+            <element signature="e#145829#145830#0" expanded="false" />
+            <element signature="e#145861#145862#0" expanded="false" />
+            <element signature="e#146298#146299#0" expanded="false" />
+            <element signature="e#146333#146334#0" expanded="false" />
+            <element signature="e#146605#146606#0" expanded="false" />
+            <element signature="e#146667#146668#0" expanded="false" />
+            <element signature="e#148828#148829#0" expanded="false" />
+            <element signature="e#148879#148880#0" expanded="false" />
+            <element signature="e#148953#148954#0" expanded="false" />
+            <element signature="e#149010#149011#0" expanded="false" />
+            <element signature="e#149078#149079#0" expanded="false" />
+            <element signature="e#149129#149130#0" expanded="false" />
+            <element signature="e#149211#149212#0" expanded="false" />
+            <element signature="e#149276#149277#0" expanded="false" />
+            <element signature="e#149361#149362#0" expanded="false" />
+            <element signature="e#149428#149429#0" expanded="false" />
+            <element signature="e#149508#149509#0" expanded="false" />
+            <element signature="e#149571#149572#0" expanded="false" />
+            <element signature="e#149645#149646#0" expanded="false" />
+            <element signature="e#149702#149703#0" expanded="false" />
+            <element signature="e#149956#149957#0" expanded="false" />
+            <element signature="e#149988#149989#0" expanded="false" />
+            <element signature="e#150249#150250#0" expanded="false" />
+            <element signature="e#150314#150315#0" expanded="false" />
+            <element signature="e#152504#152505#0" expanded="false" />
+            <element signature="e#152553#152554#0" expanded="false" />
+            <element signature="e#152625#152626#0" expanded="false" />
+            <element signature="e#152680#152681#0" expanded="false" />
+            <element signature="e#152746#152747#0" expanded="false" />
+            <element signature="e#152795#152796#0" expanded="false" />
+            <element signature="e#152875#152876#0" expanded="false" />
+            <element signature="e#152938#152939#0" expanded="false" />
+            <element signature="e#153021#153022#0" expanded="false" />
+            <element signature="e#153086#153087#0" expanded="false" />
+            <element signature="e#153164#153165#0" expanded="false" />
+            <element signature="e#153225#153226#0" expanded="false" />
+            <element signature="e#153297#153298#0" expanded="false" />
+            <element signature="e#153352#153353#0" expanded="false" />
+            <element signature="e#153632#153633#0" expanded="false" />
+            <element signature="e#153664#153665#0" expanded="false" />
+            <element signature="e#154162#154163#0" expanded="false" />
+            <element signature="e#154197#154198#0" expanded="false" />
+            <element signature="e#154704#154705#0" expanded="false" />
+            <element signature="e#154738#154739#0" expanded="false" />
+            <element signature="e#155025#155026#0" expanded="false" />
+            <element signature="e#155088#155089#0" expanded="false" />
+            <element signature="e#157672#157673#0" expanded="false" />
+            <element signature="e#157722#157723#0" expanded="false" />
+            <element signature="e#157795#157796#0" expanded="false" />
+            <element signature="e#157851#157852#0" expanded="false" />
+            <element signature="e#157918#157919#0" expanded="false" />
+            <element signature="e#157968#157969#0" expanded="false" />
+            <element signature="e#158049#158050#0" expanded="false" />
+            <element signature="e#158113#158114#0" expanded="false" />
+            <element signature="e#158197#158198#0" expanded="false" />
+            <element signature="e#158263#158264#0" expanded="false" />
+            <element signature="e#158342#158343#0" expanded="false" />
+            <element signature="e#158404#158405#0" expanded="false" />
+            <element signature="e#158477#158478#0" expanded="false" />
+            <element signature="e#158533#158534#0" expanded="false" />
+            <element signature="e#158779#158780#0" expanded="false" />
+            <element signature="e#158811#158812#0" expanded="false" />
+            <element signature="e#159254#159255#0" expanded="false" />
+            <element signature="e#159289#159290#0" expanded="false" />
+            <element signature="e#159563#159564#0" expanded="false" />
+            <element signature="e#159627#159628#0" expanded="false" />
+            <element signature="e#162143#162144#0" expanded="false" />
+            <element signature="e#162194#162195#0" expanded="false" />
+            <element signature="e#162268#162269#0" expanded="false" />
+            <element signature="e#162325#162326#0" expanded="false" />
+            <element signature="e#162393#162394#0" expanded="false" />
+            <element signature="e#162444#162445#0" expanded="false" />
+            <element signature="e#162526#162527#0" expanded="false" />
+            <element signature="e#162591#162592#0" expanded="false" />
+            <element signature="e#162676#162677#0" expanded="false" />
+            <element signature="e#162743#162744#0" expanded="false" />
+            <element signature="e#162823#162824#0" expanded="false" />
+            <element signature="e#162886#162887#0" expanded="false" />
+            <element signature="e#162960#162961#0" expanded="false" />
+            <element signature="e#163017#163018#0" expanded="false" />
+            <element signature="e#163263#163264#0" expanded="false" />
+            <element signature="e#163295#163296#0" expanded="false" />
+            <element signature="e#163739#163740#0" expanded="false" />
+            <element signature="e#163774#163775#0" expanded="false" />
+            <element signature="e#164050#164051#0" expanded="false" />
+            <element signature="e#164115#164116#0" expanded="false" />
+            <element signature="e#165986#165987#0" expanded="false" />
+            <element signature="e#166029#166030#0" expanded="false" />
+            <element signature="e#166092#166093#0" expanded="false" />
+            <element signature="e#166148#166149#0" expanded="false" />
+            <element signature="e#166219#166220#0" expanded="false" />
+            <element signature="e#166283#166284#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/Config.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="57" lean-forward="false" selection-start-line="6" selection-start-column="57" selection-end-line="6" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="18" lean-forward="false" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.oauth-client/google-oauth-client/srcs/google-oauth-client-1.22.0-sources.jar!/com/google/api/client/auth/oauth2/Credential.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="484" column="23" lean-forward="false" selection-start-line="484" selection-start-column="23" selection-end-line="484" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/LatLngBounds.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="11" lean-forward="false" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.google.maps/google-maps-services/srcs/google-maps-services-0.1.20-sources.jar!/com/google/maps/model/LatLng.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="15" column="8" lean-forward="false" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/twirl/map.scala.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="301">
+          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/servlet/HelloWorld.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
+        <state relative-caret-position="150">
+          <caret line="10" column="27" lean-forward="false" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
           <folding>
-            <element signature="e#26#45#0" expanded="true" />
+            <element signature="e#26#61#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/twirl/map.scala.html">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/PlacesDatabase.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="90">
+          <caret line="10" column="11" lean-forward="false" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/PlaceRetrieverTest.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="66" column="6" lean-forward="false" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
+        <state relative-caret-position="135">
+          <caret line="12" column="22" lean-forward="false" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="22" />
+          <folding>
+            <element signature="e#18#66#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/FusionTableTest.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="127">
+          <caret line="11" column="6" lean-forward="false" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+          <folding>
+            <element signature="e#18#66#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/LocationScanner.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="62" column="24" lean-forward="false" selection-start-line="62" selection-start-column="24" selection-end-line="62" selection-end-column="24" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/heatmaps/PostgresqlDBTest.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="12" column="18" lean-forward="false" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
+          <folding>
+            <element signature="e#18#66#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/FusionTable.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding>
+            <element signature="e#21#61#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/rt.jar!/sun/nio/ch/Net.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="370" column="0" lean-forward="false" selection-start-line="370" selection-start-column="0" selection-end-line="370" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/Main.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="335">
+          <caret line="33" column="23" lean-forward="false" selection-start-line="33" selection-start-column="23" selection-end-line="33" selection-end-column="23" />
+          <folding>
+            <element signature="e#18#74#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/heatmaps/db/PostgresqlDB.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1016">
+          <caret line="69" column="56" lean-forward="false" selection-start-line="69" selection-start-column="56" selection-end-line="69" selection-end-column="56" />
+          <folding>
+            <element signature="e#21#97#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

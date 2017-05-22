@@ -23,9 +23,9 @@ object Main extends ServerApp with StrictLogging {
   val pool : ExecutorService  = Executors.newCachedThreadPool()
 
   val config = ConfigLoader.defaultConfig
-  val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema())
-  val ft = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), 29)
-  ft.dropPlacesTable
+  val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(), recreateTableIfExists = true)
+  val ft = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), 29, recreateTableIfExists = false)
+//  ft.dropPlacesTable
   val placesApiRetriever = new PlacesApiRetriever(config)
   val ls = new LocationScanner(placesApiRetriever)
 
@@ -35,9 +35,12 @@ object Main extends ServerApp with StrictLogging {
   val placeType = PlaceType.RESTAURANT
   val london = City("London", latLngBounds)
 
- // val scanResults = ls.scanCity(london, 500, placeType)
- // val insert = ft.insertPlaces(scanResults, london, placeType.name())
- // Await.result(insert, 20 minutes)
+  println(ft.getPlacesForCity(london))
+
+  val scanResults = ls.scanCity(london, 500, placeType)
+  val insert = db.insertPlaces(scanResults, london, placeType.name())
+  //val insert = ft.insertPlaces(scanResults, london, placeType.name())
+  Await.result(insert, 120 minutes)
 
   override def server(args: List[String]): Task[Server] = {
     logger.info("Starting up server")

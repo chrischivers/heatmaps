@@ -9,7 +9,7 @@ import scala.concurrent.Future
 case class Place(placeId: String, placeType: String, latLng: LatLng)
 
 case class PlaceTableSchema(
-                             tableName: String = "places",
+                             tableName: String = "placesTable",
                              placeId: String = "place_id",
                              placeType: String = "place_type",
                              placeName: String = "place_name",
@@ -23,6 +23,5 @@ trait PlacesDatabase extends StrictLogging {
   val schema: PlaceTableSchema
   def insertPlaces(placeSearchResults: List[PlacesSearchResult], city: City, placeType: String): Future[Unit]
   def getPlacesForCity(city: City): Future[List[Place]]
-  def dropPlacesTable: Future[Unit]
 
 }
