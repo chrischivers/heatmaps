@@ -23,24 +23,23 @@ object Main extends ServerApp with StrictLogging {
   val pool : ExecutorService  = Executors.newCachedThreadPool()
 
   val config = ConfigLoader.defaultConfig
-  val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(), recreateTableIfExists = true)
-  val ft = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), 29, recreateTableIfExists = false)
+  val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(), recreateTableIfExists = false)
+ // val ft = new FusionTable(config.fusionDBConfig, PlaceTableSchema(), 29, recreateTableIfExists = false)
 //  ft.dropPlacesTable
   val placesApiRetriever = new PlacesApiRetriever(config)
+  val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
   val ls = new LocationScanner(placesApiRetriever)
 
-  val southWest = new LatLng(51.493388, -0.150247)
-  val northEast = new LatLng(51.526508, -0.083127)
+  val southWest = new LatLng(51.260833, -0.450500)
+  val northEast = new LatLng(51.669779, 0.247132)
   val latLngBounds = LatLngBounds(southWest, northEast)
   val placeType = PlaceType.RESTAURANT
   val london = City("London", latLngBounds)
 
-  println(ft.getPlacesForCity(london))
-
-  val scanResults = ls.scanCity(london, 500, placeType)
-  val insert = db.insertPlaces(scanResults, london, placeType.name())
+//  val scanResults = ls.scanCity(london, 500, placeType)
+//  val insert = db.insertPlaces(scanResults, london, placeType.name())
   //val insert = ft.insertPlaces(scanResults, london, placeType.name())
-  Await.result(insert, 120 minutes)
+//  Await.result(insert, 180 minutes)
 
   override def server(args: List[String]): Task[Server] = {
     logger.info("Starting up server")

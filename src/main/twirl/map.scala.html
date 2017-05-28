@@ -1,48 +1,77 @@
-@(centre: com.google.maps.model.LatLng)
 <html>
-<head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Fusion Tables heatmaps</title>
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-</head>
-<body>
-<div id="map"></div>
-<script>
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 51.505485, lng: -0.127889},
-          zoom: 13
-        });
-
-        var heatmap = new google.maps.FusionTablesLayer({
-          query: {
-            select: 'location',
-            from: '1alYfPjliJbzC1lBDZhkZN9v8xWX1rjjxhbY-VIdq'
-          },
-          heatmap: {
-            enabled: true
+    <head>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <title>Fusion Tables heatmaps</title>
+        <style>
+          /* Always set the map height explicitly to define the size of the div
+           * element that contains the map. */
+          #map {
+            height: 100%;
           }
-        });
+          /* Optional: Makes the sample page fill the window. */
+          html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+          }
+        </style>
+    </head>
+    <body>
+    <div id="map"></div>
+    <script>
+          var map;
+          var heatmap;
+          function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+              center: {lat: 51.505485, lng: -0.127889},
+              zoom: 14
+            });
 
-        heatmap.setMap(map);
+            google.maps.event.addListener(map, 'idle', function() {
+                plotHeatMap(map.getBounds());
+            });
 
-      }
-    </script>
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsL6wsuPFovAUq8STgMIp0xrOqMjv3F6A&callback=initMap">
-</script>
-</body>
+            function plotHeatMap(mapBounds) {
+
+                var params = "bounds=" + mapBounds.toString();
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        placeArray = JSON.parse(this.responseText);
+                        var restaurantPlaceTypeIndex = 0;
+                        var restaurantPlaceArray = placeArray[restaurantPlaceTypeIndex];
+                        var heatmapData = getLatLngPoints(restaurantPlaceArray.latLngList);
+
+                        if (heatmap) {
+                            heatmap.setMap(null);
+                        }
+                        heatmap = new google.maps.visualization.HeatmapLayer({
+                          data: heatmapData
+                        });
+                        heatmap.setMap(map);
+                    }
+                };
+                xmlhttp.open("GET", "/heatpoints?" + params, true);
+                xmlhttp.send();
+            };
+
+            function getLatLngPoints(restaurantPlaceArray) {
+                var latLngArray = new Array();
+                for(var i in restaurantPlaceArray) {
+                     var lat = restaurantPlaceArray[i].lat;
+                     var lng = restaurantPlaceArray[i].lng;
+                      latLngArray.push(new google.maps.LatLng(lat, lng));
+                };
+                return latLngArray;
+            };
+
+          };
+
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsL6wsuPFovAUq8STgMIp0xrOqMjv3F6A&libraries=visualization&callback=initMap">
+        </script>
+    </body>
 </html>

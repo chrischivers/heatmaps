@@ -45,6 +45,5 @@ class PostgresqlDBTest extends fixture.FunSuite with ScalaFutures {
     val resultsFromDB = f.db.getPlacesForCity(city).futureValue
     resultsFromDB.size should be > 0
     resultsFromDB.map(_.placeId) == locationScanResult.map(_.placeId)
-
   }
 }

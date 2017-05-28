@@ -6,13 +6,13 @@ import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import com.github.mauricio.async.db.{Configuration, QueryResult}
 import com.google.maps.model.{LatLng, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.{City, postgresDBConfig}
+import heatmaps.{City, PostgresDBConfig}
 import scala.concurrent.duration._
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 
-class PostgresqlDB(dBConfig: postgresDBConfig, val schema: PlaceTableSchema, recreateTableIfExists: Boolean = false)(implicit ec: ExecutionContext) extends PlacesDatabase {
+class PostgresqlDB(dBConfig: PostgresDBConfig, val schema: PlaceTableSchema, recreateTableIfExists: Boolean = false)(implicit ec: ExecutionContext) extends PlacesDatabase {
 
   private val connectionConfiguration = Configuration(
     username = dBConfig.username,
@@ -21,7 +21,7 @@ class PostgresqlDB(dBConfig: postgresDBConfig, val schema: PlaceTableSchema, rec
     port = dBConfig.port,
     database = Some(dBConfig.dbName))
 
-  private val connectionPoolConfig = new PoolConfiguration(maxObjects = 5, maxIdle = 5000, maxQueueSize = 10000)
+  private val connectionPoolConfig = new PoolConfiguration(maxObjects = 5, maxIdle = 5000, maxQueueSize = 100000)
 
   private val connection: PostgreSQLConnectionFactory = new PostgreSQLConnectionFactory(connectionConfiguration)
 
@@ -67,8 +67,8 @@ class PostgresqlDB(dBConfig: postgresDBConfig, val schema: PlaceTableSchema, rec
     logger.info(s"Inserting ${placeSearchResults.size} places into DB for city $city: ")
     for {
       _ <- connectToDB
-      result <- Future.sequence(placeSearchResults.map{ result => {
-          logger.info("Inserting place into DB")
+      result <- Future.sequence(placeSearchResults.zipWithIndex.map{ case (result, index)  => {
+          logger.info(s"Inserting place $index of ${placeSearchResults.size} into DB")
           insertPlace(result, city, placeType)
         }
       })
@@ -89,7 +89,7 @@ class PostgresqlDB(dBConfig: postgresDBConfig, val schema: PlaceTableSchema, rec
   }
 
   override def getPlacesForCity(city: City): Future[List[Place]] = {
-    logger.info(s"getting places for city: $city")
+    logger.info(s"getting places for city from DB: $city")
     val query = s"SELECT * FROM ${schema.tableName} WHERE ${schema.cityName} = ?"
     for {
       _ <- connectToDB
@@ -109,7 +109,7 @@ class PostgresqlDB(dBConfig: postgresDBConfig, val schema: PlaceTableSchema, rec
   }
 
   def dropPlacesTable: Future[Unit] = {
-    logger.info("dropping places table")
+    logger.info("Dropping places table")
     val query = s"DROP TABLE IF EXISTS ${schema.tableName}"
     connectionPool.sendQuery(query).map(_ => ())
   }

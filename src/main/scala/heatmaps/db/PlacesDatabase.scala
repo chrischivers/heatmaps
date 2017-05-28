@@ -9,7 +9,7 @@ import scala.concurrent.Future
 case class Place(placeId: String, placeType: String, latLng: LatLng)
 
 case class PlaceTableSchema(
-                             tableName: String = "placesTable",
+                             tableName: String = "places",
                              placeId: String = "place_id",
                              placeType: String = "place_type",
                              placeName: String = "place_name",

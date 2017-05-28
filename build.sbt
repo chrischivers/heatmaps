@@ -23,6 +23,8 @@ libraryDependencies += "com.typesafe" % "config" % "1.3.1"
 libraryDependencies += "com.google.apis" % "google-api-services-fusiontables" % "v2-rev18-1.21.0"
 libraryDependencies += "com.google.oauth-client" % "google-oauth-client-java6" % "1.22.0"
 libraryDependencies += "com.google.oauth-client" % "google-oauth-client-jetty" % "1.22.0"
+libraryDependencies += "com.github.cb372" % "scalacache-core_2.12" % "0.9.3"
+libraryDependencies += "com.github.cb372" %% "scalacache-guava" % "0.9.3"
 
 libraryDependencies ++= Seq(
   "org.http4s"     %% "http4s-blaze-server" % Http4sVersion,
