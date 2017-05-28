@@ -6,7 +6,6 @@ import io.circe.Encoder
 import io.circe.generic.semiauto._
 import io.circe.syntax._
 import org.http4s._
-import org.http4s.circe._
 import org.http4s.dsl._
 import org.http4s.twirl._
 
@@ -16,14 +15,13 @@ object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds"
 
 case class PlacePositions(placeType: String, latLngList: List[LatLng])
 
-object HelloWorld {
+object HeatmapsServlet {
 
   implicit val latLngEncoder: Encoder[LatLng] =
     Encoder.forProduct2("lat", "lng")(u =>
       (u.lat, u.lng))
   implicit val placePositionsEncoder: Encoder[PlacePositions] = deriveEncoder
 
-//  val places = Await.result(Main.placesDBRetriever.getPlaces(Main.london), 2 minute)
   val service = HttpService {
     case req@GET -> Root / "map" =>
       Ok(html.map())

@@ -8,10 +8,6 @@ import scala.annotation.tailrec
 
 class LocationScanner(placesApiRetriever: PlacesApiRetriever) extends StrictLogging {
 
-  /*
-  The circle radius is square root of 2 times their separation.
-   */
-
   def scanCity(city: City, scanSeparation: Int, placeType: PlaceType,  narrowRadiusIfReturnLimitReached: Boolean = true): List[PlacesSearchResult] = {
 
     val bottomLeft = city.latLngBounds.southwest
