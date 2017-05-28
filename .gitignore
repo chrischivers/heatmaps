@@ -66,6 +66,8 @@ jrebel.lic
 .idea
 .idea/
 .idea/*
+.idea/workspace.xml
+
 
 # paulp script
 /.lib/

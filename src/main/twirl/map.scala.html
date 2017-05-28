@@ -37,15 +37,13 @@
                 var params = "bounds=" + mapBounds.toString();
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
+                    if (this.readyState === 4 && this.status === 200) {
                         placeArray = JSON.parse(this.responseText);
                         var restaurantPlaceTypeIndex = 0;
                         var restaurantPlaceArray = placeArray[restaurantPlaceTypeIndex];
                         var heatmapData = getLatLngPoints(restaurantPlaceArray.latLngList);
 
-                        if (heatmap) {
-                            heatmap.setMap(null);
-                        }
+                        if (heatmap) { heatmap.setMap(null); }
                         heatmap = new google.maps.visualization.HeatmapLayer({
                           data: heatmapData
                         });
@@ -57,12 +55,12 @@
             };
 
             function getLatLngPoints(restaurantPlaceArray) {
-                var latLngArray = new Array();
+                var latLngArray = [];
                 for(var i in restaurantPlaceArray) {
                      var lat = restaurantPlaceArray[i].lat;
                      var lng = restaurantPlaceArray[i].lng;
                       latLngArray.push(new google.maps.LatLng(lat, lng));
-                };
+                }
                 return latLngArray;
             };
 
