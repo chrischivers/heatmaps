@@ -1,7 +1,8 @@
 package heatmaps.servlet
 
 import com.google.maps.model.LatLng
-import heatmaps.{LatLngBounds, Main}
+import com.typesafe.scalalogging.StrictLogging
+import heatmaps.{CityDefinitions, LatLngBounds, Main}
 import io.circe.Encoder
 import io.circe.generic.semiauto._
 import io.circe.syntax._
@@ -15,7 +16,7 @@ object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds"
 
 case class PlacePositions(placeType: String, latLngList: List[LatLng])
 
-object HeatmapsServlet {
+object HeatmapsServlet extends StrictLogging {
 
   implicit val latLngEncoder: Encoder[LatLng] =
     Encoder.forProduct2("lat", "lng")(u =>
@@ -24,13 +25,25 @@ object HeatmapsServlet {
 
   val service = HttpService {
     case req@GET -> Root / "map" =>
+      logger.info(s"Servlet handling map request")
       Ok(html.map())
     case req@GET -> Root / "heatpoints" :? BoundsQueryParamMatcher(bounds) =>
-      val jsonStr = Main.placesDBRetriever.getPlaces(Main.london, Some(getBounds(bounds)))
+      logger.info(s"Servlet handling heatpoints request for bounds $bounds")
+      val boundsConverted = getBounds(bounds)
+      val cityInFocus = CityDefinitions.getCityForLatLngBounds(boundsConverted)
+      cityInFocus.map { city =>
+        Main.placesDBRetriever.getPlaces(city, Some(getBounds(bounds)))
           .map(_.groupBy(_.placeType)
-          .map{ case (placeType, positions) => PlacePositions(placeType, positions.map(_.latLng))}
-          .asJson.noSpaces)
-      Ok(jsonStr)
+            .map { case (placeType, positions) => PlacePositions(placeType, positions.map(_.latLng)) }
+            .asJson.noSpaces)
+      } match {
+        case Some(jsonStr) =>
+          logger.info(s"Records found for city $cityInFocus, returning json String")
+          Ok(jsonStr)
+        case None =>
+          logger.info(s"No city found for bounds $boundsConverted. Returning empty json")
+          Ok("{}")
+      }
     }
 
   def getBounds(boundsStr: String): LatLngBounds = {

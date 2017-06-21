@@ -28,14 +28,16 @@ class PlacesDBRetriever(placesDatabase: PlacesDatabase, cacheConfig: heatmaps.Ca
       result <- fromCache match {
         case None => {
           logger.info(s"Unable to find city ${city.name} in cache. Getting from DB")
-          placesDatabase.getPlacesForCity(city)
+          for {
+            placesFromDB <- placesDatabase.getPlacesForCity(city)
+            _ <- storeInCache(city, placesFromDB)
+          } yield placesFromDB
         }
         case Some(foundList) => {
-          logger.info(s"Found city ${city.name} in cache. Using cached records")
+          logger.info(s"Found city ${city.name} in cache. Using cached records (${foundList.size} records found in cache)")
           Future(foundList)
         }
       }
-      _ <- storeInCache(city, result)
     } yield {
       logger.info(s"getPlaces found ${result.size} results before latLng filtering")
       val results = latLngBounds match {

@@ -30,11 +30,7 @@ object Main extends ServerApp with StrictLogging {
   val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
   val ls = new LocationScanner(placesApiRetriever)
 
-  val southWest = new LatLng(51.260833, -0.450500)
-  val northEast = new LatLng(51.669779, 0.247132)
-  val latLngBounds = LatLngBounds(southWest, northEast)
   val placeType = PlaceType.RESTAURANT
-  val london = City("London", latLngBounds)
 
   //  val scanResults = ls.scanCity(london, 500, placeType)
   //  val insert = db.insertPlaces(scanResults, london, placeType.name())
@@ -42,7 +38,7 @@ object Main extends ServerApp with StrictLogging {
   //  Await.result(insert, 180 minutes)
 
   override def server(args: List[String]): Task[Server] = {
-    logger.info("Starting up server")
+    logger.info(s"Starting up servlet using port $port bound to ip $ip")
     BlazeBuilder
       .bindHttp(port, ip)
       .mountService(HeatmapsServlet.service)

@@ -1,0 +1,13 @@
+{
+  "cities" : [
+    {
+      "name" : "London",
+      "coordinates" : {
+        "southWestLat" : "51.260833",
+        "southWestLng" : "-0.450500",
+        "northEastLat" : "51.669779",
+        "northEastLng" : "0.247132"
+      }
+    }
+  ]
+}
