@@ -1,6 +1,6 @@
 package heatmaps.db
 
-import com.google.maps.model.{LatLng, PlacesSearchResult}
+import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.City
 
@@ -21,7 +21,7 @@ case class PlaceTableSchema(
 
 trait PlacesDatabase extends StrictLogging {
   val schema: PlaceTableSchema
-  def insertPlaces(placeSearchResults: List[PlacesSearchResult], city: City, placeType: String): Future[Unit]
-  def getPlacesForCity(city: City): Future[List[Place]]
+  def insertPlaces(placeSearchResults: List[PlacesSearchResult], city: City, placeType: PlaceType): Future[Unit]
+  def getPlacesForCity(city: City, placeType: PlaceType): Future[List[Place]]
 
 }

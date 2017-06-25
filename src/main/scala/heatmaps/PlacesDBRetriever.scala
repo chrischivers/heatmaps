@@ -1,6 +1,6 @@
 package heatmaps
 
-import com.google.maps.model.PlacesSearchResult
+import com.google.maps.model.{PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.db.{Place, PlacesDatabase}
 
@@ -11,26 +11,25 @@ import scalacache.guava._
 class PlacesDBRetriever(placesDatabase: PlacesDatabase, cacheConfig: heatmaps.CacheConfig)(implicit ec: ExecutionContext) extends StrictLogging {
 
   implicit private val scalaCache = ScalaCache(GuavaCache())
-//  private val cache: Map[City, List[Place]] = Map()
 
-  private def storeInCache(city: City, placeList: List[Place]): Future[Unit] = {
+  private def storeInCache(city: City, placeType: PlaceType, placeList: List[Place]): Future[Unit] = {
    logger.info(s"Adding $city to cache")
-    put(city.name)(placeList, ttl = Some(cacheConfig.timeToLive))
+    put(city.name, placeType.name())(placeList, ttl = Some(cacheConfig.timeToLive))
   }
 
-  private def getFromCache(city: City): Future[Option[List[Place]]] =
-    get[List[Place], NoSerialization](city.name)
+  private def getFromCache(city: City, placeType: PlaceType): Future[Option[List[Place]]] =
+    get[List[Place], NoSerialization](city.name, placeType.name())
 
-  def getPlaces(city: City, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
+  def getPlaces(city: City, placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
     logger.info(s"Getting places for ${city.name} with latLngBounds $latLngBounds")
     for {
-     fromCache <- getFromCache(city)
+     fromCache <- getFromCache(city, placeType)
       result <- fromCache match {
         case None => {
           logger.info(s"Unable to find city ${city.name} in cache. Getting from DB")
           for {
-            placesFromDB <- placesDatabase.getPlacesForCity(city)
-            _ <- storeInCache(city, placesFromDB)
+            placesFromDB <- placesDatabase.getPlacesForCity(city, placeType)
+            _ <- storeInCache(city, placeType, placesFromDB)
           } yield placesFromDB
         }
         case Some(foundList) => {

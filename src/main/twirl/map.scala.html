@@ -2,74 +2,145 @@
     <head>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
         <meta charset="utf-8">
-        <title>Fusion Tables heatmaps</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <title>Heatmaps</title>
         <style>
           /* Always set the map height explicitly to define the size of the div
            * element that contains the map. */
           #map {
-            height: 100%;
+              height: 100%;
           }
+
           /* Optional: Makes the sample page fill the window. */
           html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+              height: 100%;
+              margin: 0;
+              padding: 0;
           }
         </style>
     </head>
     <body>
-    <div id="map"></div>
-    <script>
+
+        <div class="dropdown">
+            <div class="btn-group">
+                <div class="btn-group">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCity" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                London
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonCity">
+                        <a class="dropdown-item" id="London" href="#">London</a>
+                        <a class="dropdown-item" id="New York" href="#">New York</a>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Restaurants
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceType">
+                        <a class="dropdown-item" id="RESTAURANT" href="#">Restaurants</a>
+                        <a class="dropdown-item" id="LODGING" href="#">Lodgings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map"></div>
+        <script>
+
           var map;
           var heatmap;
+          var placeType = "RESTAURANT";
+          var city = "London";
+
           function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map'), {
               center: {lat: 51.505485, lng: -0.127889},
               zoom: 14
             });
 
-            google.maps.event.addListener(map, 'idle', function() {
-                plotHeatMap(map.getBounds());
+            setUpMenuBar();
+
+            google.maps.event.addListener(map, 'idle', function () {
+              plotHeatMap(map.getBounds(), placeType);
             });
 
-            function plotHeatMap(mapBounds) {
+          }
 
-                var params = "bounds=" + mapBounds.toString();
-                var xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function() {
-                    if (this.readyState === 4 && this.status === 200) {
-                        placeArray = JSON.parse(this.responseText);
-                        var restaurantPlaceTypeIndex = 0;
-                        var restaurantPlaceArray = placeArray[restaurantPlaceTypeIndex];
-                        var heatmapData = getLatLngPoints(restaurantPlaceArray.latLngList);
+          function setUpMenuBar() {
+              $(".dropdown-item").click(function(){
 
-                        if (heatmap) { heatmap.setMap(null); }
-                        heatmap = new google.maps.visualization.HeatmapLayer({
-                          data: heatmapData
-                        });
-                        heatmap.setMap(map);
-                    }
-                };
-                xmlhttp.open("GET", "/heatpoints?" + params, true);
-                xmlhttp.send();
-            };
+                  if ($(this).closest(".btn-group").find('.btn').attr("id") === "dropdownMenuButtonPlaceType") {
+                      var id = $(this).attr("id");
+                      placeType = id;
+                      plotHeatMap(map.getBounds(), id);
+                  } else if ($(this).closest(".btn-group").find('.btn').attr("id") === "dropdownMenuButtonCity") {
+                      var selectedCity = $(this).attr("id");
+                      city = selectedCity;
+                      setCityDefaultView(selectedCity);
+                  }
 
-            function getLatLngPoints(restaurantPlaceArray) {
-                var latLngArray = [];
-                for(var i in restaurantPlaceArray) {
-                     var lat = restaurantPlaceArray[i].lat;
-                     var lng = restaurantPlaceArray[i].lng;
+                  var clicked = $(this).text();
+                  $(this).closest(".btn-group").find('.btn').text(clicked);
+                  $(this).closest(".btn-group").find('.btn').val(clicked);
+
+              });
+          }
+
+          function plotHeatMap(mapBounds, placeType) {
+
+              var boundsParams = "bounds=" + mapBounds.toString();
+              var placeTypeParams = "placeType=" + placeType;
+              var xmlhttp = new XMLHttpRequest();
+              xmlhttp.onreadystatechange = function () {
+                  if (this.readyState === 4 && this.status === 200) {
+                      placeArray = JSON.parse(this.responseText);
+                      if (placeArray.length !== 0) {
+                          var heatmapData = getLatLngPoints(placeArray);
+
+                          if (heatmap) {
+                              heatmap.setMap(null);
+                          }
+                          heatmap = new google.maps.visualization.HeatmapLayer({
+                              data: heatmapData
+                          });
+                          heatmap.setMap(map);
+                      }
+                  }
+              };
+              xmlhttp.open("GET", "/heatpoints?" + boundsParams + "&" + placeTypeParams, true);
+              xmlhttp.send();
+
+              function getLatLngPoints(placeArray) {
+                  var latLngArray = [];
+                  for (var i in placeArray) {
+                      var lat = placeArray[i].lat;
+                      var lng = placeArray[i].lng;
                       latLngArray.push(new google.maps.LatLng(lat, lng));
-                }
-                return latLngArray;
-            };
+                  }
+                  return latLngArray;
+              }
+          }
 
-          };
+          function setCityDefaultView(cityName) {
+              var xmlhttp = new XMLHttpRequest();
+              xmlhttp.onreadystatechange = function () {
+                  if (this.readyState === 4 && this.status === 200) {
+                      var defaultViewJson = JSON.parse(this.responseText);
+                      map.setCenter(new google.maps.LatLng(defaultViewJson.lat, defaultViewJson.lng));
+                      map.setZoom(defaultViewJson.zoom);
+
+                  }
+              };
+              xmlhttp.open("GET", "/defaultView?city=" + cityName, true);
+              xmlhttp.send();
+          }
 
         </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsL6wsuPFovAUq8STgMIp0xrOqMjv3F6A&libraries=visualization&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsL6wsuPFovAUq8STgMIp0xrOqMjv3F6A&libraries=visualization&callback=initMap">
         </script>
+        <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     </body>
 </html>
