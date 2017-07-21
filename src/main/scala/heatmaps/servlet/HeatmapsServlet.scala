@@ -32,6 +32,7 @@ class HeatmapsServlet(placesDBRetriever: PlacesDBRetriever) extends StrictLoggin
     case req@GET -> Root / "map" =>
       logger.info(s"Servlet handling map request")
       Ok(html.map())
+
     case req@GET -> Root / "defaultView" :? CityDefaultViewQueryParamMatcher(city) =>
       logger.info(s"Servlet handling defaultView request")
       Definitions.cities.find(_.name == city) match {
@@ -43,6 +44,15 @@ class HeatmapsServlet(placesDBRetriever: PlacesDBRetriever) extends StrictLoggin
           logger.info(s"Not found city $city in DB, returning empty string")
           Ok("{}")
       }
+
+    case req@GET -> Root / "cities" =>
+      logger.info("Servlet handling cities request")
+      Ok(Definitions.cities.map(_.name).asJson.noSpaces)
+
+    case req@GET -> Root / "placetypes" => {}
+      logger.info("Servlet handling placetypes request")
+      Ok(Definitions.placeTypes.map(_.name()).asJson.noSpaces)
+
     case req@GET -> Root / "heatpoints" :? BoundsQueryParamMatcher(bounds) :? PlaceTypeQueryParamMatcher(placeType)=>
       logger.info(s"Servlet handling heatpoints request for bounds $bounds and placeType $placeType")
       val boundsConverted = getBounds(bounds)

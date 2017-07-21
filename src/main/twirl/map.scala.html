@@ -8,7 +8,7 @@
           /* Always set the map height explicitly to define the size of the div
            * element that contains the map. */
           #map {
-              height: 100%;
+              height: 90%;
           }
 
           /* Optional: Makes the sample page fill the window. */
@@ -27,19 +27,13 @@
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCity" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 London
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonCity">
-                        <a class="dropdown-item" id="London" href="#">London</a>
-                        <a class="dropdown-item" id="New York" href="#">New York</a>
-                    </div>
+                    <div class="dropdown-menu" id="city-dropdown-menu" aria-labelledby="dropdownMenuButtonCity"></div>
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Restaurants
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceType">
-                        <a class="dropdown-item" id="RESTAURANT" href="#">Restaurants</a>
-                        <a class="dropdown-item" id="LODGING" href="#">Lodgings</a>
-                    </div>
+                    <div class="dropdown-menu" id="place-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceType"></div>
                 </div>
             </div>
         </div>
@@ -57,32 +51,14 @@
               zoom: 14
             });
 
-            setUpMenuBar();
+
+            getCities();
+            getPlaceTypes();
 
             google.maps.event.addListener(map, 'idle', function () {
               plotHeatMap(map.getBounds(), placeType);
             });
 
-          }
-
-          function setUpMenuBar() {
-              $(".dropdown-item").click(function(){
-
-                  if ($(this).closest(".btn-group").find('.btn').attr("id") === "dropdownMenuButtonPlaceType") {
-                      var id = $(this).attr("id");
-                      placeType = id;
-                      plotHeatMap(map.getBounds(), id);
-                  } else if ($(this).closest(".btn-group").find('.btn').attr("id") === "dropdownMenuButtonCity") {
-                      var selectedCity = $(this).attr("id");
-                      city = selectedCity;
-                      setCityDefaultView(selectedCity);
-                  }
-
-                  var clicked = $(this).text();
-                  $(this).closest(".btn-group").find('.btn').text(clicked);
-                  $(this).closest(".btn-group").find('.btn').val(clicked);
-
-              });
           }
 
           function plotHeatMap(mapBounds, placeType) {
@@ -132,6 +108,60 @@
               };
               xmlhttp.open("GET", "/defaultView?city=" + cityName, true);
               xmlhttp.send();
+          }
+
+          function getCities() {
+              var xmlhttp = new XMLHttpRequest();
+              xmlhttp.onreadystatechange = function () {
+                  if (this.readyState === 4 && this.status === 200) {
+                      var citiesArray = JSON.parse(this.responseText);
+                      var cityDropdown = document.getElementById("city-dropdown-menu");
+                      for (var i in citiesArray) {
+                          var c = citiesArray[i];
+                          var a = document.createElement('a');
+                          a.className = "dropdown-item";
+                          a.id = c;
+                          a.text = c;
+                          a.addEventListener("click",function() {
+                              city = this.id;
+                              setCityDefaultView(this.id);
+                              $(this).closest(".btn-group").find('.btn').text(this.id);
+                          });
+                          cityDropdown.appendChild(a);
+                      }
+                  }
+              };
+              xmlhttp.open("GET", "/cities", true);
+              xmlhttp.send();
+          }
+
+          function getPlaceTypes() {
+              var xmlhttp = new XMLHttpRequest();
+              xmlhttp.onreadystatechange = function () {
+                  if (this.readyState === 4 && this.status === 200) {
+                      var placeTypesArray = JSON.parse(this.responseText);
+                      var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
+                      for (var i in placeTypesArray) {
+                          var pt = placeTypesArray[i];
+                          var a = document.createElement('a');
+                          a.className = "dropdown-item";
+                          a.id = pt;
+                          a.text = toTitleCase(pt) + "s";
+                          a.addEventListener("click",function() {
+                              placeType = this.id;
+                              plotHeatMap(map.getBounds(), this.id);
+                              $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
+                          });
+                          placeTypesDropdown.appendChild(a);
+                      }
+                  }
+              };
+              xmlhttp.open("GET", "/placetypes", true);
+              xmlhttp.send();
+          }
+
+          function toTitleCase(str) {
+              return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
           }
 
         </script>
