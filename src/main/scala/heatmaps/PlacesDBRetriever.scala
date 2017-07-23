@@ -12,28 +12,28 @@ class PlacesDBRetriever(placesDatabase: PlacesDatabase, cacheConfig: heatmaps.Ca
 
   implicit private val scalaCache = ScalaCache(GuavaCache())
 
-  private def storeInCache(city: City, placeType: PlaceType, placeList: List[Place]): Future[Unit] = {
-   logger.info(s"Adding $city to cache")
-    put(city.name, placeType.name())(placeList, ttl = Some(cacheConfig.timeToLive))
+  private def storeInCache(latLngRegion: LatLngRegion, placeType: PlaceType, placeList: List[Place]): Future[Unit] = {
+   logger.info(s"Adding $latLngRegion to cache")
+    put(latLngRegion.toString, placeType.name())(placeList, ttl = Some(cacheConfig.timeToLive))
   }
 
-  private def getFromCache(city: City, placeType: PlaceType): Future[Option[List[Place]]] =
-    get[List[Place], NoSerialization](city.name, placeType.name())
+  private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Option[List[Place]]] =
+    get[List[Place], NoSerialization](latLngRegion.toString, placeType.name())
 
-  def getPlaces(city: City, placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
-    logger.info(s"Getting places for ${city.name} with latLngBounds $latLngBounds")
+  def getPlaces(latLngRegion: LatLngRegion, placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
+    logger.info(s"Getting places for $latLngRegion with latLngBounds $latLngBounds")
     for {
-     fromCache <- getFromCache(city, placeType)
+     fromCache <- getFromCache(latLngRegion, placeType)
       result <- fromCache match {
         case None => {
-          logger.info(s"Unable to find city ${city.name} in cache. Getting from DB")
+          logger.info(s"Unable to find latlngregion $latLngRegion in cache. Getting from DB")
           for {
-            placesFromDB <- placesDatabase.getPlacesForCity(city, placeType)
-            _ <- storeInCache(city, placeType, placesFromDB)
+            placesFromDB <- placesDatabase.getPlacesForLatLngRegion(latLngRegion, placeType)
+            _ <- storeInCache(latLngRegion, placeType, placesFromDB)
           } yield placesFromDB
         }
         case Some(foundList) => {
-          logger.info(s"Found city ${city.name} in cache. Using cached records (${foundList.size} records found in cache)")
+          logger.info(s"Found latlngregion $latLngRegion in cache. Using cached records (${foundList.size} records found in cache)")
           Future(foundList)
         }
       }

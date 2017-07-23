@@ -12,17 +12,12 @@ object Definitions {
     final def apply(c: HCursor): Decoder.Result[City] =
       for {
         name <- c.downField("name").as[String]
-        southWestLat <- c.downField("coordinates").downField("southWestLat").as[Double]
-        southWestLng <- c.downField("coordinates").downField("southWestLng").as[Double]
-        northEastLat <- c.downField("coordinates").downField("northEastLat").as[Double]
-        northEastLng <- c.downField("coordinates").downField("northEastLng").as[Double]
         defaultViewLat <- c.downField("default-view").downField("lat").as[Double]
         defaultViewLng <- c.downField("default-view").downField("lng").as[Double]
         defaultViewZoom <- c.downField("default-view").downField("zoom").as[Int]
 
       } yield {
         City(name,
-          LatLngBounds(new LatLng(southWestLat, southWestLng), new LatLng(northEastLat, northEastLng)),
           DefaultView(new LatLng(defaultViewLat, defaultViewLng), defaultViewZoom))
       }
   }
@@ -32,6 +27,11 @@ object Definitions {
       case Left(e) => throw e
       case Right(list) => list
     }
+  }
+
+  lazy val latLngRegions: List[LatLngRegion] = {
+//    for (lat <- List.range(-85, 84); lng <- List.range(-180, 179)) yield LatLngRegion(lat, lng)
+    for (lat <- List.range(50, 59); lng <- List.range(-6, 1)) yield LatLngRegion(lat, lng)
   }
 
   lazy val placeTypes: List[PlaceType] = decode(definitionsFile)(decodePlaceTypes) match {
@@ -44,13 +44,21 @@ object Definitions {
   private implicit val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
   private implicit val decodePlaceTypes = Decoder[List[String]].prepare(_.downField("place-types"))
 
-  def getCityForLatLngBounds(latLngbounds: LatLngBounds): Option[City] = {
-    cities.find(city => {
-      val leftX = Math.max(city.latLngBounds.southwest.lat, latLngbounds.southwest.lat)
-      val rightX = Math.min(city.latLngBounds.northeast.lat, latLngbounds.northeast.lat)
-      val botY = Math.max(city.latLngBounds.southwest.lng, latLngbounds.southwest.lng)
-      val topY = Math.min(city.latLngBounds.northeast.lng, latLngbounds.northeast.lng)
-      rightX > leftX && topY > botY
-    })
+  def getLatLngRegionsForLatLngBounds(latLngbounds: LatLngBounds): Set[LatLngRegion] = {
+
+    def roundDown(n: Double) = Math.floor(n).toInt
+
+    val regionSetOpt = for {
+      southWestRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.southwest.lat), roundDown(latLngbounds.southwest.lng)))
+      northWestRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.southwest.lat), roundDown(latLngbounds.northeast.lng)))
+      southEastRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.northeast.lat), roundDown(latLngbounds.southwest.lng)))
+      northEastRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.northeast.lat), roundDown(latLngbounds.northeast.lng)))
+    } yield {
+      Set(southWestRegion, northWestRegion, southEastRegion, northEastRegion)
+    }
+    regionSetOpt match {
+      case Some(set) => set
+      case None => throw new RuntimeException(s"Unable to obtain regions for latlng bounds $latLngbounds")
+    }
   }
 }

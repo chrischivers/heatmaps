@@ -6,12 +6,6 @@
         "lat" : "51.505485",
         "lng" : "-0.127889",
         "zoom" : "14"
-      },
-      "coordinates" : {
-        "southWestLat" : "51.260833",
-        "southWestLng" : "-0.450500",
-        "northEastLat" : "51.669779",
-        "northEastLng" : "0.247132"
       }
     },
     {
@@ -20,14 +14,8 @@
         "lat" : "40.730610",
         "lng" : "-73.935242",
         "zoom" : "14"
-      },
-      "coordinates" : {
-        "southWestLat" : "40.497670",
-        "southWestLng" : "-74.259914",
-        "northEastLat" : "40.936914",
-        "northEastLng" : "-73.613094"
       }
     }
   ],
-  "place-types" : ["RESTAURANT", "LODGING"]
+  "place-types" : ["RESTAURANT"]
 }

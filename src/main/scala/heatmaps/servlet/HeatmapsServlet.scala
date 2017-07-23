@@ -2,6 +2,7 @@ package heatmaps.servlet
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.db.Place
 import heatmaps.{DefaultView, Definitions, LatLngBounds, PlacesDBRetriever}
 import io.circe.Encoder
 import io.circe.generic.semiauto._
@@ -11,6 +12,7 @@ import org.http4s.dsl._
 import org.http4s.twirl._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds")
 object PlaceTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeType")
@@ -57,19 +59,11 @@ class HeatmapsServlet(placesDBRetriever: PlacesDBRetriever) extends StrictLoggin
       logger.info(s"Servlet handling heatpoints request for bounds $bounds and placeType $placeType")
       val boundsConverted = getBounds(bounds)
       val placeTypeConverted = PlaceType.valueOf(placeType)
-      val cityInFocus = Definitions.getCityForLatLngBounds(boundsConverted)
-      cityInFocus.map { city =>
-        placesDBRetriever.getPlaces(city, placeTypeConverted, Some(getBounds(bounds)))
-          .map(_.map(place => place.latLng)
-            .asJson.noSpaces)
-      } match {
-        case Some(jsonStr) =>
-          logger.info(s"Records found for city $cityInFocus , returning json String")
-          Ok(jsonStr)
-        case None =>
-          logger.info(s"No city found for bounds $boundsConverted. Returning empty json")
-          Ok("{}")
-      }
+      val latLngRegionsInFocus = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+      val jsonStr = Future.sequence(latLngRegionsInFocus.toList.map(latLngRegion => {
+        placesDBRetriever.getPlaces(latLngRegion, placeTypeConverted, Some(getBounds(bounds)))
+      })).map(_.flatten.map(place => place.latLng).asJson.noSpaces)
+      Ok(jsonStr)
     }
 
   def getBounds(boundsStr: String): LatLngBounds = {

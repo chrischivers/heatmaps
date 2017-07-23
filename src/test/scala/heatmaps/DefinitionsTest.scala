@@ -5,17 +5,22 @@ import org.scalatest.{FunSuite, Matchers}
 
 class DefinitionsTest extends FunSuite with Matchers {
 
-  test("Latlng bounds inside London should return London as city") {
+  test("Latlng bounds inside London should return 51,0 and 51,-1 as latLngRegion") {
     val bounds = LatLngBounds(new LatLng(51.3671199064722, -0.5415070877685366), new LatLng(51.71006687923803, 0.4472624434814634))
-    val city = Definitions.getCityForLatLngBounds(bounds)
-    city.get.name shouldBe "London"
+    val latLngRegions = Definitions.getLatLngRegionsForLatLngBounds(bounds)
+    println(latLngRegions)
+    latLngRegions should have size 2
+    latLngRegions should contain (LatLngRegion(51,0))
+    latLngRegions should contain (LatLngRegion(51,-1))
   }
 
-  test("Latlng bounds outside London should return nothing") {
-    val bounds = LatLngBounds(new LatLng(50.96461790,-0.24238714), new LatLng(51.00800474,-0.11879095))
-    val city = Definitions.getCityForLatLngBounds(bounds)
-    city should not be defined
-  }
+  test("Latlng bounds set exactly as region should return 1 latLngRegion") {
+    val bounds = LatLngBounds(new LatLng(51, 0), new LatLng(51.99999, 0.999999))
+    val latLngRegions = Definitions.getLatLngRegionsForLatLngBounds(bounds)
+    println(latLngRegions)
+    latLngRegions should have size 1
+    latLngRegions should contain (LatLngRegion(51,0))
+      }
 
   test("place type list should be returned") {
     val placeTypes = Definitions.placeTypes

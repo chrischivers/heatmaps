@@ -1,5 +1,7 @@
 package heatmaps
 
+import java.io.{File, FileOutputStream, PrintWriter}
+
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
@@ -10,18 +12,14 @@ import scala.concurrent.{Await, ExecutionContext}
 
 class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever: PlacesDBRetriever)(implicit executionContext: ExecutionContext) extends StrictLogging {
 
-  def scanForPlacesInCity(city: City, scanSeparation: Int, placeType: PlaceType, narrowRadiusIfReturnLimitReached: Boolean = true, removePlacesAlreadyInDb: Boolean = true): List[PlacesSearchResult] = {
+  def scanForPlacesInLatLngRegion(latLngRegion: LatLngRegion, scanSeparation: Int, placeType: PlaceType, narrowRadiusIfReturnLimitReached: Boolean = true, removePlacesAlreadyInDb: Boolean = true): List[PlacesSearchResult] = {
 
-    val bottomLeft = city.latLngBounds.southwest
-    val topRight = city.latLngBounds.northeast
+    val bottomLeft = new LatLng(latLngRegion.lat, latLngRegion.lng)
+    val topRight =  new LatLng(latLngRegion.lat + 1, latLngRegion.lng + 1)
     val topLeft = new LatLng(topRight.lat, bottomLeft.lng)
     val bottomRight = new LatLng(bottomLeft.lat, topRight.lng)
 
-    logger.info("Coordinates window to scan \n" +
-      "Bottom Left: " + bottomLeft + "\n" +
-      "Top Right: " + topRight + "\n" +
-      "Top Left: " + topLeft + "\n" +
-      "Bottom Right: " + bottomRight)
+    logger.info(s"LatLng Region to scan: $latLngRegion")
 
     @tailrec
     def getQueryPointsInScanArea(pointsList: List[LatLng]): List[LatLng] = {
@@ -44,21 +42,23 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
 
     def removePlacesOutOfBounds(searchResults: List[PlacesSearchResult]): List[PlacesSearchResult] = {
       searchResults.filter(place => {
-        city.latLngBounds.southwest.lat <= place.geometry.location.lat &&
-          city.latLngBounds.northeast.lat >= place.geometry.location.lat &&
-          city.latLngBounds.southwest.lng <= place.geometry.location.lng &&
-          city.latLngBounds.northeast.lng >= place.geometry.location.lng
+        latLngRegion.lat <= place.geometry.location.lat &&
+        latLngRegion.lat + 1 >= place.geometry.location.lat &&
+        latLngRegion.lng <= place.geometry.location.lng &&
+        latLngRegion.lng + 1 >= place.geometry.location.lng
       })
     }
 
     def removePlacesAlreadyInDB(searchResults: List[PlacesSearchResult]): List[PlacesSearchResult] = {
-      val result = placesDBRetriever.getPlaces(city, placeType).map { placesInDB =>
+      val result = placesDBRetriever.getPlaces(latLngRegion, placeType).map { placesInDB =>
         searchResults.filterNot(searchResult => placesInDB.map(_.placeId).contains(searchResult.placeId))
       }
       Await.result(result, 2.minutes)
     }
 
     val pointList = getQueryPointsInScanArea(List(bottomLeft))
+    println(pointList.map(x => x.lat + "," + x.lng).mkString("\n"))
+
     logger.info(s"Points list calculated. Contains ${pointList.size} points")
     logger.info(s"Getting places from API for points in list")
     val placesList: List[PlacesSearchResult] = pointList.zipWithIndex.flatMap { case (point, index) =>

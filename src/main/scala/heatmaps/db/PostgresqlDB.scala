@@ -6,7 +6,7 @@ import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import com.github.mauricio.async.db.{Configuration, Connection, QueryResult}
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.{City, PostgresDBConfig}
+import heatmaps.{City, LatLngRegion, PostgresDBConfig}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -53,7 +53,7 @@ class PostgresqlDB(dBConfig: PostgresDBConfig, val schema: PlaceTableSchema, rec
            |    ${schema.placeId} varchar NOT NULL,
            |    ${schema.placeType} varchar NOT NULL,
            |    ${schema.placeName} varchar,
-           |    ${schema.cityName} varchar,
+           |    ${schema.latLngRegion} varchar,
            |    ${schema.lat} real NOT NULL,
            |    ${schema.lng} real NOT NULL,
            |    ${schema.lastUpdated} timestamp NOT NULL,
@@ -63,36 +63,39 @@ class PostgresqlDB(dBConfig: PostgresDBConfig, val schema: PlaceTableSchema, rec
     } yield queryResult
   }
 
-  override def insertPlaces(placeSearchResults: List[PlacesSearchResult], city: City, placeType: PlaceType): Future[Unit] = {
-    logger.info(s"Inserting ${placeSearchResults.size} places into DB for city $city: ")
+  override def insertPlaces(placeSearchResults: List[PlacesSearchResult], latLngRegion: LatLngRegion, placeType: PlaceType): Future[Unit] = {
+    logger.info(s"Inserting ${placeSearchResults.size} places into DB for latLngRegion $latLngRegion and type $placeType ")
     for {
       _ <- connectToDB
       result <- Future.sequence(placeSearchResults.zipWithIndex.map{ case (result, index)  => {
           logger.info(s"Inserting place $index of ${placeSearchResults.size} into DB")
-          insertPlace(result, city, placeType.name())
+          insertPlace(result, latLngRegion, placeType.name())
         }
       })
     } yield result.map(_ => ())
   }
 
-  private def insertPlace(placeSearchResult: PlacesSearchResult, city: City, placeType: String): Future[QueryResult] = {
+  private def insertPlace(placeSearchResult: PlacesSearchResult, latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
     val statement =
       s"""
          |
-        |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.cityName}, ${schema.lat}, ${schema.lng}, ${schema.lastUpdated})
+        |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.lastUpdated})
          |    VALUES (?,?,?,?,?,'now');
          |
       """.stripMargin
 
-    connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, city.name, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
+    connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
   }
 
-  override def getPlacesForCity(city: City, placeType: PlaceType): Future[List[Place]] = {
-    logger.info(s"getting places for city from DB: $city")
-    val query = s"SELECT * FROM ${schema.tableName} WHERE ${schema.cityName} = ? AND ${schema.placeType} = ?"
+  override def getPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[List[Place]] = {
+    logger.info(s"getting places for latLngRegin $latLngRegion from DB")
+    val query = s"SELECT * " +
+      s"FROM ${schema.tableName} " +
+      s"WHERE ${schema.latLngRegion} = ? " +
+      s"AND ${schema.placeType} = ?"
     for {
       _ <- connectToDB
-      queryResult <- connectionPool.sendPreparedStatement(query, List(city.name, placeType.name()))
+      queryResult <- connectionPool.sendPreparedStatement(query, List(latLngRegion.toString, placeType.name()))
     } yield {
       queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {

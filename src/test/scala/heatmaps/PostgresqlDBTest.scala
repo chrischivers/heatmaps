@@ -42,19 +42,18 @@ class PostgresqlDBTest extends fixture.FunSuite with ScalaFutures {
     val placeType1 = PlaceType.RESTAURANT
     val placeType2 = PlaceType.LODGING
 
-    val latLngBounds = LatLngBounds(new LatLng(51.509482, -0.138981), new LatLng(51.516319, -0.131428))
-    val city = City("TestCity", latLngBounds, DefaultView(new LatLng(0,0),0))
-    val locationScanResult1 = f.locationScanner.scanForPlacesInCity(city, 500, placeType1, narrowRadiusIfReturnLimitReached = false)
-    f.db.insertPlaces(locationScanResult1, city, placeType1).futureValue
+    val latLngRegion = LatLngRegion(45, 25)
+    val locationScanResult1 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType1, narrowRadiusIfReturnLimitReached = false)
+    f.db.insertPlaces(locationScanResult1, latLngRegion, placeType1).futureValue
 
-    val locationScanResult2 = f.locationScanner.scanForPlacesInCity(city, 500, placeType2, narrowRadiusIfReturnLimitReached = false)
-    f.db.insertPlaces(locationScanResult2, city, placeType2).futureValue
+    val locationScanResult2 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType2, narrowRadiusIfReturnLimitReached = false)
+    f.db.insertPlaces(locationScanResult2, latLngRegion, placeType2).futureValue
 
-    val resultsFromDB1 = f.db.getPlacesForCity(city, placeType1).futureValue
+    val resultsFromDB1 = f.db.getPlacesForLatLngRegion(latLngRegion, placeType1).futureValue
     resultsFromDB1.size should be > 0
     resultsFromDB1.map(_.placeId) == locationScanResult1.map(_.placeId)
 
-    val resultsFromDB2 = f.db.getPlacesForCity(city, placeType1).futureValue
+    val resultsFromDB2 = f.db.getPlacesForLatLngRegion(latLngRegion, placeType2).futureValue
     resultsFromDB2.size should be > 0
     resultsFromDB2.map(_.placeId) == locationScanResult2.map(_.placeId)
   }

@@ -9,6 +9,8 @@ class PlaceRetrieverTest extends FunSuite {
 
   val config = ConfigLoader.defaultConfig
 
+  //TODO test for latLngRegion that has no places
+
   test("heatmaps.db.Place Retriever should retrieve a list of places for a given location") {
     val placesApiRetriever = new PlacesApiRetriever(config)
     val searchLocation = new LatLng(51.512500, -0.114691)
