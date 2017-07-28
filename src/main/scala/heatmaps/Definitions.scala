@@ -30,8 +30,7 @@ object Definitions {
   }
 
   lazy val latLngRegions: List[LatLngRegion] = {
-//    for (lat <- List.range(-85, 84); lng <- List.range(-180, 179)) yield LatLngRegion(lat, lng)
-    for (lat <- List.range(50, 59); lng <- List.range(-6, 1)) yield LatLngRegion(lat, lng)
+    for (lat <- List.range(-85, 84); lng <- List.range(-180, 179)) yield LatLngRegion(lat, lng)
   }
 
   lazy val placeTypes: List[PlaceType] = decode(definitionsFile)(decodePlaceTypes) match {
