@@ -1,12 +1,13 @@
 package heatmaps
 
 import com.google.maps.model.{LatLng, PlaceType}
+import com.typesafe.scalalogging.StrictLogging
 import io.circe._
 import io.circe.parser.decode
 
 import scala.io.Source
 
-object Definitions {
+object Definitions extends StrictLogging {
 
   private implicit val decodeCity: Decoder[City] = new Decoder[City] {
     final def apply(c: HCursor): Decoder.Result[City] =
@@ -43,21 +44,24 @@ object Definitions {
   private implicit val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
   private implicit val decodePlaceTypes = Decoder[List[String]].prepare(_.downField("place-types"))
 
-  def getLatLngRegionsForLatLngBounds(latLngbounds: LatLngBounds): Set[LatLngRegion] = {
+  def getLatLngRegionsForLatLngBounds(latLngbounds: LatLngBounds): List[LatLngRegion] = {
 
     def roundDown(n: Double) = Math.floor(n).toInt
+    def roundUp(n: Double) = Math.ceil(n).toInt
+    logger.info(s"getting regions for latLngBounds: $latLngbounds")
 
-    val regionSetOpt = for {
-      southWestRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.southwest.lat), roundDown(latLngbounds.southwest.lng)))
-      northWestRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.southwest.lat), roundDown(latLngbounds.northeast.lng)))
-      southEastRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.northeast.lat), roundDown(latLngbounds.southwest.lng)))
-      northEastRegion <- latLngRegions.find(_ == LatLngRegion(roundDown(latLngbounds.northeast.lat), roundDown(latLngbounds.northeast.lng)))
-    } yield {
-      Set(southWestRegion, northWestRegion, southEastRegion, northEastRegion)
-    }
-    regionSetOpt match {
-      case Some(set) => set
-      case None => throw new RuntimeException(s"Unable to obtain regions for latlng bounds $latLngbounds")
-    }
+    val southWestBoundary = new LatLng(roundDown(latLngbounds.southwest.lat), roundDown(latLngbounds.southwest.lng))
+    val northEastBoundary = new LatLng(roundUp(latLngbounds.northeast.lat), roundUp(latLngbounds.northeast.lng))
+
+    val filteredRegions = latLngRegions.filter(region => {
+      region.lat >= southWestBoundary.lat &&
+      region.lng >= southWestBoundary.lng &&
+      region.lat <= northEastBoundary.lat &&
+      region.lng <= northEastBoundary.lng
+    })
+
+    logger.info(s"LatLngRegions obtained: \n ${filteredRegions.mkString("\n")}")
+
+    filteredRegions
   }
 }
