@@ -57,7 +57,7 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     }
 
     val pointList = getQueryPointsInScanArea(List(bottomLeft))
-    println(pointList.map(x => x.lat + "," + x.lng).mkString("\n"))
+//    println(pointList.map(x => x.lat + "," + x.lng).mkString("\n"))
 
     logger.info(s"Points list calculated. Contains ${pointList.size} points")
     logger.info(s"Getting places from API for points in list")

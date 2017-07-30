@@ -1,26 +1,13 @@
 package heatmaps.db
 
-import com.github.mauricio.async.db.{Connection, QueryResult}
+import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
-import com.typesafe.scalalogging.StrictLogging
 import heatmaps.models.{LatLngRegion, Place}
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
-trait Table[T <: Connection] extends StrictLogging {
-  val db: DB[T]
-  val schema: Schema
-
-  protected def createTable: Future[QueryResult]
-
-  def dropTable(implicit executor: ExecutionContext): Future[Unit] = {
-    logger.info(s"Dropping ${schema.tableName}")
-    val query = s"DROP TABLE IF EXISTS ${schema.tableName}"
-    db.connectionPool.sendQuery(query).map(_ => ())
-  }
-}
 
 class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
 

@@ -12,5 +12,15 @@ case class PlaceTableSchema(
                              latLngRegion: String = "lat_lng_region",
                              lat: String = "lat",
                              lng: String = "lng",
-                             lastUpdated: String = "last_updated",
-                             primaryKey: List[String] = List("place_id", "place_type")) extends Schema
+                             lastUpdated: String = "last_updated") extends Schema {
+  override val primaryKey: List[String] = List(placeId, placeType)
+}
+
+case class RegionsTableSchema(
+                             tableName: String = "regions",
+                             regionName: String = "name",
+                             placeType: String = "place_type",
+                             lastScanned: String = "last_scanned"
+                             ) extends Schema {
+  override val primaryKey: List[String] = List(regionName, placeType)
+}
