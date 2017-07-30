@@ -41,7 +41,12 @@ object ScannerApp extends App with StrictLogging {
         _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
         _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
       } yield {
-        logger.info(s"${BigDecimal(index / regionsToScan.size).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete")
+        logger.info(
+          s"""
+             |**************
+             |${BigDecimal((index + regionsAlreadyScanned.size) / allRegions.size).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete"
+             |**************
+           """.stripMargin)
       }, 10 hours)
     }
   }
