@@ -4,7 +4,7 @@ import java.util.concurrent.{ExecutorService, Executors}
 
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.db.{PlaceTableSchema, PostgresqlDB}
+import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
 import heatmaps.servlet.HeatmapsServlet
 import org.http4s.server.blaze.BlazeBuilder
 import org.http4s.server.{Server, ServerApp}
@@ -23,8 +23,9 @@ object Main extends ServerApp with StrictLogging {
   val pool: ExecutorService = Executors.newCachedThreadPool()
 
   val config = ConfigLoader.defaultConfig
-  val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(), recreateTableIfExists = false)
-  val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
+  val db = new PostgresDB(config.dBConfig)
+  val placesTable = new PlacesTable(db, PlaceTableSchema(), recreateTableIfExists = false)
+  val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
 
 
   val heatmapsServlet = new HeatmapsServlet(placesDBRetriever)

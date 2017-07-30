@@ -5,8 +5,16 @@ import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 
-case class Config(postgresDBConfig: PostgresDBConfig, cacheConfig: CacheConfig, placesApiKey: String)
-case class PostgresDBConfig(host: String, port: Int, username: String, password: String, dbName: String)
+case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiKey: String)
+sealed trait DBConfig {
+  val host: String
+  val port: Int
+  val username: String
+  val password: String
+  val dbName: String
+}
+case class PostgresDBConfig(host: String, port: Int, username: String, password: String, dbName: String) extends DBConfig
+
 case class CacheConfig(timeToLive: Duration)
 
 object ConfigLoader {

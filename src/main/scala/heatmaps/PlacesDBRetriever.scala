@@ -1,14 +1,15 @@
 package heatmaps
 
-import com.google.maps.model.{PlaceType, PlacesSearchResult}
+import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.db.{Place, PlacesDatabase}
+import heatmaps.db.PlacesTable
+import heatmaps.models.{LatLngBounds, LatLngRegion, Place}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalacache._
 import scalacache.guava._
 
-class PlacesDBRetriever(placesDatabase: PlacesDatabase, cacheConfig: heatmaps.CacheConfig)(implicit ec: ExecutionContext) extends StrictLogging {
+class PlacesDBRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.CacheConfig)(implicit ec: ExecutionContext) extends StrictLogging {
 
   implicit private val scalaCache = ScalaCache(GuavaCache())
 
@@ -28,7 +29,7 @@ class PlacesDBRetriever(placesDatabase: PlacesDatabase, cacheConfig: heatmaps.Ca
         case None => {
           logger.info(s"Unable to find latlngregion $latLngRegion in cache. Getting from DB")
           for {
-            placesFromDB <- placesDatabase.getPlacesForLatLngRegion(latLngRegion, placeType)
+            placesFromDB <- placesTable.getPlacesForLatLngRegion(latLngRegion, placeType)
             _ <- storeInCache(latLngRegion, placeType, placesFromDB)
           } yield placesFromDB
         }

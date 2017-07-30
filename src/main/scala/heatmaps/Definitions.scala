@@ -2,6 +2,7 @@ package heatmaps
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.models.{City, DefaultView, LatLngBounds, LatLngRegion}
 import io.circe._
 import io.circe.parser.decode
 

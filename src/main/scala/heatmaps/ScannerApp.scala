@@ -3,7 +3,8 @@ package heatmaps
 import java.io.{File, FileOutputStream, PrintWriter}
 
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.db.{PlaceTableSchema, PostgresqlDB}
+import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
+import heatmaps.models.LatLngRegion
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -13,9 +14,10 @@ import scala.util.{Failure, Success}
 
 object ScannerApp extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
-  val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(), recreateTableIfExists = false)
+  val db = new PostgresDB(config.dBConfig)
+  val placesTable = new PlacesTable(db, PlaceTableSchema(), recreateTableIfExists = false)
   val placesApiRetriever = new PlacesApiRetriever(config)
-  val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
+  val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
   val ls = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
   val regionsAlreadyScanned = Source.fromFile("regionsscanned.txt").getLines().drop(1).map(line => {
@@ -41,10 +43,11 @@ object ScannerApp extends App with StrictLogging {
       val result = Definitions.placeTypes.map { placeType =>
         logger.info(s"Scanning placeType $placeType")
         val scanResults = ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
-        val dbInsertResult = db.insertPlaces(scanResults, latLngRegion, placeType)
+        val dbInsertResult = placesTable.insertPlaces(scanResults, latLngRegion, placeType)
 
         dbInsertResult.onComplete {
           case Success(_) =>
+            logger.info(s"Success writing $latLngRegion to DB")
             appendLatLngToFile(latLngRegion)
           case Failure(e) =>
             logger.error(s"Error writing $latLngRegion to DB", e)

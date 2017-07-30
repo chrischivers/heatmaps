@@ -1,9 +1,11 @@
 package heatmaps
 
 import com.google.maps.model.{LatLng, PlaceType}
-import heatmaps.db.{PlaceTableSchema, PostgresqlDB}
+import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
+import heatmaps.models.LatLngRegion
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -13,8 +15,9 @@ class LocationScannerTest extends FunSuite {
 
   test("Location Scanner should retrieve a list of all places in a given latLngRegion") {
     val placesApiRetriever = new PlacesApiRetriever(config)
-    val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(tableName = "placestest"), recreateTableIfExists = true)
-    val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
+    val db = new PostgresDB(config.dBConfig)
+    val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), recreateTableIfExists = true)
+    val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
 
     val ls = new LocationScanner(placesApiRetriever, placesDBRetriever)
     val latLngRegion = LatLngRegion(45, 25)
@@ -26,8 +29,9 @@ class LocationScannerTest extends FunSuite {
 
   test("place retriever results for mid point of a given area should be a subset of location scanner results for the entire area") {
     val placesApiRetriever = new PlacesApiRetriever(config)
-    val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(tableName = "placestest"), recreateTableIfExists = true)
-    val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
+    val db = new PostgresDB(config.dBConfig)
+    val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), recreateTableIfExists = true)
+    val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
 
     val ls = new LocationScanner(placesApiRetriever, placesDBRetriever)
     val latLngRegion = LatLngRegion(45, 25)
@@ -53,8 +57,9 @@ class LocationScannerTest extends FunSuite {
     val latLngRegion = LatLngRegion(45, 25)
 
     val placesApiRetriever = new PlacesApiRetriever(config)
-    val db = new PostgresqlDB(config.postgresDBConfig, PlaceTableSchema(tableName = "placestest"), recreateTableIfExists = true)
-    val placesDBRetriever = new PlacesDBRetriever(db, config.cacheConfig)
+    val db = new PostgresDB(config.dBConfig)
+    val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), recreateTableIfExists = true)
+    val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
     val ls = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
     val scanResultsLargeRadius = ls.scanForPlacesInLatLngRegion(latLngRegion, 10000,  PlaceType.RESTAURANT)

@@ -1,6 +1,7 @@
 package heatmaps
 
 import com.google.maps.model.{LatLng, PlaceType}
+import heatmaps.models.{LatLngBounds, LatLngRegion}
 import org.scalatest.{FunSuite, Matchers}
 
 class DefinitionsTest extends FunSuite with Matchers {

@@ -5,6 +5,7 @@ import java.io.{File, FileOutputStream, PrintWriter}
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
+import heatmaps.models.LatLngRegion
 
 import scala.concurrent.duration._
 import scala.annotation.tailrec

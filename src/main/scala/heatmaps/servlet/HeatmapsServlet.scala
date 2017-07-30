@@ -2,10 +2,9 @@ package heatmaps.servlet
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.db.Place
-import heatmaps.{DefaultView, Definitions, LatLngBounds, PlacesDBRetriever}
+import heatmaps.models.{DefaultView, LatLngBounds}
+import heatmaps.{Definitions, PlacesDBRetriever}
 import io.circe.Encoder
-import io.circe.generic.semiauto._
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.dsl._
