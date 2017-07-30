@@ -31,7 +31,7 @@ object ScannerApp extends App with StrictLogging {
     logger.info(s"${allRegions.size - regionsToScan.size} regions scanned")
     logger.info(s"${regionsToScan.size} regions left to scan")
     logger.info(s"LatLngRegions to scan: $regionsToScan")
-    regionsToScan.foreach { latLngRegion =>
+    regionsToScan.zipWithIndex.foreach { case (latLngRegion, index) =>
       logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
       Await.result(for {
         scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
@@ -40,7 +40,9 @@ object ScannerApp extends App with StrictLogging {
         _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
         _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
         _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
-      } yield (), 10 hours)
+      } yield {
+        logger.info(s"${BigDecimal(index / regionsToScan.size).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete")
+      }, 10 hours)
     }
   }
 }

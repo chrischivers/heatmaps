@@ -26,7 +26,6 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     def getQueryPointsInScanArea(pointsList: List[LatLng]): List[LatLng] = {
       val lastPointAdded = pointsList.last
       if (lastPointAdded.lat >= topRight.lat) {
-        logger.info("finished getting query points. stopping recursion")
         pointsList
       } else if (lastPointAdded.lng >= topRight.lng) {
         val nextPoint = SphericalUtil.computeOffset(new LatLng(lastPointAdded.lat, bottomLeft.lng), scanSeparation, 0)
