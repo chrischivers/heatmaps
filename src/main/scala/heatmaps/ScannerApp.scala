@@ -44,7 +44,7 @@ object ScannerApp extends App with StrictLogging {
         logger.info(
           s"""
              |**************
-             |${BigDecimal(((index + regionsAlreadyScanned.size) / allRegions.size) * 100).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete"
+             |${BigDecimal(((index.toDouble + regionsAlreadyScanned.size.toDouble) / allRegions.size.toDouble) * 100).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete
              |**************
            """.stripMargin)
       }, 10 hours)

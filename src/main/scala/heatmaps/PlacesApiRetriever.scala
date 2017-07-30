@@ -24,7 +24,6 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
 
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
-    logger.info(s"Getting places from API for $latLng, radius $radius and type: $placeType")
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
   }
 
