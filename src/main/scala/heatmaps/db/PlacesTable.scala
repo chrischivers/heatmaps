@@ -6,25 +6,14 @@ import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.models.{LatLngRegion, Place}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration._
 
-
-trait Table[T <: Connection]  extends StrictLogging {
+trait Table[T <: Connection] extends StrictLogging {
   val db: DB[T]
   val schema: Schema
-  val recreateTableIfExists: Boolean = false
 
-  def createTable(implicit executor: ExecutionContext): Future[QueryResult] = {
-    if (recreateTableIfExists) {
-      logger.info("Recreating Table If Exists")
-      for {
-        _ <- dropTable
-        newTable <- createNewTable
-      } yield newTable
-    } else createNewTable
-  }
-
-  protected def createNewTable: Future[QueryResult]
+  protected def createTable: Future[QueryResult]
 
   def dropTable(implicit executor: ExecutionContext): Future[Unit] = {
     logger.info(s"Dropping ${schema.tableName}")
@@ -33,10 +22,21 @@ trait Table[T <: Connection]  extends StrictLogging {
   }
 }
 
-class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema, recreateTableIfExists: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
+class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
 
-  override protected def createNewTable: Future[QueryResult] = {
-    logger.info(s"Creating Table if not existing")
+  if (createNewTable) {
+    Await.result({
+      logger.info(s"Creating new table ${schema.tableName}")
+      for {
+        _ <- dropTable
+        newTable <- createTable
+      } yield newTable
+    }, 1 minute) //Blocks while table created
+
+  }
+
+  override protected def createTable: Future[QueryResult] = {
+    logger.info(s"Creating Table ${schema.tableName}")
     for {
       _ <- db.connectToDB
       queryResult <- db.connectionPool.sendQuery(
@@ -81,7 +81,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def getPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[List[Place]] = {
-    logger.info(s"getting places for latLngRegin $latLngRegion from DB")
+    logger.info(s"getting places for latLngRegion $latLngRegion from DB")
     val query = s"SELECT * " +
       s"FROM ${schema.tableName} " +
       s"WHERE ${schema.latLngRegion} = ? " +

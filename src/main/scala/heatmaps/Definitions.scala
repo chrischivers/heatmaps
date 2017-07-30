@@ -57,9 +57,9 @@ object Definitions extends StrictLogging {
     val filteredRegions = latLngRegions.filter(region => {
       region.lat >= southWestBoundary.lat &&
       region.lng >= southWestBoundary.lng &&
-      region.lat <= northEastBoundary.lat &&
-      region.lng <= northEastBoundary.lng
-    })
+      region.lat < northEastBoundary.lat &&
+      region.lng < northEastBoundary.lng
+  })
 
     logger.info(s"LatLngRegions obtained: \n ${filteredRegions.mkString("\n")}")
 

@@ -9,14 +9,14 @@ import heatmaps.models.LatLngRegion
 
 import scala.concurrent.duration._
 import scala.annotation.tailrec
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever: PlacesDBRetriever)(implicit executionContext: ExecutionContext) extends StrictLogging {
 
-  def scanForPlacesInLatLngRegion(latLngRegion: LatLngRegion, scanSeparation: Int, placeType: PlaceType, narrowRadiusIfReturnLimitReached: Boolean = true, removePlacesAlreadyInDb: Boolean = true): List[PlacesSearchResult] = {
+  def scanForPlacesInLatLngRegion(latLngRegion: LatLngRegion, scanSeparation: Int, placeType: PlaceType, removePlacesAlreadyInDb: Boolean = true): Future[List[PlacesSearchResult]] = {
 
     val bottomLeft = new LatLng(latLngRegion.lat, latLngRegion.lng)
-    val topRight =  new LatLng(latLngRegion.lat + 1, latLngRegion.lng + 1)
+    val topRight = new LatLng(latLngRegion.lat + 1, latLngRegion.lng + 1)
     val topLeft = new LatLng(topRight.lat, bottomLeft.lng)
     val bottomRight = new LatLng(bottomLeft.lat, topRight.lng)
 
@@ -44,17 +44,16 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     def removePlacesOutOfBounds(searchResults: List[PlacesSearchResult]): List[PlacesSearchResult] = {
       searchResults.filter(place => {
         latLngRegion.lat <= place.geometry.location.lat &&
-        latLngRegion.lat + 1 >= place.geometry.location.lat &&
-        latLngRegion.lng <= place.geometry.location.lng &&
-        latLngRegion.lng + 1 >= place.geometry.location.lng
+          latLngRegion.lat + 1 >= place.geometry.location.lat &&
+          latLngRegion.lng <= place.geometry.location.lng &&
+          latLngRegion.lng + 1 >= place.geometry.location.lng
       })
     }
 
-    def removePlacesAlreadyInDB(searchResults: List[PlacesSearchResult]): List[PlacesSearchResult] = {
-      val result = placesDBRetriever.getPlaces(latLngRegion, placeType).map { placesInDB =>
+    def removePlacesAlreadyInDB(searchResults: List[PlacesSearchResult]): Future[List[PlacesSearchResult]] = {
+      placesDBRetriever.getPlaces(latLngRegion, placeType).map { placesInDB =>
         searchResults.filterNot(searchResult => placesInDB.map(_.placeId).contains(searchResult.placeId))
       }
-      Await.result(result, 2.minutes)
     }
 
     val pointList = getQueryPointsInScanArea(List(bottomLeft))
@@ -62,21 +61,29 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
 
     logger.info(s"Points list calculated. Contains ${pointList.size} points")
     logger.info(s"Getting places from API for points in list")
-    val placesList: List[PlacesSearchResult] = pointList.zipWithIndex.flatMap { case (point, index) =>
+    val placesList = Future.sequence(pointList.zipWithIndex.map { case (point, index) =>
       logger.info(s"Processing point $index of ${pointList.size}")
-      placesApiRetriever.getPlaces(point, scanSeparation, placeType, narrowRadiusIfReturnLimitReached)
+      placesApiRetriever.getPlaces(point, scanSeparation, placeType)
     }
-
-    logger.info(s"${placesList.size} places retrieved from API.")
-    val pointsListUnique = removeDuplicatePlacesSearchResults(placesList)
-    logger.info(s"${pointsListUnique.size} places retrieved after duplicates removed")
-    val pointsListOutOfBoundsRemoved = removePlacesOutOfBounds(pointsListUnique)
-    logger.info(s"${pointsListOutOfBoundsRemoved.size} places retrieved after out of bounds removed")
+    ).map { places =>
+      val flattenedList = places.flatten
+      logger.info(s"${flattenedList.size} places retrieved from API.")
+      flattenedList
+    }.map(places => {
+      val duplicatesRemoved = removeDuplicatePlacesSearchResults(places)
+      logger.info(s"${duplicatesRemoved.size} places retrieved after duplicates removed")
+      duplicatesRemoved
+    }).map(places => {
+      val outOfBoundsRemoved = removePlacesOutOfBounds(places)
+      logger.info(s"${outOfBoundsRemoved.size} places retrieved after out of bounds removed")
+      outOfBoundsRemoved
+    })
     if (removePlacesAlreadyInDb) {
-      val pointsListExistingRemoved = removePlacesAlreadyInDB(pointsListOutOfBoundsRemoved)
-      logger.info(s"${pointsListExistingRemoved.size} places retrieved after those already in DB removed")
-      pointsListExistingRemoved
-    }
-    else pointsListOutOfBoundsRemoved
+      for {
+        places <- placesList
+        pointsListExistingRemoved <- removePlacesAlreadyInDB(places)
+        _ = logger.info(s"${pointsListExistingRemoved.size} places retrieved after those already in DB removed")
+      } yield pointsListExistingRemoved
+    } else placesList
   }
 }

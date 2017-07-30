@@ -24,7 +24,7 @@ object Main extends ServerApp with StrictLogging {
 
   val config = ConfigLoader.defaultConfig
   val db = new PostgresDB(config.dBConfig)
-  val placesTable = new PlacesTable(db, PlaceTableSchema(), recreateTableIfExists = false)
+  val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
   val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
 
 

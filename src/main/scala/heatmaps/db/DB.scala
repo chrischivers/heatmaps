@@ -17,7 +17,7 @@ trait DB[T <: Connection] extends StrictLogging {
 
   val connection: ObjectFactory[T]
 
-  val connectionPool: ConnectionPool[T] = new ConnectionPool[T](connection, connectionPoolConfig)
+  val connectionPool: ConnectionPool[T]
 
   def connectToDB: Future[Connection] = connectionPool.connect
 
@@ -38,4 +38,5 @@ class PostgresDB(dBConfig: DBConfig) extends DB[PostgreSQLConnection] {
 
   override val connectionPoolConfig: PoolConfiguration = new PoolConfiguration(maxObjects = 5, maxIdle = 5000, maxQueueSize = 100000)
   override val connection: ObjectFactory[PostgreSQLConnection] = new PostgreSQLConnectionFactory(connectionConfiguration)
+  override val connectionPool: ConnectionPool[PostgreSQLConnection] = new ConnectionPool[PostgreSQLConnection](connection, connectionPoolConfig)
 }

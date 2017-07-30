@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 object ScannerApp extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
   val db = new PostgresDB(config.dBConfig)
-  val placesTable = new PlacesTable(db, PlaceTableSchema(), recreateTableIfExists = false)
+  val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
   val placesApiRetriever = new PlacesApiRetriever(config)
   val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
   val ls = new LocationScanner(placesApiRetriever, placesDBRetriever)
@@ -42,10 +42,12 @@ object ScannerApp extends App with StrictLogging {
       logger.info(s"Place types to scan ${Definitions.placeTypes}")
       val result = Definitions.placeTypes.map { placeType =>
         logger.info(s"Scanning placeType $placeType")
-        val scanResults = ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
-        val dbInsertResult = placesTable.insertPlaces(scanResults, latLngRegion, placeType)
+        val scanAndInsert = for {
+          scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
+          dbInsertResult <- placesTable.insertPlaces(scanResults, latLngRegion, placeType)
+        } yield dbInsertResult
 
-        dbInsertResult.onComplete {
+        scanAndInsert.onComplete {
           case Success(_) =>
             logger.info(s"Success writing $latLngRegion to DB")
             appendLatLngToFile(latLngRegion)
@@ -53,7 +55,7 @@ object ScannerApp extends App with StrictLogging {
             logger.error(s"Error writing $latLngRegion to DB", e)
             throw e
         }
-        dbInsertResult
+        scanAndInsert
       }
       result
     }

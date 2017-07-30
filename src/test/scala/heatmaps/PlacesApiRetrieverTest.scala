@@ -1,16 +1,18 @@
 package heatmaps
 
-import com.google.maps.model.PlaceType
+import com.google.maps.model.{LatLng, PlaceType}
+import com.typesafe.scalalogging.StrictLogging
+import googleutils.SphericalUtil
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
 import heatmaps.models.LatLngRegion
+import org.scalatest.{FunSuite, fixture}
 import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.fixture
-
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.concurrent.duration._
 
-class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
+class PlacesApiRetrieverTest extends fixture.FunSuite with StrictLogging with ScalaFutures {
 
   val config = ConfigLoader.defaultConfig
 
@@ -39,24 +41,19 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     }
   }
 
-  test("heatmaps.db.Place results persisted to DB should match those retrieved") { f =>
 
-    val placeType1 = PlaceType.RESTAURANT
-    val placeType2 = PlaceType.LODGING
+  test("Place Retriever should retrieve a list of places for a given location, falling within radius") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val locationScanResult1 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType1).futureValue
-    f.placesTable.insertPlaces(locationScanResult1, latLngRegion, placeType1).futureValue
+    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, PlaceType.RESTAURANT).futureValue
+    f.placesTable.insertPlaces(locationScanResult, latLngRegion, PlaceType.RESTAURANT).futureValue
 
-    val locationScanResult2 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType2).futureValue
-    f.placesTable.insertPlaces(locationScanResult2, latLngRegion, placeType2).futureValue
-
-    val resultsFromDB1 = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType1).futureValue
-    resultsFromDB1.size should be > 0
-    resultsFromDB1.map(_.placeId) == locationScanResult1.map(_.placeId)
-
-    val resultsFromDB2 = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType2).futureValue
-    resultsFromDB2.size should be > 0
-    resultsFromDB2.map(_.placeId) == locationScanResult2.map(_.placeId)
+    val searchLocation = new LatLng(45.4, 25.5)
+    val radius = 1000
+    val results1 = f.placesApiRetriever.getPlaces(searchLocation, radius, PlaceType.RESTAURANT).futureValue
+    results1.foreach(result => {
+      val placeLocation = result.geometry.location
+      SphericalUtil.computeDistanceBetween(searchLocation, placeLocation).toInt should be <= radius
+    })
   }
 }

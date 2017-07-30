@@ -2,7 +2,7 @@ package heatmaps.servlet
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.models.{DefaultView, LatLngBounds}
+import heatmaps.models.{DefaultView, LatLngBounds, LatLngRegion, Place}
 import heatmaps.{Definitions, PlacesDBRetriever}
 import io.circe.Encoder
 import io.circe.syntax._
@@ -58,10 +58,10 @@ class HeatmapsServlet(placesDBRetriever: PlacesDBRetriever) extends StrictLoggin
       logger.info(s"Servlet handling heatpoints request for bounds $bounds and placeType $placeType")
       val boundsConverted = getBounds(bounds)
       val placeTypeConverted = PlaceType.valueOf(placeType)
-      val latLngRegionsInFocus = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = Future.sequence(latLngRegionsInFocus.toList.map(latLngRegion => {
+      val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+      val jsonStr = Future.sequence(latLngRegionsInFocus.map(latLngRegion => {
         placesDBRetriever.getPlaces(latLngRegion, placeTypeConverted, Some(getBounds(bounds)))
-      })).map(_.flatten.map(place => place.latLng).asJson.noSpaces)
+      })).map(x => x.flatten.toSet[Place].map(place => place.latLng).asJson.noSpaces)
       Ok(jsonStr)
     }
 
