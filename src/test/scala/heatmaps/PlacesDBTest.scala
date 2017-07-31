@@ -1,8 +1,11 @@
 package heatmaps
 
 import com.google.maps.model.PlaceType
+import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
 import heatmaps.models.LatLngRegion
+import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
+import heatmaps.web.PlacesRetriever
 import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.fixture
@@ -25,7 +28,7 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     val placesApiRetriever = new PlacesApiRetriever(config)
     val db = new PostgresDB(config.dBConfig)
     val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), createNewTable = true)
-    val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
+    val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig)
     val locationScanner = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
     val testFixture = FixtureParam(placesApiRetriever, locationScanner, placesTable)

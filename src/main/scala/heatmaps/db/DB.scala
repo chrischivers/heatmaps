@@ -5,7 +5,7 @@ import com.github.mauricio.async.db.pool.{ConnectionPool, ObjectFactory, PoolCon
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.DBConfig
+import heatmaps.config.DBConfig
 
 import scala.concurrent.Future
 

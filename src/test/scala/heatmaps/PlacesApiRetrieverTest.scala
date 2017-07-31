@@ -3,13 +3,16 @@ package heatmaps
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
+import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
 import heatmaps.models.LatLngRegion
+import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
+import heatmaps.web.PlacesRetriever
 import org.scalatest.{FunSuite, fixture}
 import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class PlacesApiRetrieverTest extends fixture.FunSuite with StrictLogging with ScalaFutures {
@@ -27,7 +30,7 @@ class PlacesApiRetrieverTest extends fixture.FunSuite with StrictLogging with Sc
     val placesApiRetriever = new PlacesApiRetriever(config)
     val db = new PostgresDB(config.dBConfig)
     val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), createNewTable = true)
-    val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
+    val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig)
     val locationScanner = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
     val testFixture = FixtureParam(placesApiRetriever, locationScanner, placesTable)

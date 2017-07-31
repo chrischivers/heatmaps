@@ -1,4 +1,4 @@
-package heatmaps
+package heatmaps.web
 
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalacache._
 import scalacache.guava._
 
-class PlacesDBRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.CacheConfig)(implicit ec: ExecutionContext) extends StrictLogging {
+class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.CacheConfig)(implicit ec: ExecutionContext) extends StrictLogging {
 
   implicit private val scalaCache = ScalaCache(GuavaCache())
 

@@ -2,7 +2,10 @@ package heatmaps
 
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
+import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
+import heatmaps.web.PlacesRetriever
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -14,7 +17,7 @@ object ScannerApp extends App with StrictLogging {
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
   val regionsTable = new RegionsTable(db, RegionsTableSchema(), createNewTable = false)
   val placesApiRetriever = new PlacesApiRetriever(config)
-  val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
+  val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig)
   val ls = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
   def getRegionsAlreadyScanned(placeType: PlaceType) = regionsTable.getRegions(placeType)

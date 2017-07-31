@@ -3,8 +3,11 @@ package heatmaps
 import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
 import heatmaps.models.LatLngRegion
+import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
+import heatmaps.web.PlacesRetriever
 import org.scalatest.Matchers._
 import org.scalatest.RecoverMethods._
 import org.scalatest.concurrent.ScalaFutures
@@ -29,7 +32,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
     val placesApiRetriever = new PlacesApiRetriever(config)
     val db = new PostgresDB(config.dBConfig)
     val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), createNewTable = true)
-    val placesDBRetriever = new PlacesDBRetriever(placesTable, config.cacheConfig)
+    val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig)
     val locationScanner = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
     val testFixture = FixtureParam(placesApiRetriever, locationScanner, placesTable)
@@ -46,7 +49,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
   test("places fetched from cache are same as those fetched directly from DB") { f =>
 
     val placeType = PlaceType.RESTAURANT
-    val placesDBRetriever = new PlacesDBRetriever(f.placesTable, config.cacheConfig)
+    val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig)
 
     val latLngRegion = LatLngRegion(45, 25)
     (for {
@@ -65,7 +68,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
   test("places are fetched again from db when cached records expire") { f =>
 
     val placeType = PlaceType.RESTAURANT
-    val placesDBRetriever = new PlacesDBRetriever(f.placesTable, config.cacheConfig.copy(timeToLive = 5 seconds))
+    val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig.copy(timeToLive = 5 seconds))
 
     val latLngRegion = LatLngRegion(45, 25)
     (for {

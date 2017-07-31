@@ -1,27 +1,27 @@
-package heatmaps
+package heatmaps.scanner
 
-import com.google.maps.{GeoApiContext, PlacesApi}
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
+import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
+import heatmaps.config.Config
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging{
 
-  private val context: GeoApiContext = new GeoApiContext().setApiKey(config.placesApiKey)
-  private val returnLimit = 190
+  private val context: GeoApiContext = new GeoApiContext().setApiKey(config.placesApiConfig.apiKey)
+  private val returnLimit = config.placesApiConfig.returnLimt
 
   def getPlaces(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
     for {
       placesFromApi <- getPlacesFromApi(latLng, radius, placeType)
       result <- if (placesFromApi.length > returnLimit) {
-        logger.info(s"Size of response for $latLng with radius $radius exceeded 190. Size = ${placesFromApi.length}. Breaking down...")
+        logger.info(s"Size of response for $latLng with radius $radius exceeded $returnLimit. Size = ${placesFromApi.length}. Breaking down...")
         getPlacesFromApiIfLimitReached(latLng, radius / 2, placeType)
       } else Future(placesFromApi)
     } yield result
   }
-
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)

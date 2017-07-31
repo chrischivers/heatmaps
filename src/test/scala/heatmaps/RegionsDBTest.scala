@@ -1,6 +1,7 @@
 package heatmaps
 
 import com.google.maps.model.PlaceType
+import heatmaps.config.ConfigLoader
 import heatmaps.db._
 import heatmaps.models.LatLngRegion
 import org.joda.time.{DateTimeZone, LocalDateTime}

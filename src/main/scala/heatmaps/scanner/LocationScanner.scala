@@ -1,17 +1,15 @@
-package heatmaps
-
-import java.io.{File, FileOutputStream, PrintWriter}
+package heatmaps.scanner
 
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
 import heatmaps.models.LatLngRegion
+import heatmaps.web.PlacesRetriever
 
-import scala.concurrent.duration._
 import scala.annotation.tailrec
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
-class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever: PlacesDBRetriever)(implicit executionContext: ExecutionContext) extends StrictLogging {
+class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever: PlacesRetriever)(implicit executionContext: ExecutionContext) extends StrictLogging {
 
   def scanForPlacesInLatLngRegion(latLngRegion: LatLngRegion, scanSeparation: Int, placeType: PlaceType, removePlacesAlreadyInDb: Boolean = true): Future[List[PlacesSearchResult]] = {
 
