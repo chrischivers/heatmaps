@@ -41,9 +41,9 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     def removePlacesOutOfBounds(searchResults: List[PlacesSearchResult]): List[PlacesSearchResult] = {
       searchResults.filter(place => {
         latLngRegion.lat <= place.geometry.location.lat &&
-          latLngRegion.lat + 1 >= place.geometry.location.lat &&
+          latLngRegion.lat + 1 > place.geometry.location.lat &&
           latLngRegion.lng <= place.geometry.location.lng &&
-          latLngRegion.lng + 1 >= place.geometry.location.lng
+          latLngRegion.lng + 1 > place.geometry.location.lng
       })
     }
 
