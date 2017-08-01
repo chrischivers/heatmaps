@@ -58,7 +58,7 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     logger.info(s"Points list calculated. Contains ${pointList.size} points")
     logger.info(s"Getting places from API for points in list")
     val placesList = Future.sequence(pointList.zipWithIndex.map { case (point, index) =>
-      logger.debug(s"Processing point $index of ${pointList.size}")
+//      logger.debug(s"Processing point $index of ${pointList.size}")
       placesApiRetriever.getPlaces(point, scanSeparation, placeType)
     }
     ).map { places =>

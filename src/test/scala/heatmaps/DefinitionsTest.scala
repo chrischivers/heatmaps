@@ -8,6 +8,7 @@ import org.scalatest.{FunSuite, Matchers}
 class DefinitionsTest extends FunSuite with Matchers {
 
   import heatmaps.web.HeatmapsServlet._
+  import Definitions._
 
   test("Latlng bounds inside London should return 51,0 and 51,-1 as latLngRegion") {
     val bounds = LatLngBounds(new LatLng(51.3671199064722, -0.5415070877685366), new LatLng(51.71006687923803, 0.4472624434814634))
