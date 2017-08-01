@@ -41,13 +41,15 @@ object ScannerApp extends App with StrictLogging {
   logger.info(s"Place types to scan ${Definitions.placeTypes}")
   Definitions.placeTypes.foreach { placeType =>
 
-    val regionsAlreadyScanned = Await.result(getRegionsAlreadyScanned(placeType), 5 minute)
+    val regionsAlreadyScanned = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys.toList
+    val validRegionsAlreadyScanned = regionsAlreadyScanned.filterNot(regionsNotToScan.contains)
     val regionsToScan = allRegions
         .filterNot(regionsAlreadyScanned.contains)
         .filterNot(regionsNotToScan.contains)
 
     logger.info(s"${allRegions.size} regions in total")
     logger.info(s"${regionsAlreadyScanned.size} regions already scanned")
+    logger.info(s"${validRegionsAlreadyScanned.size} valid regions already scanned")
     logger.info(s"${regionsNotToScan.size} regions marked as ignore")
     logger.info(s"${regionsToScan.size} regions left to scan")
     logger.info(s"LatLngRegions to scan: $regionsToScan")
@@ -64,7 +66,7 @@ object ScannerApp extends App with StrictLogging {
         logger.info(
           s"""
              |**************
-             |${BigDecimal(((index.toDouble + regionsAlreadyScanned.size.toDouble) / (allRegions.size.toDouble - regionsNotToScan.size.toDouble)) * 100).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete
+             |${BigDecimal(((index.toDouble + validRegionsAlreadyScanned.size.toDouble) / (allRegions.size.toDouble - regionsNotToScan.size.toDouble)) * 100).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete
              |**************
            """.stripMargin)
       }, 10 hours)
