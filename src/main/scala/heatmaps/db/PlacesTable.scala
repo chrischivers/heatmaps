@@ -90,4 +90,43 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       }
     }
   }
+
+  def updatePlace(placeID: String, placeType: String, name: String): Future[QueryResult] = {
+    logger.info(s"updating place $placeID, $name in DB")
+    val statement =
+      s"""
+         |
+         |UPDATE ${schema.tableName}
+         |SET ${schema.placeName} = ?
+         |WHERE ${schema.placeId} = ?
+         |AND ${schema.placeType} = ?
+         |
+      """.stripMargin
+
+    db.connectionPool.sendPreparedStatement(statement, List(name, placeID, placeType))
+  }
+
+  def getLatLngRegionsContainingNullPlaceNames(placeType: PlaceType): Future[List[LatLngRegion]] = {
+    logger.info(s"getting latLngRegions containing null place names")
+    val query = s"SELECT DISTINCT(${schema.latLngRegion}) " +
+      s"FROM ${schema.tableName} " +
+      s"WHERE ${schema.placeType} = ? " +
+      s"AND ${schema.placeName} IS NULL " +
+      s"ORDER BY ${schema.latLngRegion} ASC"
+    for {
+      _ <- db.connectToDB
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.name()))
+    } yield {
+      queryResult.rows match {
+        case Some(resultSet) => resultSet.map(res => {
+          val regionStr = res.apply(schema.latLngRegion).asInstanceOf[String]
+          LatLngRegion(
+            regionStr.split(",")(0).toInt,
+            regionStr.split(",")(1).toInt
+          )
+        }).toList
+        case None => List.empty
+      }
+    }
+  }
 }
