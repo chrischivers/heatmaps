@@ -2,10 +2,11 @@ package heatmaps.config
 
 import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration.{Duration, FiniteDuration}
+import scala.collection.JavaConverters._
 
 case class PostgresDBConfig(host: String, port: Int, username: String, password: String, dbName: String) extends DBConfig
 case class CacheConfig(timeToLive: Duration)
-case class PlacesApiConfig(apiKey: String, returnLimt: Int)
+case class PlacesApiConfig(apiKeys: List[String], returnLimt: Int)
 
 case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiConfig: PlacesApiConfig)
 sealed trait DBConfig {
@@ -38,7 +39,7 @@ object ConfigLoader {
         defaultConfigFactory.getDuration(cacheDBParamsPrefix + "time-to-live")
       ),
       PlacesApiConfig(
-        defaultConfigFactory.getString("placesApi.key"),
+        defaultConfigFactory.getStringList("placesApi.keys").asScala.toList,
         defaultConfigFactory.getInt("placesApi.returnLimit")
       )
     )

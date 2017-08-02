@@ -57,11 +57,10 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     val resultsFromDB1 = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType1).futureValue
     resultsFromDB1.size should be > 0
     resultsFromDB1.map(_.placeId) == locationScanResult1.map(_.placeId)
-    resultsFromDB1.map(_.placeName) == locationScanResult1.map(_.name)
+    resultsFromDB1.map(_.placeName).map(_.isEmpty) should not contain false
 
     val resultsFromDB2 = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType2).futureValue
     resultsFromDB2.size should be > 0
     resultsFromDB2.map(_.placeId) == locationScanResult2.map(_.placeId)
-    resultsFromDB2.map(_.placeName) == locationScanResult2.map(_.name)
   }
 }

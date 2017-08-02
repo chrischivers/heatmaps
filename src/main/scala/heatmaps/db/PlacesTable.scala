@@ -59,12 +59,12 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     val statement =
       s"""
          |
-        |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.placeName}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.lastUpdated})
-         |    VALUES (?,?,?,?,?,?,'now');
+         |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.lastUpdated})
+         |    VALUES (?,?,?,?,?,'now');
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, placeSearchResult.name, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
+    db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
   }
 
   def getPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[List[Place]] = {
@@ -81,7 +81,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         case Some(resultSet) => resultSet.map(res => {
           Place(
             res.apply(schema.placeId).asInstanceOf[String],
-            res.apply(schema.placeName).asInstanceOf[String],
+            Option(res.apply(schema.placeName).asInstanceOf[String]),
             res.apply(schema.placeType).asInstanceOf[String],
             new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble)
           )
