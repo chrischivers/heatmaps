@@ -14,13 +14,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging {
 
   private val apiKeys = config.placesApiConfig.apiKeys
-  var activeApiKeyIndex = new AtomicInteger(0)
-  val context: GeoApiContext = new GeoApiContext()
+  private var activeApiKeyIndex = new AtomicInteger(0)
+  val context: GeoApiContext = new GeoApiContext().setApiKey(apiKeys(activeApiKeyIndex.get()))
 
   private def updateExpiredApiKey(expiredKeyIndex: Int): Unit = {
     val activeKeyIndex = activeApiKeyIndex.get()
     if (activeKeyIndex == expiredKeyIndex && activeKeyIndex + 1 < apiKeys.size) {
       activeApiKeyIndex.set(activeKeyIndex + 1)
+      context.setApiKey(apiKeys(activeKeyIndex + 1))
     }
   }
 
@@ -37,13 +38,13 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
   }
 
   def getDetailsForPlaceId(placeId: String): Future[String] = {
-    val apiKeyIndexToUse = activeApiKeyIndex.get()
-    context.setApiKey(apiKeys(apiKeyIndexToUse))
+    val apiKeyIndexInUse = activeApiKeyIndex.get()
+
     Future(PlacesApi.placeDetails(context, placeId).await().name)
       .recoverWith{
-        case _: OverDailyLimitException if apiKeyIndexToUse + 1 < apiKeys.size =>
+        case _: OverDailyLimitException if apiKeyIndexInUse + 1 < apiKeys.size =>
           logger.info("Over daily limit. Changing API key")
-          updateExpiredApiKey(apiKeyIndexToUse)
+          updateExpiredApiKey(apiKeyIndexInUse)
           Thread.sleep(2000)
           getDetailsForPlaceId(placeId)
         case ex =>
@@ -53,14 +54,13 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
   }
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
-    val apiKeyIndexToUse = activeApiKeyIndex.get()
-    context.setApiKey(apiKeys(apiKeyIndexToUse))
+    val apiKeyIndexInUse = activeApiKeyIndex.get()
 
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
       .recoverWith{
-        case _: OverDailyLimitException if apiKeyIndexToUse + 1 < apiKeys.size =>
+        case _: OverDailyLimitException if apiKeyIndexInUse + 1 < apiKeys.size =>
           logger.info("Over daily limit. Changing API key")
-          updateExpiredApiKey(apiKeyIndexToUse)
+          updateExpiredApiKey(apiKeyIndexInUse)
           Thread.sleep(2000)
           getPlacesFromApi(latLng, radius, placeType)
         case ex =>
