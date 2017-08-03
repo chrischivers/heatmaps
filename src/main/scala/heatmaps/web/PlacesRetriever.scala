@@ -6,6 +6,7 @@ import heatmaps.db.PlacesTable
 import heatmaps.models.{LatLngBounds, LatLngRegion, Place}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 import scalacache._
 import scalacache.guava._
 
@@ -21,33 +22,37 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
   private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Option[List[Place]]] =
     get[List[Place], NoSerialization](latLngRegion.toString, placeType.name())
 
-  def getPlaces(latLngRegion: LatLngRegion, placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
-    logger.info(s"Getting places for $latLngRegion with latLngBounds $latLngBounds")
+  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
+    logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
     for {
-     fromCache <- getFromCache(latLngRegion, placeType)
-      result <- fromCache match {
-        case None => {
-          logger.info(s"Unable to find latlngregion $latLngRegion in cache. Getting from DB")
-          for {
-            placesFromDB <- placesTable.getPlacesForLatLngRegion(latLngRegion, placeType)
-            _ <- storeInCache(latLngRegion, placeType, placesFromDB)
-          } yield placesFromDB
-        }
-        case Some(foundList) => {
-          logger.info(s"Found latlngregion $latLngRegion in cache. Using cached records (${foundList.size} records found in cache)")
-          Future(foundList)
-        }
-      }
+     cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType).map(res => (region, res))))
+     (inCache, notInCache) = cachedResults.partition(_._2.isDefined)
+      _ =  logger.info(s"Unable to find latlngregiosn $notInCache in cache. Getting from DB")
+      resultsFromDb <- placesTable.getPlacesForLatLngRegions(notInCache.map(_._1), placeType)
+     _ =  logger.info(s"Retrieved ${resultsFromDb.size} records from DB.")
+
     } yield {
+
+      Future.sequence(notInCache.map(latLngReg =>
+        storeInCache(latLngReg._1, placeType, resultsFromDb.filter(_.latLngRegion == latLngReg._1))))
+        .onComplete{
+          case Success(_) => logger.info(s"Successfully persisted ${notInCache.map(_._1)} regions to cache")
+          case Failure(e) =>
+            logger.error(s"Error persisting ${notInCache.map(_._1)} regions to cache", e)
+            throw e
+      }
+
+      val result: Set[Place] = (inCache.flatMap(_._2).flatten ++ resultsFromDb).toSet
       logger.info(s"getPlaces found ${result.size} results before latLng filtering")
       val results = latLngBounds match {
         case Some(bounds) => result.filter(place => placeWithinBounds(place, bounds))
         case None => result
       }
       logger.info(s"getPlaces returning ${results.size} results after latLng filtering")
-      results
+      results.toList
     }
   }
+
   private def placeWithinBounds(place: Place, bounds: LatLngBounds): Boolean = {
     bounds.southwest.lat <= place.latLng.lat &&
     bounds.northeast.lat >= place.latLng.lat &&

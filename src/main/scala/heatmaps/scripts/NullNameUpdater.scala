@@ -1,13 +1,10 @@
 package heatmaps.scripts
 
-import com.github.mauricio.async.db.QueryResult
-import com.google.maps.PlacesApi
 import com.google.maps.errors.NotFoundException
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.ConfigLoader
 import heatmaps.db._
-import heatmaps.models.LatLngRegion
 import heatmaps.scanner.PlacesApiRetriever
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,8 +15,6 @@ object NullNameUpdater extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
   val db = new PostgresDB(config.dBConfig)
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
-
-
   val placesApiRetriever = new PlacesApiRetriever(config)
 
   val regionsWithNullPlaceNames =  {
@@ -29,9 +24,7 @@ object NullNameUpdater extends App with StrictLogging {
     result
   }
 
-  regionsWithNullPlaceNames.take(10).foreach(region => {
-    logger.info(s"Updating nulls for region $region")
-  Await.result({placesTable.getPlacesForLatLngRegion(region, PlaceType.RESTAURANT).flatMap(places => {
+  Await.result({placesTable.getPlacesForLatLngRegions(regionsWithNullPlaceNames.take(30), PlaceType.RESTAURANT).flatMap(places => {
     Future.sequence(places.filter(_.placeName.isEmpty).map(place => {
       placesApiRetriever.getDetailsForPlaceId(place.placeId).flatMap(name => {
         placesTable.updatePlace(place.placeId, place.placeType, name)
@@ -42,5 +35,4 @@ object NullNameUpdater extends App with StrictLogging {
       }
     }))
   })}, 10 hours)
-})
 }

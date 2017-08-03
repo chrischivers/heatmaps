@@ -42,7 +42,7 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     }
   }
 
-  test("heatmaps.db.Place results persisted to DB should match those retrieved") { f =>
+  test("Place results persisted to DB should match those retrieved") { f =>
 
     val placeType1 = PlaceType.RESTAURANT
     val placeType2 = PlaceType.LODGING
@@ -54,13 +54,35 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     val locationScanResult2 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType2).futureValue
     f.placesTable.insertPlaces(locationScanResult2, latLngRegion, placeType2).futureValue
 
-    val resultsFromDB1 = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType1).futureValue
+    val resultsFromDB1 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType1).futureValue
     resultsFromDB1.size should be > 0
-    resultsFromDB1.map(_.placeId) == locationScanResult1.map(_.placeId)
-    resultsFromDB1.map(_.placeName).map(_.isEmpty) should not contain false
+    resultsFromDB1.map(_.placeId) should contain allElementsOf locationScanResult1.map(_.placeId)
+    resultsFromDB1.map(_.latLngRegion).toSet shouldBe Set(latLngRegion)
 
-    val resultsFromDB2 = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType2).futureValue
+    val resultsFromDB2 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType2).futureValue
     resultsFromDB2.size should be > 0
-    resultsFromDB2.map(_.placeId) == locationScanResult2.map(_.placeId)
+    resultsFromDB2.map(_.placeId) should contain allElementsOf locationScanResult2.map(_.placeId)
+    resultsFromDB2.map(_.latLngRegion).toSet shouldBe Set(latLngRegion)
+  }
+
+
+
+  test("Place results persisted separately for two regions should all be obtained using bulk get") { f =>
+
+    val placeType = PlaceType.RESTAURANT
+
+    val latLngRegion1 = LatLngRegion(45, 25)
+    val latLngRegion2 = LatLngRegion(46, 25)
+    val locationScanResult1 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion1, 10000, placeType).futureValue
+    f.placesTable.insertPlaces(locationScanResult1, latLngRegion1, placeType).futureValue
+
+    val locationScanResult2 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion2, 10000, placeType).futureValue
+    f.placesTable.insertPlaces(locationScanResult2, latLngRegion2, placeType).futureValue
+
+    val resultsFromDB = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion1, latLngRegion2), placeType).futureValue
+    resultsFromDB.size shouldBe locationScanResult1.size + locationScanResult2.size
+    resultsFromDB.map(_.placeId) should contain allElementsOf locationScanResult1.map(_.placeId) ++ locationScanResult2.map(_.placeId)
+
   }
 }
+

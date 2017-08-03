@@ -54,14 +54,14 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
     val latLngRegion = LatLngRegion(45, 25)
     (for {
       locationScanResult <- f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, PlaceType.RESTAURANT)
-       _ <- f.placesTable.insertPlaces(locationScanResult, latLngRegion, PlaceType.RESTAURANT)
+      _ <- f.placesTable.insertPlaces(locationScanResult, latLngRegion, PlaceType.RESTAURANT)
     } yield ()).futureValue
-    val resultsFromDB = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType).futureValue
-    val resultsFromCache = placesDBRetriever.getPlaces(latLngRegion, placeType).futureValue
+    val resultsFromDB = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType).futureValue
+    val resultsFromCache = placesDBRetriever.getPlaces(List(latLngRegion), placeType).futureValue
 
     resultsFromDB.map(_.placeId) should contain theSameElementsAs resultsFromCache.map(_.placeId)
     f.placesTable.dropTable.futureValue
-    val resultsFromCacheAgain = placesDBRetriever.getPlaces(latLngRegion, placeType).futureValue
+    val resultsFromCacheAgain = placesDBRetriever.getPlaces(List(latLngRegion), placeType).futureValue
     resultsFromCacheAgain.map(_.placeId) should contain theSameElementsAs resultsFromDB.map(_.placeId)
   }
 
@@ -76,15 +76,39 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
       _ <- f.placesTable.insertPlaces(locationScanResult, latLngRegion, placeType)
     } yield ()).futureValue
 
-    val resultsFromDB = f.placesTable.getPlacesForLatLngRegion(latLngRegion, placeType).futureValue
-    val resultsFromCache = placesDBRetriever.getPlaces(latLngRegion, placeType).futureValue
+    val resultsFromDB = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType).futureValue
+    val resultsFromCache = placesDBRetriever.getPlaces(List(latLngRegion), placeType).futureValue
 
     resultsFromDB.size should be > 0
     resultsFromDB.map(_.placeId) should contain theSameElementsAs resultsFromCache.map(_.placeId)
     f.placesTable.dropTable.futureValue
     Thread.sleep(5000)
     recoverToSucceededIf[GenericDatabaseException] {
-      placesDBRetriever.getPlaces(latLngRegion, placeType)
+      placesDBRetriever.getPlaces(List(latLngRegion), placeType)
     }
+  }
+
+  test("get requests for multiple LatLng regions are fetched both from cache and DB combined") { f =>
+
+    val placeType = PlaceType.RESTAURANT
+    val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig)
+
+    val latLngRegion1 = LatLngRegion(45, 25)
+    val latLngRegion2 = LatLngRegion(46, 25)
+    val locationScanResult1 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion1, 10000, PlaceType.RESTAURANT).futureValue
+    f.placesTable.insertPlaces(locationScanResult1, latLngRegion1, PlaceType.RESTAURANT).futureValue
+
+    placesDBRetriever.getPlaces(List(latLngRegion1), placeType).futureValue
+
+    f.placesTable.dropTable.futureValue
+    f.placesTable.createTable.futureValue
+
+    val locationScanResult2 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion2, 10000, PlaceType.RESTAURANT).futureValue
+    f.placesTable.insertPlaces(locationScanResult2, latLngRegion2, PlaceType.RESTAURANT).futureValue
+
+    val results = placesDBRetriever.getPlaces(List(latLngRegion1, latLngRegion2), placeType).futureValue
+    results.size shouldBe locationScanResult1.size + locationScanResult2.size
+    results.map(_.placeId) should contain allElementsOf locationScanResult1.map(_.placeId) ++ locationScanResult2.map(_.placeId)
+
   }
 }

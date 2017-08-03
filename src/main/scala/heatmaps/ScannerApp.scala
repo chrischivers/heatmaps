@@ -43,9 +43,13 @@ object ScannerApp extends App with StrictLogging {
 
     val regionsAlreadyScanned = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys.toList
     val validRegionsAlreadyScanned = regionsAlreadyScanned.filterNot(regionsNotToScan.contains)
-    val regionsToScan = allRegions
+    val regionsToScanFiltered = allRegions
         .filterNot(regionsAlreadyScanned.contains)
         .filterNot(regionsNotToScan.contains)
+    val regionsToScan = {
+      if (config.scannerConfig.direction == "reverse") regionsToScanFiltered.reverse
+      else regionsToScanFiltered
+    }
 
     logger.info(s"${allRegions.size} regions in total")
     logger.info(s"${regionsAlreadyScanned.size} regions already scanned")

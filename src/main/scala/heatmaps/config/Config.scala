@@ -7,8 +7,9 @@ import scala.collection.JavaConverters._
 case class PostgresDBConfig(host: String, port: Int, username: String, password: String, dbName: String) extends DBConfig
 case class CacheConfig(timeToLive: Duration)
 case class PlacesApiConfig(apiKeys: List[String], returnLimt: Int)
+case class ScannerConfig(direction: String)
 
-case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiConfig: PlacesApiConfig)
+case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiConfig: PlacesApiConfig, scannerConfig: ScannerConfig)
 sealed trait DBConfig {
   val host: String
   val port: Int
@@ -41,6 +42,9 @@ object ConfigLoader {
       PlacesApiConfig(
         defaultConfigFactory.getStringList("placesApi.keys").asScala.toList,
         defaultConfigFactory.getInt("placesApi.returnLimit")
+      ),
+      ScannerConfig(
+        defaultConfigFactory.getString("scanner.direction")
       )
     )
   }

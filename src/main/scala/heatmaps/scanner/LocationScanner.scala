@@ -48,7 +48,7 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     }
 
     def removePlacesAlreadyInDB(searchResults: List[PlacesSearchResult]): Future[List[PlacesSearchResult]] = {
-      placesDBRetriever.getPlaces(latLngRegion, placeType).map { placesInDB =>
+      placesDBRetriever.getPlaces(List(latLngRegion), placeType).map { placesInDB =>
         searchResults.filterNot(searchResult => placesInDB.map(_.placeId).contains(searchResult.placeId))
       }
     }

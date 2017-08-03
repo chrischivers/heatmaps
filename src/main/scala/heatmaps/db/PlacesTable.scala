@@ -22,7 +22,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
 
   }
 
-  override protected def createTable: Future[QueryResult] = {
+  override def createTable: Future[QueryResult] = {
     logger.info(s"Creating Table ${schema.tableName}")
     for {
       _ <- db.connectToDB
@@ -67,26 +67,31 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
   }
 
-  def getPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[List[Place]] = {
-    logger.info(s"getting places for latLngRegion $latLngRegion from DB")
-    val query = s"SELECT * " +
-      s"FROM ${schema.tableName} " +
-      s"WHERE ${schema.latLngRegion} = ? " +
-      s"AND ${schema.placeType} = ?"
-    for {
-      _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(query, List(latLngRegion.toString, placeType.name()))
-    } yield {
-      queryResult.rows match {
-        case Some(resultSet) => resultSet.map(res => {
-          Place(
-            res.apply(schema.placeId).asInstanceOf[String],
-            Option(res.apply(schema.placeName).asInstanceOf[String]),
-            res.apply(schema.placeType).asInstanceOf[String],
-            new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble)
-          )
-        }).toList
-        case None => List.empty
+  def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType): Future[List[Place]] = {
+    if(latLngRegions.isEmpty) Future(List.empty)
+    else {
+      logger.info(s"getting places for latLngRegions $latLngRegions from DB")
+      val query = s"SELECT * " +
+        s"FROM ${schema.tableName} " +
+        s"WHERE ${schema.latLngRegion} IN (${latLngRegions.map(str => s"'${str.toString}'").mkString(",")}) " +
+        s"AND ${schema.placeType} = ?"
+      for {
+        _ <- db.connectToDB
+        queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.name()))
+      } yield {
+        queryResult.rows match {
+          case Some(resultSet) => resultSet.map(res => {
+            val latLngRegStr = res.apply(schema.latLngRegion).asInstanceOf[String].split(",")
+            Place(
+              res.apply(schema.placeId).asInstanceOf[String],
+              Option(res.apply(schema.placeName).asInstanceOf[String]),
+              res.apply(schema.placeType).asInstanceOf[String],
+              new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble),
+              LatLngRegion(latLngRegStr(0).toInt, latLngRegStr(1).toInt)
+            )
+          }).toList
+          case None => List.empty
+        }
       }
     }
   }

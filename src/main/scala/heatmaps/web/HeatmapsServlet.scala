@@ -60,9 +60,8 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
       val boundsConverted = getBounds(bounds)
       val placeTypeConverted = PlaceType.valueOf(placeType)
       val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = Future.sequence(latLngRegionsInFocus.map(latLngRegion => {
-        placesDBRetriever.getPlaces(latLngRegion, placeTypeConverted, Some(getBounds(bounds)))
-      })).map(x => x.flatten.toSet[Place].map(place => place.latLng).asJson.noSpaces)
+      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, Some(getBounds(bounds)))
+        .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
       Ok(jsonStr)
     }
 }
