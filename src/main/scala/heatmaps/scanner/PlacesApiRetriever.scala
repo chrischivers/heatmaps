@@ -18,8 +18,10 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
   val context: GeoApiContext = new GeoApiContext()
 
   private def updateExpiredApiKey(expiredKeyIndex: Int): Unit = {
-    if (activeApiKeyIndex.get() == expiredKeyIndex && activeApiKeyIndex.get() + 1 < apiKeys.size
-    ) activeApiKeyIndex.set(expiredKeyIndex + 1)
+    val activeKeyIndex = activeApiKeyIndex.get()
+    if (activeKeyIndex == expiredKeyIndex && activeKeyIndex + 1 < apiKeys.size) {
+      activeApiKeyIndex.set(activeKeyIndex + 1)
+    }
   }
 
   private val returnLimit = config.placesApiConfig.returnLimt
