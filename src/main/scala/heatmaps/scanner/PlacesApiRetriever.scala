@@ -1,5 +1,7 @@
 package heatmaps.scanner
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.google.maps.errors.OverDailyLimitException
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.google.maps.{GeoApiContext, PlacesApi}
@@ -11,9 +13,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging {
 
-  private val apiKeys = config.placesApiConfig.apiKeys.toIterator
-  var activeApiKey = apiKeys.next()
+  private val apiKeys = config.placesApiConfig.apiKeys
+  var activeApiKeyIndex = new AtomicInteger(0)
   val context: GeoApiContext = new GeoApiContext()
+
+  private def updateExpiredApiKey(expiredKeyIndex: Int): Unit = {
+    if (activeApiKeyIndex.get() == expiredKeyIndex) activeApiKeyIndex.set(expiredKeyIndex + 1)
+  }
 
   private val returnLimit = config.placesApiConfig.returnLimt
 
@@ -28,12 +34,13 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
   }
 
   def getDetailsForPlaceId(placeId: String): Future[String] = {
-    context.setApiKey(activeApiKey)
+    val apiKeyIndexToUse = activeApiKeyIndex.get()
+    context.setApiKey(apiKeys(apiKeyIndexToUse))
     Future(PlacesApi.placeDetails(context, placeId).await().name)
       .recoverWith{
-        case _: OverDailyLimitException if apiKeys.hasNext =>
+        case _: OverDailyLimitException if apiKeyIndexToUse + 1 < apiKeys.size =>
           logger.info("Over daily limit. Changing API key")
-          activeApiKey = apiKeys.next()
+          updateExpiredApiKey(apiKeyIndexToUse)
           Thread.sleep(2000)
           getDetailsForPlaceId(placeId)
         case ex =>
@@ -43,13 +50,14 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
   }
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
-    context.setApiKey(activeApiKey)
+    val apiKeyIndexToUse = activeApiKeyIndex.get()
+    context.setApiKey(apiKeys(apiKeyIndexToUse))
 
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
       .recoverWith{
-        case _: OverDailyLimitException if apiKeys.hasNext =>
+        case _: OverDailyLimitException if apiKeyIndexToUse + 1 < apiKeys.size =>
           logger.info("Over daily limit. Changing API key")
-          activeApiKey = apiKeys.next()
+          updateExpiredApiKey(apiKeyIndexToUse)
           Thread.sleep(2000)
           getPlacesFromApi(latLng, radius, placeType)
         case ex =>
