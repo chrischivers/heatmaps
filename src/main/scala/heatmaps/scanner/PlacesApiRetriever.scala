@@ -30,14 +30,32 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
   def getDetailsForPlaceId(placeId: String): Future[String] = {
     context.setApiKey(activeApiKey)
     Future(PlacesApi.placeDetails(context, placeId).await().name)
-      .recoverWith(recoverIfApiLimitReached(getDetailsForPlaceId(placeId)))
+      .recoverWith{
+        case _: OverDailyLimitException if apiKeys.hasNext =>
+          logger.info("Over daily limit. Changing API key")
+          activeApiKey = apiKeys.next()
+          Thread.sleep(2000)
+          getDetailsForPlaceId(placeId)
+        case ex =>
+          logger.error("Over daily limit exception. No more api keys available", ex)
+          throw ex
+      }
   }
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
     context.setApiKey(activeApiKey)
 
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
-      .recoverWith(recoverIfApiLimitReached(getPlacesFromApi(latLng, radius, placeType)))
+      .recoverWith{
+        case _: OverDailyLimitException if apiKeys.hasNext =>
+          logger.info("Over daily limit. Changing API key")
+          activeApiKey = apiKeys.next()
+          Thread.sleep(2000)
+          getPlacesFromApi(latLng, radius, placeType)
+        case ex =>
+          logger.error("Over daily limit exception. No more api keys available", ex)
+          throw ex
+      }
   }
 
   private def getPlacesFromApiIfLimitReached(latLng: LatLng, newRadius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
@@ -51,15 +69,5 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
         })).map(_.flatten ++ places)
       })
     }
-  }
-
-  private def recoverIfApiLimitReached[U](f: Future[U]): PartialFunction[Throwable, Future[U]] = {
-    case _: OverDailyLimitException if apiKeys.hasNext =>
-      logger.info("Over daily limit. Changing API key")
-      activeApiKey = apiKeys.next()
-      f
-    case ex =>
-      logger.error("Over daily limit exception. No more api keys available", ex)
-      throw ex
   }
 }

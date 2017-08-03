@@ -25,17 +25,13 @@ object NullNameUpdater extends App with StrictLogging {
   }
   regionsWithNullPlaceNames.foreach { region =>
     Await.result({
-      placesTable.getPlacesForLatLngRegions(List(region), PlaceType.RESTAURANT).flatMap(places => {
-        Future.sequence(places.filter(_.placeName.isEmpty).map(place => {
+      placesTable.getPlacesForLatLngRegions(List(region), PlaceType.RESTAURANT)
+        .map(_.filter(_.placeName.isEmpty)
+          .map(place => {
           placesApiRetriever.getDetailsForPlaceId(place.placeId).flatMap(name => {
             placesTable.updatePlace(place.placeId, place.placeType, name)
-          }).recover {
-            case _: NotFoundException =>
-              logger.info(s"Place ID not found exception for ID ${place.placeId}")
-              placesTable.updatePlace(place.placeId, place.placeType, "NOT_FOUND")
-          }
-        }))
-      })
+          })
+      }))
     }, 100 hours)
   }
 }
