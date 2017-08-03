@@ -24,7 +24,7 @@ object NullNameUpdater extends App with StrictLogging {
     result
   }
 
-  Await.result({placesTable.getPlacesForLatLngRegions(regionsWithNullPlaceNames.take(30), PlaceType.RESTAURANT).flatMap(places => {
+  Await.result({placesTable.getPlacesForLatLngRegions(regionsWithNullPlaceNames, PlaceType.RESTAURANT).flatMap(places => {
     Future.sequence(places.filter(_.placeName.isEmpty).map(place => {
       placesApiRetriever.getDetailsForPlaceId(place.placeId).flatMap(name => {
         placesTable.updatePlace(place.placeId, place.placeType, name)
@@ -34,5 +34,5 @@ object NullNameUpdater extends App with StrictLogging {
           placesTable.updatePlace(place.placeId, place.placeType, "NOT_FOUND")
       }
     }))
-  })}, 10 hours)
+  })}, 100 hours)
 }
