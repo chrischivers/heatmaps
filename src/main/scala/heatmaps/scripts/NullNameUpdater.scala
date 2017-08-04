@@ -26,13 +26,12 @@ object NullNameUpdater extends App with StrictLogging {
     Await.result({
       placesTable.getPlacesForLatLngRegions(List(region), PlaceType.RESTAURANT)
         .map(_.filter(_.placeName.isEmpty)
-          .foreach(place => {
-          placesApiRetriever.getDetailsForPlaceId(place.placeId).flatMap(name => {
-            placesTable.updatePlace(place.placeId, place.placeType, name).map { _ =>
-              logger.info(s"Sucessfully persisted ${place.placeId} to DB")
-            }
-          })
-      }))
+          .foreach(place => for {
+            name <- placesApiRetriever.getDetailsForPlaceId(place.placeId)
+            _ <- placesTable.updatePlace(place.placeId, place.placeType, name)
+          } yield {
+            logger.info(s"Sucessfully persisted ${place.placeId} to DB")
+          }))
     }, 100 hours)
   }
 }
