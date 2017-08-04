@@ -1,15 +1,14 @@
 package heatmaps.scripts
 
-import com.google.maps.errors.NotFoundException
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.ConfigLoader
 import heatmaps.db._
 import heatmaps.scanner.PlacesApiRetriever
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 
 object NullNameUpdater extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
@@ -27,9 +26,11 @@ object NullNameUpdater extends App with StrictLogging {
     Await.result({
       placesTable.getPlacesForLatLngRegions(List(region), PlaceType.RESTAURANT)
         .map(_.filter(_.placeName.isEmpty)
-          .map(place => {
+          .foreach(place => {
           placesApiRetriever.getDetailsForPlaceId(place.placeId).flatMap(name => {
-            placesTable.updatePlace(place.placeId, place.placeType, name)
+            placesTable.updatePlace(place.placeId, place.placeType, name).map { _ =>
+              logger.info(s"Sucessfully persisted ${place.placeId} to DB")
+            }
           })
       }))
     }, 100 hours)
