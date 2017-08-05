@@ -45,14 +45,12 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
       val result: Set[Place] = (inCache.flatMap(_._2).flatten ++ resultsFromDb).toSet
       logger.info(s"getPlaces found ${result.size} results before latLng filtering")
       val resultsWithinBounds = latLngBounds match {
-        case Some(bounds) => {
-          logger.info(s"Bounds parameter set at ${bounds}")
+        case Some(bounds) =>
+          logger.info(s"Bounds parameter set at $bounds")
           result.filter(place => placeWithinBounds(place, bounds))
-        }
-        case None => {
+        case None =>
           logger.info("No bounds parameter set")
           result
-        }
       }
 
       val resultsAtDensity = density match {
