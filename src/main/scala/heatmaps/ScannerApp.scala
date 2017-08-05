@@ -12,6 +12,7 @@ import heatmaps.web.PlacesRetriever
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Random
 
 object ScannerApp extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
@@ -44,33 +45,35 @@ object ScannerApp extends App with StrictLogging {
   logger.info(s"Place types to scan ${Definitions.placeTypes}")
   Definitions.placeTypes.foreach { placeType =>
     logger.info(s"Processing place type $placeType")
-    val validRegions = allRegions.filterNot(regionsNotToScan.contains).toSet
-    val regionsAlreadyScannedAtStart = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys
-    val validRegionsStillToDo = validRegions.diff(regionsAlreadyScannedAtStart.toSet)
+    val validRegions = allRegions.filterNot(regionsNotToScan.contains)
+    val regionsAlreadyScannedAtStart = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys.toList
+    val validRegionsStillToDo = Random.shuffle(validRegions.diff(regionsAlreadyScannedAtStart))
 
     logger.info(s"${allRegions.size} regions in total")
     logger.info(s"${validRegions.size} valid regions in total")
     logger.info(s"${validRegionsStillToDo.size} valid regions still to do")
     validRegionsStillToDo.foreach { latLngRegion =>
-      logger.info(s"Checking $latLngRegion is not already scanned or in progress...")
         Await.result(for {
-          regionsAlreadyScanned <- getRegionsAlreadyScanned(placeType).map(_.keys.toSet)
+          regionsAlreadyScanned <- getRegionsAlreadyScanned(placeType).map(_.keys.toList)
           regionsInProgress <- getRegionsInProgress(placeType)
           _ = logger.info(s"Regions currently in progress: $regionsInProgress")
-          _ <- if ((regionsInProgress ++ regionsAlreadyScanned).contains(latLngRegion)) {
-                Future.failed(new RuntimeException(s"Region $latLngRegion already in progress"))
-              } else Future.successful(())
-          _ =  logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
-          _ <- inProgressTable.insertRegionInProgress(latLngRegion, placeType.name())
-          _ = logger.info(s"Region $latLngRegion added to In Progress record")
-          scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
-          _ = logger.info(s"Scanned for places in $latLngRegion. ${scanResults.size} results obtained")
-          _ <- placesTable.insertPlaces(scanResults, latLngRegion, placeType)
-          _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
-          _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
-          _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
-          _ <- inProgressTable.deleteRegionInProgress(latLngRegion, placeType.name())
-          _ = logger.info(s"Region $latLngRegion deleted from In Progress record")
+          _ = logger.info(s"Checking $latLngRegion is not already scanned or in progress...")
+          _ <- if (!(regionsInProgress ++ regionsAlreadyScanned).contains(latLngRegion)) for {
+                    _ <- inProgressTable.insertRegionInProgress(latLngRegion, placeType.name())
+                    _ = logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
+                     _ = logger.info(s"Region $latLngRegion added to In Progress record")
+                     scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
+                     _ = logger.info(s"Scanned for places in $latLngRegion. ${scanResults.size} results obtained")
+                     _ <- placesTable.insertPlaces(scanResults, latLngRegion, placeType)
+                     _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
+                     _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
+                     _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
+                     _ <- inProgressTable.deleteRegionInProgress(latLngRegion, placeType.name())
+                     _ = logger.info(s"Region $latLngRegion deleted from In Progress record")
+          } yield () else {
+            logger.info(s"Region $latLngRegion already scanned or in progress. Ignoring...")
+            Future.successful(())
+          }
         } yield {
           val validRegionsAlreadyScanned = regionsAlreadyScanned.intersect(validRegions)
           logger.info(
