@@ -2,7 +2,7 @@ package heatmaps.scanner
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.google.maps.errors.OverDailyLimitException
+import com.google.maps.errors.{NotFoundException, OverDailyLimitException}
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
@@ -41,7 +41,10 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
     val apiKeyIndexInUse = activeApiKeyIndex.get()
 
     Future(PlacesApi.placeDetails(context, placeId).await().name)
-      .recoverWith{
+      .recoverWith {
+        case _: NotFoundException =>
+          logger.error(s"Place $placeId not found in API")
+          Future("NOT_FOUND")
         case _: OverDailyLimitException if apiKeyIndexInUse + 1 < apiKeys.size =>
           logger.info("Over daily limit. Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
