@@ -6,8 +6,6 @@ import io.circe.{Decoder, HCursor}
 
 object JsonDecoders {
 
-  implicit val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
-  implicit val decodePlaceTypes = Decoder[List[String]].prepare(_.downField("place-types"))
 
   implicit val decodeCity: Decoder[City] = new Decoder[City] {
     final def apply(c: HCursor): Decoder.Result[City] =
@@ -22,5 +20,7 @@ object JsonDecoders {
       }
   }
 
+  implicit val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
+  implicit val decodePlaceTypes = Decoder[List[String]].prepare(_.downField("place-types"))
 
 }

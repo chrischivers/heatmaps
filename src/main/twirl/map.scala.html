@@ -5,13 +5,10 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
         <title>Heatmaps</title>
         <style>
-          /* Always set the map height explicitly to define the size of the div
-           * element that contains the map. */
           #map {
               height: 90%;
           }
 
-          /* Optional: Makes the sample page fill the window. */
           html, body {
               height: 100%;
               margin: 0;
@@ -56,15 +53,16 @@
             getPlaceTypes();
 
             google.maps.event.addListener(map, 'idle', function () {
-              plotHeatMap(map.getBounds(), placeType);
+              plotHeatMap(map.getBounds(), placeType, map.getZoom());
             });
 
           }
 
-          function plotHeatMap(mapBounds, placeType) {
+          function plotHeatMap(mapBounds, placeType, zoom) {
 
               var boundsParams = "bounds=" + mapBounds.toString();
               var placeTypeParams = "placeType=" + placeType;
+              var zoomParams = "zoom=" + zoom.toString();
               var xmlhttp = new XMLHttpRequest();
               xmlhttp.onreadystatechange = function () {
                   if (this.readyState === 4 && this.status === 200) {
@@ -82,7 +80,7 @@
                       }
                   }
               };
-              xmlhttp.open("GET", "/heatpoints?" + boundsParams + "&" + placeTypeParams, true);
+              xmlhttp.open("GET", "/heatpoints?" + boundsParams + "&" + placeTypeParams + "&" + zoomParams, true);
               xmlhttp.send();
 
               function getLatLngPoints(placeArray) {
@@ -149,7 +147,7 @@
                           a.text = toTitleCase(pt) + "s";
                           a.addEventListener("click",function() {
                               placeType = this.id;
-                              plotHeatMap(map.getBounds(), this.id);
+                              plotHeatMap(map.getBounds(), this.id, map.getZoom());
                               $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
                           });
                           placeTypesDropdown.appendChild(a);

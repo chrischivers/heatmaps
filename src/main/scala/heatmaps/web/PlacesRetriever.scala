@@ -22,7 +22,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
   private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Option[List[Place]]] =
     get[List[Place], NoSerialization](latLngRegion.toString, placeType.name())
 
-  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None): Future[List[Place]] = {
+  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None, density: Option[Density] = None): Future[List[Place]] = {
     logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
     for {
      cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType).map(res => (region, res))))
@@ -44,12 +44,27 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
 
       val result: Set[Place] = (inCache.flatMap(_._2).flatten ++ resultsFromDb).toSet
       logger.info(s"getPlaces found ${result.size} results before latLng filtering")
-      val results = latLngBounds match {
-        case Some(bounds) => result.filter(place => placeWithinBounds(place, bounds))
-        case None => result
+      val resultsWithinBounds = latLngBounds match {
+        case Some(bounds) => {
+          logger.info(s"Bounds parameter set at ${bounds}")
+          result.filter(place => placeWithinBounds(place, bounds))
+        }
+        case None => {
+          logger.info("No bounds parameter set")
+          result
+        }
       }
-      logger.info(s"getPlaces returning ${results.size} results after latLng filtering")
-      results.toList
+
+      val resultsAtDensity = density match {
+        case Some(d) =>
+          logger.info(s"Density parameter set at ${d.value}")
+          resultsWithinBounds.take((resultsWithinBounds.size * (d.value / 100)).toInt)
+        case None =>
+          logger.info("No density parameter set")
+          resultsWithinBounds
+      }
+      logger.info(s"getPlaces returning ${resultsAtDensity.size} results after latLng filtering")
+      resultsAtDensity.toList
     }
   }
 

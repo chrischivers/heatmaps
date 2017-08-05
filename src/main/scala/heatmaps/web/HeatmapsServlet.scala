@@ -17,6 +17,9 @@ import scala.concurrent.Future
 object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds")
 object PlaceTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeType")
 object CityDefaultViewQueryParamMatcher extends QueryParamDecoderMatcher[String]("city")
+object ZoomQueryParamMatcher extends QueryParamDecoderMatcher[String]("zoom")
+
+case class Density(value: Double)
 
 class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging {
 
@@ -55,12 +58,16 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
       logger.info("Servlet handling placetypes request")
       Ok(Definitions.placeTypes.map(_.name()).asJson.noSpaces)
 
-    case req@GET -> Root / "heatpoints" :? BoundsQueryParamMatcher(bounds) :? PlaceTypeQueryParamMatcher(placeType)=>
+    case req@GET -> Root / "heatpoints"
+      :? BoundsQueryParamMatcher(bounds)
+      :? PlaceTypeQueryParamMatcher(placeType)
+      :? ZoomQueryParamMatcher(zoom) =>
       logger.info(s"Servlet handling heatpoints request for bounds $bounds and placeType $placeType")
       val boundsConverted = getBounds(bounds)
+      val density = zoomToDensity(zoom.toInt)
       val placeTypeConverted = PlaceType.valueOf(placeType)
       val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, Some(getBounds(bounds)))
+      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, Some(getBounds(bounds)), Some(density))
         .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
       Ok(jsonStr)
     }
@@ -71,5 +78,13 @@ object HeatmapsServlet extends StrictLogging {
   def getBounds(boundsStr: String): LatLngBounds = {
     val boundsSplit = boundsStr.replaceAll("[() ]", "").split(",").map(_.toDouble)
     LatLngBounds(new LatLng(boundsSplit(0), boundsSplit(1)), new LatLng(boundsSplit(2), boundsSplit(3)))
+  }
+
+  //Returns the density (%) of places required based on zoom level
+  def zoomToDensity(zoom: Int): Density = {
+    val minZoom = 1
+    val maxZoom = 20
+    val normalisedZoom = if (zoom < minZoom) minZoom else if (zoom > maxZoom) maxZoom else zoom
+    Density(normalisedZoom * (100.0 / maxZoom))
   }
 }
