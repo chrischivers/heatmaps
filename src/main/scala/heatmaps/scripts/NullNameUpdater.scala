@@ -20,7 +20,7 @@ object NullNameUpdater extends App with StrictLogging {
     logger.info("Getting regions containing null place names from DB")
     val result = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(PlaceType.RESTAURANT),10 minutes)
     logger.info(s"${result.size} regions containing null place names")
-    result
+    result.toSet
   }
   regionsWithNullPlaceNames.foreach { region =>
     logger.info(

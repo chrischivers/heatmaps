@@ -27,7 +27,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
     for {
      cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType).map(res => (region, res))))
      (inCache, notInCache) = cachedResults.partition(_._2.isDefined)
-      _ =  logger.info(s"Unable to find latlngregiosn $notInCache in cache. Getting from DB")
+      _ =  logger.info(s"Unable to find latLngRegions $notInCache in cache. Getting from DB")
       resultsFromDb <- placesTable.getPlacesForLatLngRegions(notInCache.map(_._1), placeType)
      _ =  logger.info(s"Retrieved ${resultsFromDb.size} records from DB.")
 

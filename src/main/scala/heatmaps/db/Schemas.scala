@@ -24,3 +24,13 @@ case class RegionsTableSchema(
                              ) extends Schema {
   override val primaryKey: List[String] = List(regionName, placeType)
 }
+
+case class InProgressTableSchema(
+                               tableName: String = "in_progress",
+                               regionName: String = "name",
+                               placeType: String = "place_type",
+                               started: String = "started"
+                             ) extends Schema {
+  override val primaryKey: List[String] = List(regionName, placeType)
+}
+
