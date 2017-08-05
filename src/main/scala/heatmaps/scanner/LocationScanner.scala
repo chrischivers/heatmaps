@@ -58,8 +58,10 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     logger.info(s"Points list calculated. Contains ${pointList.size} points")
     logger.info(s"Getting places from API for points in list")
     val placesList = Future.sequence(pointList.zipWithIndex.map { case (point, index) =>
-      logger.info(s"Getting point $index of ${pointList.size} (${(index.toDouble / pointList.size.toDouble) * 100} % complete")
-      placesApiRetriever.getPlaces(point, scanSeparation, placeType)
+      placesApiRetriever.getPlaces(point, scanSeparation, placeType).map { list =>
+        logger.info(s"Got places for index $index of ${pointList.size} (${(index.toDouble / pointList.size.toDouble) * 100}% complete)")
+        list
+      }
     }
     ).map { places =>
       val flattenedList = places.flatten

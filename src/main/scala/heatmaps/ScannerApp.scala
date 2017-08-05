@@ -2,6 +2,7 @@ package heatmaps
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.ScannerApp.getRegionsAlreadyScanned
 import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
 import heatmaps.models.{LatLngBounds, LatLngRegion}
@@ -40,10 +41,9 @@ object ScannerApp extends App with StrictLogging {
     ).flatMap(Definitions.getLatLngRegionsForLatLngBounds).toSet
   }
 
-
   logger.info(s"Place types to scan ${Definitions.placeTypes}")
   Definitions.placeTypes.foreach { placeType =>
-
+    logger.info(s"Processing place type $placeType")
     val validRegions = allRegions.filterNot(regionsNotToScan.contains).toSet
     val regionsAlreadyScannedAtStart = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys
     val validRegionsStillToDo = validRegions.diff(regionsAlreadyScannedAtStart.toSet)
@@ -53,11 +53,14 @@ object ScannerApp extends App with StrictLogging {
     logger.info(s"${validRegionsStillToDo.size} valid regions still to do")
     validRegionsStillToDo.foreach { latLngRegion =>
       logger.info(s"Checking $latLngRegion is not already scanned or in progress...")
-      val regionsAlreadyScanned = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys.toSet
-      val regionsInProgress = Await.result(getRegionsInProgress(placeType), 5 minute).toSet
-      if (!(regionsAlreadyScanned ++ regionsInProgress).contains(latLngRegion)) {
-        logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
         Await.result(for {
+          regionsAlreadyScanned <- getRegionsAlreadyScanned(placeType).map(_.keys.toSet)
+          regionsInProgress <- getRegionsInProgress(placeType)
+          _ = logger.info(s"Regions currently in progress: $regionsInProgress")
+          _ <- if ((regionsInProgress ++ regionsAlreadyScanned).contains(latLngRegion)) {
+                Future.failed(new RuntimeException(s"Region $latLngRegion already in progress"))
+              } else Future.successful(())
+          _ =  logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
           _ <- inProgressTable.insertRegionInProgress(latLngRegion, placeType.name())
           _ = logger.info(s"Region $latLngRegion added to In Progress record")
           scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
@@ -67,7 +70,7 @@ object ScannerApp extends App with StrictLogging {
           _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
           _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
           _ <- inProgressTable.deleteRegionInProgress(latLngRegion, placeType.name())
-          _ = logger.info(s"Region$latLngRegion deleted from In Progress record")
+          _ = logger.info(s"Region $latLngRegion deleted from In Progress record")
         } yield {
           val validRegionsAlreadyScanned = regionsAlreadyScanned.intersect(validRegions)
           logger.info(
@@ -77,7 +80,6 @@ object ScannerApp extends App with StrictLogging {
                |**************
            """.stripMargin)
         }, 100 hours)
-      }
     }
   }
 }
