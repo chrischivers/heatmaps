@@ -53,36 +53,36 @@ object ScannerApp extends App with StrictLogging {
     logger.info(s"${validRegions.size} valid regions in total")
     logger.info(s"${validRegionsStillToDo.size} valid regions still to do")
     validRegionsStillToDo.foreach { latLngRegion =>
-        Await.result(for {
-          regionsAlreadyScanned <- getRegionsAlreadyScanned(placeType).map(_.keys.toList)
-          regionsInProgress <- getRegionsInProgress(placeType)
-          _ = logger.info(s"Regions currently in progress: $regionsInProgress")
-          _ = logger.info(s"Checking $latLngRegion is not already scanned or in progress...")
-          _ <- if (!(regionsInProgress ++ regionsAlreadyScanned).contains(latLngRegion)) for {
-                    _ <- inProgressTable.insertRegionInProgress(latLngRegion, placeType.name())
-                    _ = logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
-                     _ = logger.info(s"Region $latLngRegion added to In Progress record")
-                     scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
-                     _ = logger.info(s"Scanned for places in $latLngRegion. ${scanResults.size} results obtained")
-                     _ <- placesTable.insertPlaces(scanResults, latLngRegion, placeType)
-                     _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
-                     _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
-                     _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
-                     _ <- inProgressTable.deleteRegionInProgress(latLngRegion, placeType.name())
-                     _ = logger.info(s"Region $latLngRegion deleted from In Progress record")
-          } yield () else {
-            logger.info(s"Region $latLngRegion already scanned or in progress. Ignoring...")
-            Future.successful(())
-          }
-        } yield {
-          val validRegionsAlreadyScanned = regionsAlreadyScanned.intersect(validRegions)
-          logger.info(
-            s"""
-               |**************
-               |${BigDecimal(((validRegionsAlreadyScanned.size.toDouble + 1) / validRegions.size.toDouble) * 100).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete
-               |**************
+      Await.result(for {
+        regionsAlreadyScanned <- getRegionsAlreadyScanned(placeType).map(_.keys.toList)
+        regionsInProgress <- getRegionsInProgress(placeType)
+        _ = logger.info(s"Regions currently in progress: $regionsInProgress")
+        _ = logger.info(s"Checking $latLngRegion is not already scanned or in progress...")
+        _ <- if (!(regionsInProgress ++ regionsAlreadyScanned).contains(latLngRegion)) for {
+          _ <- inProgressTable.insertRegionInProgress(latLngRegion, placeType.name())
+          _ = logger.info(s"Scanning latLngRegion $latLngRegion with placeType: $placeType")
+          _ = logger.info(s"Region $latLngRegion added to In Progress record")
+          scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeType)
+          _ = logger.info(s"Scanned for places in $latLngRegion. ${scanResults.size} results obtained")
+          _ <- placesTable.insertPlaces(scanResults, latLngRegion, placeType)
+          _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
+          _ <- regionsTable.insertRegion(latLngRegion, placeType.name())
+          _ = logger.info(s"Recorded $latLngRegion region as scanned in DB")
+          _ <- inProgressTable.deleteRegionInProgress(latLngRegion, placeType.name())
+          _ = logger.info(s"Region $latLngRegion deleted from In Progress record")
+        } yield () else {
+          logger.info(s"Region $latLngRegion already scanned or in progress. Ignoring...")
+          Future.successful(())
+        }
+      } yield {
+        val validRegionsAlreadyScanned = regionsAlreadyScanned.intersect(validRegions)
+        logger.info(
+          s"""
+             |**************
+             |${BigDecimal(((validRegionsAlreadyScanned.size.toDouble + 1) / validRegions.size.toDouble) * 100).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble} % complete
+             |**************
            """.stripMargin)
-        }, 100 hours)
+      }, 100 hours)
     }
   }
 }

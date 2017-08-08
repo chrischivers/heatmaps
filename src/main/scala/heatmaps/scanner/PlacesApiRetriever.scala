@@ -20,9 +20,16 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
 
   private def updateExpiredApiKey(expiredKeyIndex: Int): Unit = {
     val activeKeyIndex = activeApiKeyIndex.get()
-    if (activeKeyIndex == expiredKeyIndex && activeKeyIndex + 1 < apiKeys.size) {
-      activeApiKeyIndex.set(activeKeyIndex + 1)
-      context.setApiKey(apiKeys(activeKeyIndex + 1))
+    if (activeKeyIndex == expiredKeyIndex) {
+      if (activeKeyIndex + 1 < apiKeys.size) {
+        activeApiKeyIndex.set(activeKeyIndex + 1)
+        context.setApiKey(apiKeys(activeKeyIndex + 1))
+      } else {
+        logger.info("Reached end of API keys. Waiting for 1 hour before trying from beginning")
+        activeApiKeyIndex.set(0)
+        context.setApiKey(apiKeys.head)
+        Thread.sleep(60000 * 60)
+      }
     }
   }
 
