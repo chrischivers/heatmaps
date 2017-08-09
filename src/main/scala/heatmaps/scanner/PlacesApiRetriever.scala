@@ -53,7 +53,7 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
         case _: NotFoundException =>
           logger.error(s"Place $placeId not found in API")
           Future("NOT_FOUND")
-        case _: OverDailyLimitException if apiKeyIndexInUse + 1 < apiKeys.size =>
+        case _: OverDailyLimitException =>
           logger.info("Over daily limit. Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
           Thread.sleep(2000)
@@ -69,7 +69,7 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
 
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
       .recoverWith{
-        case _: OverDailyLimitException if apiKeyIndexInUse + 1 < apiKeys.size =>
+        case _: OverDailyLimitException =>
           logger.info("Over daily limit. Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
           getPlacesFromApi(latLng, radius, placeType)
