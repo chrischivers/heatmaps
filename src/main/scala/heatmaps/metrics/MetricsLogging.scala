@@ -26,6 +26,7 @@ trait MetricsLogging extends StrictLogging {
 
   def incrMetricsCounter(series: String) = {
     reporter //initialises the lazy val after fields have been set
-    metricRegistry.counter(series).inc()
+    metricRegistry.counter(s"$series-count").inc()
+    metricRegistry.meter(s"$series-meter").mark()
   }
 }
