@@ -3,6 +3,7 @@ package heatmaps.db
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.google.maps.model.PlaceType
+import heatmaps.config.{ConfigLoader, MetricsConfig}
 import heatmaps.models.LatLngRegion
 import org.joda.time.LocalDateTime
 
@@ -10,6 +11,9 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 class InProgressTable(val db: DB[PostgreSQLConnection], val schema: InProgressTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
+
+  override val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
+  override val metricsGroupName: String = "InProgressDBTable"
 
   if (createNewTable) {
     Await.result({

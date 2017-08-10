@@ -3,6 +3,7 @@ package heatmaps.db
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
+import heatmaps.config.{ConfigLoader, MetricsConfig}
 import heatmaps.models.{LatLngRegion, Place}
 
 import scala.concurrent.duration._
@@ -10,6 +11,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 
 class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
+
+  override val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
+  override val metricsGroupName: String = "PlacesDBTable"
 
   if (createNewTable) {
     Await.result({
@@ -47,15 +51,16 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     logger.info(s"Inserting ${placeSearchResults.size} places into DB for latLngRegion $latLngRegion and type $placeType ")
     for {
       _ <- db.connectToDB
-      result <- Future.sequence(placeSearchResults.zipWithIndex.map{ case (result, index)  => {
-          logger.info(s"Inserting place $index of ${placeSearchResults.size} into DB")
-          insertPlace(result, latLngRegion, placeType.name())
-        }
+      result <- Future.sequence(placeSearchResults.zipWithIndex.map { case (result, index) => {
+        logger.info(s"Inserting place $index of ${placeSearchResults.size} into DB")
+        insertPlace(result, latLngRegion, placeType.name())
+      }
       })
     } yield result.map(_ => ())
   }
 
   private def insertPlace(placeSearchResult: PlacesSearchResult, latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
+    incrMetricsCounter("insert_place")
     val statement =
       s"""
          |
@@ -65,10 +70,11 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       """.stripMargin
 
     db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
+
   }
 
   def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType): Future[List[Place]] = {
-    if(latLngRegions.isEmpty) Future(List.empty)
+    if (latLngRegions.isEmpty) Future(List.empty)
     else {
       logger.info(s"getting places for latLngRegions $latLngRegions from DB")
       val query = s"SELECT * " +
@@ -98,6 +104,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
 
   def updatePlace(placeID: String, placeType: String, name: String): Future[QueryResult] = {
     logger.info(s"updating place $placeID, $name in DB")
+    incrMetricsCounter("update_place")
     val statement =
       s"""
          |

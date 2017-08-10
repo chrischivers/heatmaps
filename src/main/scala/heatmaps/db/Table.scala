@@ -2,10 +2,11 @@ package heatmaps.db
 
 import com.github.mauricio.async.db.{Connection, QueryResult}
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.metrics.MetricsLogging
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait Table[T <: Connection] extends StrictLogging {
+trait Table[T <: Connection] extends StrictLogging with MetricsLogging {
   val db: DB[T]
   val schema: Schema
 
