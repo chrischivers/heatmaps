@@ -25,6 +25,8 @@ libraryDependencies += "com.google.oauth-client" % "google-oauth-client-java6" %
 libraryDependencies += "com.google.oauth-client" % "google-oauth-client-jetty" % "1.22.0"
 libraryDependencies += "com.github.cb372" % "scalacache-core_2.12" % "0.9.3"
 libraryDependencies += "com.github.cb372" %% "scalacache-guava" % "0.9.3"
+libraryDependencies += "com.github.davidb" % "metrics-influxdb" % "0.9.3"
+libraryDependencies += "nl.grons" %% "metrics-scala" % "3.5.6"
 
 libraryDependencies ++= Seq(
   "org.http4s"     %% "http4s-blaze-server" % Http4sVersion,

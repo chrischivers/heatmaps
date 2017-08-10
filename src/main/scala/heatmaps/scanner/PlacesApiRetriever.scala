@@ -7,12 +7,16 @@ import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
-import heatmaps.config.Config
+import heatmaps.config.{Config, MetricsConfig}
+import heatmaps.metrics.MetricsLogging
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging {
+class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging with MetricsLogging {
+
+  override val metricsConfig: MetricsConfig = config.metricsConfig
+  override val metricsGroupName: String = "PlacesApi"
 
   private val apiKeys = Random.shuffle(config.placesApiConfig.apiKeys)
   private val activeApiKeyIndex = new AtomicInteger(0)
@@ -47,7 +51,6 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
 
   def getDetailsForPlaceId(placeId: String): Future[String] = {
     val apiKeyIndexInUse = activeApiKeyIndex.get()
-
     Future(PlacesApi.placeDetails(context, placeId).await().name)
       .recoverWith {
         case _: NotFoundException =>
@@ -59,14 +62,16 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
           Thread.sleep(2000)
           getDetailsForPlaceId(placeId)
         case ex =>
-          logger.error("Over daily limit exception. No more api keys available", ex)
+          logger.error("Unknown exception thrown", ex)
           throw ex
-      }
+      }.map(result => {
+      incrMetricsCounter("placeDetails")
+      result
+    })
   }
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
     val apiKeyIndexInUse = activeApiKeyIndex.get()
-
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
       .recoverWith{
         case _: OverDailyLimitException =>
@@ -74,9 +79,12 @@ class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionCon
           updateExpiredApiKey(apiKeyIndexInUse)
           getPlacesFromApi(latLng, radius, placeType)
         case ex =>
-          logger.error("Over daily limit exception. No more api keys available", ex)
+          logger.error("Unknown exception thrown", ex)
           throw ex
-      }
+      }.map {list =>
+      incrMetricsCounter("radarSearch")
+      list
+    }
   }
 
   private def getPlacesFromApiIfLimitReached(latLng: LatLng, newRadius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {

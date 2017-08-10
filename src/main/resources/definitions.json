@@ -17,5 +17,6 @@
       }
     }
   ],
-  "place-types" : ["RESTAURANT"]
+  "place-types" : ["RESTAURANT", "CAFE", "UNIVERSITY", "TRAIN_STATION", "SHOPPING_MALL", "LODGING"],
+  "place-groups" : ["MCDONALDS"]
 }
