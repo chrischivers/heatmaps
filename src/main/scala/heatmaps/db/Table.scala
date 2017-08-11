@@ -2,7 +2,6 @@ package heatmaps.db
 
 import com.github.mauricio.async.db.{Connection, QueryResult}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.metrics.MetricsLogging
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -7,8 +7,7 @@ import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
-import heatmaps.config.{Config, MetricsConfig}
-import heatmaps.metrics.MetricsLogging
+import heatmaps.config.Config
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
@@ -61,16 +60,17 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
         case ex =>
           logger.error("Unknown exception thrown", ex)
           throw ex
-      }.map(result => {
-      MetricsLogging.incrMetricsCounter("placeDetails")
-      result
-    })
+      }
+//      .map(result => {
+//      MetricsLogging.incrMetricsCounter("placeDetails")
+//      result
+//    })
   }
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
     val apiKeyIndexInUse = activeApiKeyIndex.get()
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
-      .recoverWith{
+      .recoverWith {
         case _: OverDailyLimitException =>
           logger.info("Over daily limit. Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
@@ -78,10 +78,11 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
         case ex =>
           logger.error("Unknown exception thrown", ex)
           throw ex
-      }.map {list =>
-      MetricsLogging.incrMetricsCounter("radarSearch")
-      list
-    }
+      }
+//      .map {list =>
+//      MetricsLogging.incrMetricsCounter("radarSearch")
+//      list
+//    }
   }
 
   private def getPlacesFromApiIfLimitReached(latLng: LatLng, newRadius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
