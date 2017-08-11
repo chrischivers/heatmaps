@@ -9,6 +9,7 @@ import heatmaps.scanner.PlacesApiRetriever
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.util.Random
 
 object NullNameUpdater extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
@@ -20,7 +21,7 @@ object NullNameUpdater extends App with StrictLogging {
     logger.info("Getting regions containing null place names from DB")
     val result = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(PlaceType.RESTAURANT),10 minutes)
     logger.info(s"${result.size} regions containing null place names")
-    result.toSet
+    Random.shuffle(result)
   }
   regionsWithNullPlaceNames.foreach { region =>
     logger.info(
