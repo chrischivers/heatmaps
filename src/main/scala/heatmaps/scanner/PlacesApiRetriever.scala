@@ -62,7 +62,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.error("Unknown exception thrown", ex)
           throw ex
       }.map(result => {
-      MetricsLogging.incrMetricsCounter("placeDetails")(executionContext)
+      MetricsLogging.incrMetricsCounter("placeDetails")
       result
     })
   }
@@ -79,7 +79,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.error("Unknown exception thrown", ex)
           throw ex
       }.map {list =>
-      MetricsLogging.incrMetricsCounter("radarSearch")(executionContext)
+      MetricsLogging.incrMetricsCounter("radarSearch")
       list
     }
   }

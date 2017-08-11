@@ -21,9 +21,9 @@ object MetricsLogging extends StrictLogging {
     .tag("hostname", InetAddress.getLocalHost.getHostName)
     .convertDurationsTo(TimeUnit.SECONDS)
 
-    reporter.build().start(10, TimeUnit.SECONDS)
+    reporter.build().start(30, TimeUnit.SECONDS)
 
-  def incrMetricsCounter(series: String, increaseBy: Int = 1)(implicit executionContext: ExecutionContext) = Future {
+  def incrMetricsCounter(series: String, increaseBy: Int = 1) = {
     metricRegistry.counter(s"$series-count").inc(increaseBy)
     metricRegistry.meter(s"$series-meter").mark(increaseBy)
   }
