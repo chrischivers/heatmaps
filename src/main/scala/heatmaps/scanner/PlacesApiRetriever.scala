@@ -15,9 +15,6 @@ import scala.util.Random
 
 class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging with MetricsLogging {
 
-  override val metricsConfig: MetricsConfig = config.metricsConfig
-  override val metricsGroupName: String = "PlacesApi"
-
   private val apiKeys = Random.shuffle(config.placesApiConfig.apiKeys)
   private val activeApiKeyIndex = new AtomicInteger(0)
   val context: GeoApiContext = new GeoApiContext().setApiKey(apiKeys(activeApiKeyIndex.get()))

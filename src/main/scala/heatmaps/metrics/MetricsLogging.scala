@@ -4,29 +4,28 @@ import java.net.InetAddress
 
 import com.codahale.metrics.MetricRegistry
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.config.MetricsConfig
+import heatmaps.config.{ConfigLoader, MetricsConfig}
 import metrics_influxdb.HttpInfluxdbProtocol
 import java.util.concurrent.TimeUnit
+
 import metrics_influxdb.InfluxdbReporter
+
+import scala.concurrent.Future
 
 trait MetricsLogging extends StrictLogging {
 
   private val metricRegistry = new MetricRegistry()
 
-  val metricsConfig: MetricsConfig
+  val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
 
-  val metricsGroupName: String
-
-  lazy val reporter = InfluxdbReporter.forRegistry(metricRegistry)
+  val reporter = InfluxdbReporter.forRegistry(metricRegistry)
     .protocol(new HttpInfluxdbProtocol(metricsConfig.host, metricsConfig.port, metricsConfig.dbName))
-    .tag("group", metricsGroupName)
     .tag("hostname", InetAddress.getLocalHost.getHostName)
     .convertDurationsTo(TimeUnit.SECONDS)
     .build().start(10, TimeUnit.SECONDS)
 
-  def incrMetricsCounter(series: String) = {
-    reporter //initialises the lazy val after fields have been set
-    metricRegistry.counter(s"$series-count").inc()
-    metricRegistry.meter(s"$series-meter").mark()
+  def incrMetricsCounter(series: String, increaseBy: Int = 1) = Future {
+    metricRegistry.counter(s"$series-count").inc(increaseBy)
+    metricRegistry.meter(s"$series-meter").mark(increaseBy)
   }
 }

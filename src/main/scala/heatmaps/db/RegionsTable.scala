@@ -12,9 +12,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class RegionsTable(val db: DB[PostgreSQLConnection], val schema: RegionsTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
 
-  override val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
-  override val metricsGroupName: String = "RegionsDBTable"
-
   if (createNewTable) {
     Await.result({
       logger.info(s"Creating new table ${schema.tableName}")

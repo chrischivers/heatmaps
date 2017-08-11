@@ -12,9 +12,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class InProgressTable(val db: DB[PostgreSQLConnection], val schema: InProgressTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
 
-  override val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
-  override val metricsGroupName: String = "InProgressDBTable"
-
   if (createNewTable) {
     Await.result({
       logger.info(s"Creating new table ${schema.tableName}")

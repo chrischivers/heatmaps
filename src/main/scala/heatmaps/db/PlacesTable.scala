@@ -12,9 +12,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema, createNewTable: Boolean = false)(implicit ec: ExecutionContext) extends Table[PostgreSQLConnection] {
 
-  override val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
-  override val metricsGroupName: String = "PlacesDBTable"
-
   if (createNewTable) {
     Await.result({
       logger.info(s"Creating new table ${schema.tableName}")
@@ -60,7 +57,6 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   private def insertPlace(placeSearchResult: PlacesSearchResult, latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
-    incrMetricsCounter("insert_place")
     val statement =
       s"""
          |
@@ -104,7 +100,6 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
 
   def updatePlace(placeID: String, placeType: String, name: String): Future[QueryResult] = {
     logger.info(s"updating place $placeID, $name in DB")
-    incrMetricsCounter("update_place")
     val statement =
       s"""
          |

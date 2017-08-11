@@ -6,7 +6,7 @@ import heatmaps.metrics.MetricsLogging
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait Table[T <: Connection] extends StrictLogging with MetricsLogging {
+trait Table[T <: Connection] extends StrictLogging {
   val db: DB[T]
   val schema: Schema
 
