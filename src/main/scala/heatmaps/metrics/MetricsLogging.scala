@@ -7,16 +7,12 @@ import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.{ConfigLoader, MetricsConfig}
 import metrics_influxdb.HttpInfluxdbProtocol
 import java.util.concurrent.TimeUnit
-
 import metrics_influxdb.InfluxdbReporter
-
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MetricsLogging extends StrictLogging {
+object MetricsLogging extends StrictLogging {
 
   private val metricRegistry = new MetricRegistry()
-
-  implicit val executionContext: ExecutionContext
 
   val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
 
@@ -24,9 +20,10 @@ trait MetricsLogging extends StrictLogging {
     .protocol(new HttpInfluxdbProtocol(metricsConfig.host, metricsConfig.port, metricsConfig.dbName))
     .tag("hostname", InetAddress.getLocalHost.getHostName)
     .convertDurationsTo(TimeUnit.SECONDS)
-    .build().start(10, TimeUnit.SECONDS)
 
-  def incrMetricsCounter(series: String, increaseBy: Int = 1) = Future {
+    reporter.build().start(10, TimeUnit.SECONDS)
+
+  def incrMetricsCounter(series: String, increaseBy: Int = 1)(implicit executionContext: ExecutionContext) = Future {
     metricRegistry.counter(s"$series-count").inc(increaseBy)
     metricRegistry.meter(s"$series-meter").mark(increaseBy)
   }

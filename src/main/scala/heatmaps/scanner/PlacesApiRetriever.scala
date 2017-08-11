@@ -13,7 +13,7 @@ import heatmaps.metrics.MetricsLogging
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class PlacesApiRetriever(config: Config)(implicit val executionContext: ExecutionContext) extends StrictLogging with MetricsLogging {
+class PlacesApiRetriever(config: Config)(implicit val executionContext: ExecutionContext) extends StrictLogging {
 
   private val apiKeys = Random.shuffle(config.placesApiConfig.apiKeys)
   private val activeApiKeyIndex = new AtomicInteger(0)
@@ -62,7 +62,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.error("Unknown exception thrown", ex)
           throw ex
       }.map(result => {
-      incrMetricsCounter("placeDetails")
+      MetricsLogging.incrMetricsCounter("placeDetails")(executionContext)
       result
     })
   }
@@ -79,7 +79,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.error("Unknown exception thrown", ex)
           throw ex
       }.map {list =>
-      incrMetricsCounter("radarSearch")
+      MetricsLogging.incrMetricsCounter("radarSearch")(executionContext)
       list
     }
   }
