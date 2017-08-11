@@ -10,11 +10,13 @@ import java.util.concurrent.TimeUnit
 
 import metrics_influxdb.InfluxdbReporter
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MetricsLogging extends StrictLogging {
 
   private val metricRegistry = new MetricRegistry()
+
+  implicit val executionContext: ExecutionContext
 
   val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
 

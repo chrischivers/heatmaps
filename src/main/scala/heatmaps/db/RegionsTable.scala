@@ -3,7 +3,6 @@ package heatmaps.db
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.google.maps.model.PlaceType
-import heatmaps.config.{ConfigLoader, MetricsConfig}
 import heatmaps.models.LatLngRegion
 import org.joda.time.LocalDateTime
 
@@ -41,7 +40,6 @@ class RegionsTable(val db: DB[PostgreSQLConnection], val schema: RegionsTableSch
   }
 
   def insertRegion(latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
-    incrMetricsCounter("insert_region")
     val statement =
       s"""
          |

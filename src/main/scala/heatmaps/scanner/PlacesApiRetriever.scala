@@ -13,7 +13,7 @@ import heatmaps.metrics.MetricsLogging
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class PlacesApiRetriever(config: Config)(implicit executionContext: ExecutionContext) extends StrictLogging with MetricsLogging {
+class PlacesApiRetriever(config: Config)(implicit val executionContext: ExecutionContext) extends StrictLogging with MetricsLogging {
 
   private val apiKeys = Random.shuffle(config.placesApiConfig.apiKeys)
   private val activeApiKeyIndex = new AtomicInteger(0)
