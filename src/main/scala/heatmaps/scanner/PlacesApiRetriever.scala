@@ -8,6 +8,8 @@ import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
 import heatmaps.config.Config
+import heatmaps.metrics.MetricsLogging
+import nl.grons.metrics.scala.{DefaultInstrumented, Meter}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
@@ -61,10 +63,10 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.error("Unknown exception thrown", ex)
           throw ex
       }
-//      .map(result => {
-//      MetricsLogging.incrMetricsCounter("placeDetails")
-//      result
-//    })
+      .map(result => {
+      MetricsLogging.incrDetailsSearchRequests
+      result
+    })
   }
 
   private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
@@ -79,10 +81,10 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.error("Unknown exception thrown", ex)
           throw ex
       }
-//      .map {list =>
-//      MetricsLogging.incrMetricsCounter("radarSearch")
-//      list
-//    }
+      .map {list =>
+      MetricsLogging.incrRadarSearchRequests
+      list
+    }
   }
 
   private def getPlacesFromApiIfLimitReached(latLng: LatLng, newRadius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
