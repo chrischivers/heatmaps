@@ -83,6 +83,12 @@ object ScannerApp extends App with StrictLogging {
              |**************
            """.stripMargin)
       }, 100 hours)
+      logger.info(
+        """
+          |************
+          |Execution Finished!
+          |************
+        """.stripMargin)
     }
   }
 }
