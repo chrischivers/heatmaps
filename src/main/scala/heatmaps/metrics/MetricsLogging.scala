@@ -25,9 +25,9 @@ object MetricsLogging extends StrictLogging with DefaultInstrumented {
   setUpReporter
 
 
-  val radarSearchRequestsCounter: Counter = metrics.counter("radar-search-requests")
-  def incrRadarSearchRequests = radarSearchRequestsCounter.inc()
+  val radarSearchRequestsMeter: Meter = metrics.meter("radar-search-requests")
+  def incrRadarSearchRequests = radarSearchRequestsMeter.mark()
 
-  val detailsSearchRequestsCounter: Counter = metrics.counter("details-search-requests")
-  def incrDetailsSearchRequests = detailsSearchRequestsCounter.inc()
+  val detailsSearchRequestsMeter: Meter = metrics.meter("details-search-requests")
+  def incrDetailsSearchRequests = detailsSearchRequestsMeter.mark()
 }
