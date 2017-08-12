@@ -104,7 +104,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       s"""
          |
          |UPDATE ${schema.tableName}
-         |SET ${schema.placeName} = ?
+         |SET ${schema.placeName} = ?, ${schema.lastUpdated} = 'now'
          |WHERE ${schema.placeId} = ?
          |AND ${schema.placeType} = ?
          |
