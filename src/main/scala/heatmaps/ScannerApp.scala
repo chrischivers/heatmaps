@@ -43,7 +43,7 @@ object ScannerApp extends App with StrictLogging {
   }
 
   logger.info(s"Place types to scan ${Definitions.placeTypes.take(1)}")
-  Definitions.placeTypes.slice(1, 2).foreach { placeType =>
+  Definitions.placeTypes.slice(0, 2).foreach { placeType =>
     logger.info(s"Processing place type $placeType")
     val validRegions = allRegions.filterNot(regionsNotToScan.contains)
     val regionsAlreadyScannedAtStart = Await.result(getRegionsAlreadyScanned(placeType), 5 minute).keys.toList
