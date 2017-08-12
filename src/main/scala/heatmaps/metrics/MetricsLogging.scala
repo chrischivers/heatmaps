@@ -19,6 +19,7 @@ object MetricsLogging extends StrictLogging with DefaultInstrumented {
     InfluxdbReporter.forRegistry(metricRegistry)
       .protocol(new HttpInfluxdbProtocol(metricsConfig.host, metricsConfig.port, metricsConfig.dbName))
       .tag("hostname", InetAddress.getLocalHost.getHostName)
+      .convertRatesTo(TimeUnit.MINUTES)
       .build().start(10, TimeUnit.SECONDS)
   }
 
