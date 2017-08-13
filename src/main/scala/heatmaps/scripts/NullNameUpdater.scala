@@ -39,7 +39,7 @@ object NullNameUpdater extends App with StrictLogging {
               _ <- placesTable.updatePlace(place.placeId, place.placeType, name)
             } yield {
               logger.info(s"Sucessfully persisted ${place.placeId} to DB")
-            }, 1 hour)))
-    }, 100 hours)
+            }, 24 hour)))
+    }, 999 hours)
   }
 }
