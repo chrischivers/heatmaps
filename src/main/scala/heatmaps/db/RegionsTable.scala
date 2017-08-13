@@ -31,7 +31,7 @@ class RegionsTable(val db: DB[PostgreSQLConnection], val schema: RegionsTableSch
            |CREATE TABLE IF NOT EXISTS
            |${schema.tableName} (
            |    ${schema.regionName} varchar NOT NULL,
-       |        ${schema.placeType} varchar NOT NULL,
+           |        ${schema.placeType} varchar NOT NULL,
            |    ${schema.lastScanned} timestamp NOT NULL,
            |    PRIMARY KEY(${schema.primaryKey.mkString(",")})
            |);

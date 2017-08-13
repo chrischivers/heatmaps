@@ -16,21 +16,22 @@ case class PlaceTableSchema(
   override val primaryKey: List[String] = List(placeId, placeType)
 }
 
-case class RegionsTableSchema(
-                             tableName: String = "regions",
-                             regionName: String = "name",
-                             placeType: String = "place_type",
-                             lastScanned: String = "last_scanned"
-                             ) extends Schema {
+case class RegionsStatusTableSchema(
+                                      tableName: String = "regions_status",
+                                      regionName: String = "name",
+                                      placeType: String = "place_type",
+                                      lastScanStarted: String = "last_scan_started",
+                                      lastScanCompleted: String = "last_scan_completed",
+                                      numberPlaces: String = "number_places"
+                                    ) extends Schema {
   override val primaryKey: List[String] = List(regionName, placeType)
 }
 
-case class InProgressTableSchema(
-                               tableName: String = "in_progress",
+case class RegionsTableSchema(
+                               tableName: String = "regions",
                                regionName: String = "name",
                                placeType: String = "place_type",
-                               started: String = "started"
+                               lastScanned: String = "last_scanned"
                              ) extends Schema {
   override val primaryKey: List[String] = List(regionName, placeType)
 }
-

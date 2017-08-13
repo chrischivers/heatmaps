@@ -136,4 +136,27 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       }
     }
   }
+
+  def getActiveLatLngRegions: Future[Set[LatLngRegion]] = {
+    logger.info(s"getting latLngRegions")
+    val query =
+      s"SELECT DISTINCT(${schema.latLngRegion}) " +
+      s"FROM ${schema.tableName} " +
+      s"ORDER BY ${schema.latLngRegion} ASC"
+    for {
+      _ <- db.connectToDB
+      queryResult <- db.connectionPool.sendPreparedStatement(query)
+    } yield {
+      queryResult.rows match {
+        case Some(resultSet) => resultSet.map(res => {
+          val regionStr = res.apply(schema.latLngRegion).asInstanceOf[String]
+          LatLngRegion(
+            regionStr.split(",")(0).toInt,
+            regionStr.split(",")(1).toInt
+          )
+        }).toSet
+        case None => Set.empty
+      }
+    }
+  }
 }
