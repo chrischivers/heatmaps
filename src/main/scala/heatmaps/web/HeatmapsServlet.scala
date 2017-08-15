@@ -3,10 +3,12 @@ package heatmaps.web
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.Definitions.{allLatLngRegions, logger}
-import heatmaps.models.{DefaultView, LatLngBounds, LatLngRegion, Place}
+import heatmaps.models._
 import heatmaps.config.Definitions
 import io.circe.Encoder
 import io.circe.syntax._
+import io.circe._
+import io.circe.generic.semiauto._
 import org.http4s._
 import org.http4s.dsl._
 import org.http4s.twirl._
@@ -33,6 +35,12 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
     Encoder.forProduct3("lat", "lng", "zoom")(u =>
       (u.latLng.lat, u.latLng.lng, u.zoom))
 
+  implicit val placeTypeEncoder: Encoder[PlaceType] =
+    Encoder.forProduct1("name")(u =>
+      (u.name()))
+
+  implicit val placeGroupEncoder: Encoder[PlaceGroup] = deriveEncoder[PlaceGroup]
+
   val service = HttpService {
     case req@GET -> Root / "map" =>
       logger.info(s"Servlet handling map request")
@@ -54,9 +62,9 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
       logger.info("Servlet handling cities request")
       Ok(Definitions.cities.map(_.name).asJson.noSpaces)
 
-    case req@GET -> Root / "placetypes" => {}
-      logger.info("Servlet handling placetypes request")
-      Ok(Definitions.placeTypes.map(_.name()).asJson.noSpaces)
+    case req@GET -> Root / "placegroups" =>
+      logger.info("Servlet handling placegroups request")
+      Ok(Definitions.placeGroups.asJson.noSpaces)
 
     case req@GET -> Root / "heatpoints"
       :? BoundsQueryParamMatcher(bounds)

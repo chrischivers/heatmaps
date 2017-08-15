@@ -33,6 +33,7 @@ class RegionsTable(val db: DB[PostgreSQLConnection], val schema: RegionsTableSch
            |    ${schema.regionName} varchar NOT NULL,
            |        ${schema.placeType} varchar NOT NULL,
            |    ${schema.lastScanned} timestamp NOT NULL,
+           |    ${schema.migrated} boolean DEFAULT false,
            |    PRIMARY KEY(${schema.primaryKey.mkString(",")})
            |);
         """.stripMargin)
@@ -51,11 +52,12 @@ class RegionsTable(val db: DB[PostgreSQLConnection], val schema: RegionsTableSch
     db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, placeType))
   }
 
-  def getRegions(placeType: PlaceType): Future[Map[LatLngRegion, LocalDateTime]] = {
+  def getRegions(placeType: PlaceType, migrated: Option[Boolean] = None): Future[Map[LatLngRegion, LocalDateTime]] = {
     logger.info(s"getting regions for placeType: $placeType from Regions DB")
     val query = s"SELECT * " +
       s"FROM ${schema.tableName} " +
       s"WHERE ${schema.placeType} = ? " +
+      migrated.fold("")(migrated => s"AND ${schema.migrated} = $migrated ") +
       s"ORDER BY ${schema.regionName} ASC"
     for {
       _ <- db.connectToDB
@@ -70,5 +72,19 @@ class RegionsTable(val db: DB[PostgreSQLConnection], val schema: RegionsTableSch
         case None => Map.empty
       }
     }
+  }
+
+  def updateMigratedStatus(latLngRegion: LatLngRegion) = {
+    logger.info(s"updating region $latLngRegion to set migrated complete")
+    val statement =
+      s"""
+         |
+         |UPDATE ${schema.tableName}
+         |SET ${schema.migrated} = true
+         |WHERE ${schema.regionName} = ?
+         |
+      """.stripMargin
+
+    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString))
   }
 }

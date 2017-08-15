@@ -1,11 +1,10 @@
 package heatmaps.config
 
-import com.google.maps.model.LatLng
-import heatmaps.models.{City, DefaultView}
+import com.google.maps.model.{LatLng, PlaceType}
+import heatmaps.models.{City, DefaultView, PlaceGroup}
 import io.circe.{Decoder, HCursor}
 
 object JsonDecoders {
-
 
   implicit val decodeCity: Decoder[City] = new Decoder[City] {
     final def apply(c: HCursor): Decoder.Result[City] =
@@ -20,7 +19,17 @@ object JsonDecoders {
       }
   }
 
-  implicit val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
-  implicit val decodePlaceTypes = Decoder[List[String]].prepare(_.downField("place-types"))
+  implicit val decodePlaceGroup: Decoder[PlaceGroup] = new Decoder[PlaceGroup] {
+    final def apply(c: HCursor): Decoder.Result[PlaceGroup] =
+      for {
+        name <- c.downField("type").as[String]
+        subTypes <- c.downField("sub-type").as[List[String]]
+      } yield {
+        PlaceGroup(PlaceType.valueOf(name), subTypes)
+      }
+  }
+
+  val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
+  val decodePlaceGroups = Decoder[List[PlaceGroup]].prepare(_.downField("place-groups"))
 
 }

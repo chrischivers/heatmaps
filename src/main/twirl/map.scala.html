@@ -32,6 +32,11 @@
                     </button>
                     <div class="dropdown-menu" id="place-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceType"></div>
                 </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceSubType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    </button>
+                    <div class="dropdown-menu" id="place-sub-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceSubType"></div>
+                </div>
             </div>
         </div>
         <div id="map"></div>
@@ -50,7 +55,7 @@
 
 
             getCities();
-            getPlaceTypes();
+            getPlaceGroups();
 
             google.maps.event.addListener(map, 'idle', function () {
               plotHeatMap(map.getBounds(), placeType, map.getZoom());
@@ -133,18 +138,19 @@
               xmlhttp.send();
           }
 
-          function getPlaceTypes() {
+          function getPlaceGroups() {
               var xmlhttp = new XMLHttpRequest();
               xmlhttp.onreadystatechange = function () {
                   if (this.readyState === 4 && this.status === 200) {
-                      var placeTypesArray = JSON.parse(this.responseText);
+                      var placeGroupsArray = JSON.parse(this.responseText);
                       var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
-                      for (var i in placeTypesArray) {
-                          var pt = placeTypesArray[i];
+                      for (var i in placeGroupsArray) {
+                          var placeType = placeGroupsArray[i].placeType.name;
+                          var subTypes = placeGroupsArray[i].subTypes;
                           var a = document.createElement('a');
                           a.className = "dropdown-item";
-                          a.id = pt;
-                          a.text = toTitleCase(pt) + "s";
+                          a.id = placeType;
+                          a.text = toTitleCase(placeType) + "s";
                           a.addEventListener("click",function() {
                               placeType = this.id;
                               plotHeatMap(map.getBounds(), this.id, map.getZoom());
@@ -154,7 +160,7 @@
                       }
                   }
               };
-              xmlhttp.open("GET", "/placetypes", true);
+              xmlhttp.open("GET", "/placegroups", true);
               xmlhttp.send();
           }
 

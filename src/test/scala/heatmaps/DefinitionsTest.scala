@@ -48,7 +48,7 @@ class DefinitionsTest extends FunSuite with Matchers {
   }
 
   test("place type list should be returned") {
-    val placeTypes = Definitions.placeTypes
+    val placeTypes = Definitions.placeGroups.map(_.placeType)
     placeTypes should contain (PlaceType.RESTAURANT)
   }
 }

@@ -2,12 +2,11 @@ package heatmaps.config
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.models.{City, LatLngBounds, LatLngRegion}
+import heatmaps.config.JsonDecoders._
+import heatmaps.models.{City, LatLngBounds, LatLngRegion, PlaceGroup}
 import io.circe.parser.decode
 
 import scala.io.Source
-import heatmaps.config.JsonDecoders._
-import heatmaps.web.HeatmapsServlet.logger
 
 object Definitions extends StrictLogging {
 
@@ -24,9 +23,9 @@ object Definitions extends StrictLogging {
     for (lat <- List.range(-85, 84); lng <- List.range(-180, 179)) yield LatLngRegion(lat, lng)
   }
 
-  lazy val placeTypes: List[PlaceType] = decode(definitionsFile)(decodePlaceTypes) match {
+  lazy val placeGroups: List[PlaceGroup] = decode(definitionsFile)(decodePlaceGroups) match {
     case Left(e) => throw e
-    case Right(list) => list.map(place => PlaceType.valueOf(place))
+    case Right(list) => list
   }
 
 

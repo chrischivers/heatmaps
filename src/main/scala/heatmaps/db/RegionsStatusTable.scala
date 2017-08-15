@@ -49,7 +49,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
   }
 
 
-  private def insertRegion(latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
+  def insertRegion(latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
     val statement =
       s"""
          |
@@ -80,7 +80,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
     }
   }
 
-  def updateRegionScanStarted(latLngRegion: LatLngRegion, placeType: PlaceType) = {
+  def updateRegionScanStarted(latLngRegion: LatLngRegion, placeType: String) = {
     logger.info(s"updating region $latLngRegion to set scan started")
     val statement =
       s"""
@@ -95,7 +95,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
     db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, placeType))
   }
 
-  def updateRegionScanCompleted(latLngRegion: LatLngRegion, placeType: PlaceType, numberPlaces: Int) = {
+  def updateRegionScanCompleted(latLngRegion: LatLngRegion, placeType: String, numberPlaces: Int) = {
     logger.info(s"updating region $latLngRegion to set scan completed")
     val statement =
       s"""
@@ -114,11 +114,11 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
   def getNextRegionToProcess: Future[(LatLngRegion, PlaceType)] = {
     logger.info(s"getting next region to process from RegionsStatus DB")
     val updateAndQuery =
-      s"UPDATE ${schema.tableName} s " +
-      s"SET s.${schema.lastScanStarted} = 'now' " +
-      s"WHERE (s.${schema.regionName}, s.${schema.placeType}) IN " +
+      s"UPDATE ${schema.tableName} " +
+      s"SET ${schema.lastScanStarted} = 'now' " +
+      s"WHERE (${schema.regionName}, ${schema.placeType}) IN " +
         s"(SELECT p.${schema.regionName}, p.${schema.placeType} " +
-        s"FROM ${schema.tableName} p" +
+        s"FROM ${schema.tableName} p " +
         s"WHERE p.${schema.lastScanStarted} IS NULL " +
         s"ORDER BY p.${schema.regionName} ASC, p.${schema.placeType} ASC " +
         s"LIMIT 1) " +

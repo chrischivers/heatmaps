@@ -17,6 +17,30 @@
       }
     }
   ],
-  "place-types" : ["RESTAURANT", "CAFE", "UNIVERSITY", "TRAIN_STATION", "SHOPPING_MALL", "LODGING"],
-  "place-groups" : ["MCDONALDS"]
+  "place-groups" : [
+    {
+      "type" : "RESTAURANT",
+      "sub-type" : ["MCDONALDS", "BURGER KING"]
+    },
+    {
+      "type" : "CAFE",
+      "sub-type" : ["STARBUCKS"]
+    },
+    {
+      "type" : "UNIVERSITY",
+      "sub-type" : []
+    },
+    {
+      "type" : "TRAIN_STATION",
+      "sub-type" : []
+    },
+    {
+      "type" : "SHOPPING_MALL",
+      "sub-type" : []
+    },
+    {
+      "type" : "LODGING",
+      "sub-type" : ["TRAVELODGE"]
+    }
+  ]
 }

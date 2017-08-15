@@ -1,8 +1,10 @@
 package heatmaps.scripts
 
+import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
+import heatmaps.models.LatLngRegion
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -15,22 +17,36 @@ object MigrateRegionsToRegionsStatus extends App with StrictLogging {
   val regionsStatusTable = new RegionsStatusTable(db, RegionsStatusTableSchema(), createNewTable = false)
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
 
-  val result = Future.sequence(Definitions.placeTypes.map { placeType =>
+  Definitions.placeGroups.map(_.placeType).foreach { placeType =>
     logger.info(s"processing place type: $placeType")
-    for {
-      regionsInRegionsTable <- regionsTable.getRegions(placeType)
-      _ = logger.info(s"Got ${regionsInRegionsTable.size} regions from Regions table for placetype $placeType")
-      _ <- Future.sequence(regionsInRegionsTable.map {case (region, _) =>
-        for {
-          _ <- regionsStatusTable.updateRegionScanStarted(region, placeType)
+    Await.result(for {
+      regionsInRegionsTable <- regionsTable.getRegions(placeType, migrated = Some(false))
+      regionsInStatusTable <- regionsStatusTable.getRegionsFor(placeType.name())
+      activeRegions = regionsInRegionsTable.keys.toList.intersect(regionsInStatusTable)
+      nonActiveRegions = regionsInRegionsTable.keys.toList.diff(regionsInStatusTable)
+
+      _ = nonActiveRegions.foreach { region =>
+        Await.result(for {
+          _ <- regionsTable.updateMigratedStatus(region)
+          _ = logger.info(s"Updated migrated status for non-active regions: $region")
+        } yield (), 5 minutes)
+      }
+
+      _ = logger.info(s"Got ${activeRegions.size} non-migrated active regions from Regions table for placetype $placeType")
+
+      _ = activeRegions.foreach {region =>
+        Await.result(for {
+          _ <- regionsStatusTable.updateRegionScanStarted(region, placeType.name())
         _ = logger.info(s"Updated region started for $region and place type $placeType")
           places <- placesTable.getPlacesForLatLngRegions(List(region), placeType)
           _ = logger.info(s"Got ${places.size} places for $region and place type $placeType")
-          _ <- regionsStatusTable.updateRegionScanCompleted(region, placeType, places.size)
+          _ <- regionsStatusTable.updateRegionScanCompleted(region, placeType.name(), places.size)
           _ = logger.info(s"Updated region completed for $region and place type $placeType")
-        } yield ()})
-    } yield ()
-  })
+          _ <- regionsTable.updateMigratedStatus(region)
+          _ = logger.info(s"Updated migration status for $region")
+        } yield (), 1 hour)}
 
-  Await.result(result, 99 hours)
+    } yield (), 100 hours)
+  }
+
 }

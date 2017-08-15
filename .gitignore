@@ -75,6 +75,5 @@ jrebel.lic
 /.lib/
 
 application.conf
-logback.xml
 client_secrets.json
 regionsscanned.txt

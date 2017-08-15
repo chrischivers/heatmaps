@@ -26,7 +26,7 @@ object ScannerApp extends App with StrictLogging {
       _ = logger.info(s"Scanned for places in $latLngRegion. ${scanResults.size} results obtained")
       _ <- placesTable.insertPlaces(scanResults, latLngRegion, placeType)
       _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
-      _ <- regionStatusTable.updateRegionScanCompleted(latLngRegion, placeType, scanResults.size)
+      _ <- regionStatusTable.updateRegionScanCompleted(latLngRegion, placeType.name(), scanResults.size)
       _ = logger.info(s"Recorded $latLngRegion region as scan complete with ${scanResults.size} places")
     } yield (), 99 hours)
   }

@@ -73,7 +73,8 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     if (latLngRegions.isEmpty) Future(List.empty)
     else {
       logger.info(s"getting places for latLngRegions $latLngRegions from DB")
-      val query = s"SELECT * " +
+      val query =
+        s"SELECT * " +
         s"FROM ${schema.tableName} " +
         s"WHERE ${schema.latLngRegion} IN (${latLngRegions.map(str => s"'${str.toString}'").mkString(",")}) " +
         s"AND ${schema.placeType} = ?"
