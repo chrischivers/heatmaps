@@ -99,6 +99,26 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     }
   }
 
+  def countPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Long] = {
+    logger.info(s"getting count of places for latLngRegions $latLngRegion from DB")
+    val query =
+      s"SELECT COUNT(*) " +
+        s"FROM ${schema.tableName} " +
+        s"WHERE ${schema.latLngRegion} = ? " +
+        s"AND ${schema.placeType} = ?"
+    for {
+      _ <- db.connectToDB
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(latLngRegion.toString, placeType.name()))
+    } yield {
+      queryResult.rows match {
+        case Some(resultSet) => resultSet.map(res => {
+         res.apply("count").asInstanceOf[Long]
+        }).toList.headOption.fold(throw new RuntimeException("Unable to get count of places from DB"))(identity)
+        case None => throw new RuntimeException("Unable to get count of places from DB")
+      }
+    }
+  }
+
   def updatePlace(placeID: String, placeType: String, name: String): Future[QueryResult] = {
     logger.info(s"updating place $placeID, $name in DB")
     val statement =

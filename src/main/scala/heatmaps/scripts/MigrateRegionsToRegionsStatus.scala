@@ -1,14 +1,12 @@
 package heatmaps.scripts
 
-import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
-import heatmaps.models.LatLngRegion
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 
 object MigrateRegionsToRegionsStatus extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
@@ -34,19 +32,21 @@ object MigrateRegionsToRegionsStatus extends App with StrictLogging {
 
       _ = logger.info(s"Got ${activeRegions.size} non-migrated active regions from Regions table for placetype $placeType")
 
-      _ = activeRegions.foreach {region =>
+      _ = activeRegions.foreach { region =>
         Await.result(for {
           _ <- regionsStatusTable.updateRegionScanStarted(region, placeType.name())
-        _ = logger.info(s"Updated region started for $region and place type $placeType")
-          places <- placesTable.getPlacesForLatLngRegions(List(region), placeType)
-          _ = logger.info(s"Got ${places.size} places for $region and place type $placeType")
-          _ <- regionsStatusTable.updateRegionScanCompleted(region, placeType.name(), places.size)
+          _ = logger.info(s"Updated region started for $region and place type $placeType")
+          placeCount <- placesTable.countPlacesForLatLngRegion(region, placeType)
+          _ = logger.info(s"Got $placeCount places for $region and place type $placeType")
+          _ <- regionsStatusTable.updateRegionScanCompleted(region, placeType.name(), placeCount.toInt)
           _ = logger.info(s"Updated region completed for $region and place type $placeType")
           _ <- regionsTable.updateMigratedStatus(region)
           _ = logger.info(s"Updated migration status for $region")
-        } yield (), 1 hour)}
+        } yield (), 1 hour)
+      }
 
     } yield (), 100 hours)
   }
+
 
 }

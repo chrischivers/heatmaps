@@ -46,6 +46,7 @@
           var heatmap;
           var placeType = "RESTAURANT";
           var city = "London";
+          var placeGroupData;
 
           function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -55,7 +56,7 @@
 
 
             getCities();
-            getPlaceGroups();
+            getPlaceGroupData();
 
             google.maps.event.addListener(map, 'idle', function () {
               plotHeatMap(map.getBounds(), placeType, map.getZoom());
@@ -138,31 +139,50 @@
               xmlhttp.send();
           }
 
-          function getPlaceGroups() {
+          function setPlaceGroupsMenu() {
+
+              var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
+              var placeSubTypeDropdown = document.getElementById("place-sub-type-dropdown-menu");
+              for (var i in placeGroupData) {
+                  var placeType = placeGroupData[i].placeType.name;
+                  var a = document.createElement('a');
+                  a.className = "dropdown-item";
+                  a.id = placeType;
+                  a.subtypes = placeGroupData[i].subtypes;
+                  a.text = toTitleCase(placeType) + "s";
+                  a.addEventListener("click", function () {
+                      placeType = this.id;
+                      plotHeatMap(map.getBounds(), this.id, map.getZoom());
+                      $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
+
+                      for (var j in this.subtypes) {
+                          var subType = this.subtypes[j];
+                          var b = document.createElement('a');
+                          b.className = "dropdown-item";
+                          b.id = subType;
+                          a.text = toTitleCase(subType) + "s";
+
+                          placeSubTypeDropdown.appendChild(b);
+                      }
+                  });
+                  placeTypesDropdown.appendChild(a);
+
+              }
+          }
+
+
+          function getPlaceGroupData() {
               var xmlhttp = new XMLHttpRequest();
               xmlhttp.onreadystatechange = function () {
                   if (this.readyState === 4 && this.status === 200) {
-                      var placeGroupsArray = JSON.parse(this.responseText);
-                      var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
-                      for (var i in placeGroupsArray) {
-                          var placeType = placeGroupsArray[i].placeType.name;
-                          var subTypes = placeGroupsArray[i].subTypes;
-                          var a = document.createElement('a');
-                          a.className = "dropdown-item";
-                          a.id = placeType;
-                          a.text = toTitleCase(placeType) + "s";
-                          a.addEventListener("click",function() {
-                              placeType = this.id;
-                              plotHeatMap(map.getBounds(), this.id, map.getZoom());
-                              $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
-                          });
-                          placeTypesDropdown.appendChild(a);
-                      }
+                      placeGroupData = JSON.parse(this.responseText);
+                      setPlaceGroupsMenu();
                   }
               };
               xmlhttp.open("GET", "/placegroups", true);
               xmlhttp.send();
           }
+
 
           function toTitleCase(str) {
               return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
