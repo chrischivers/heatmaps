@@ -18,6 +18,7 @@ import scala.concurrent.Future
 
 object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds")
 object PlaceTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeType")
+object PlaceSubTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeSubType")
 object CityDefaultViewQueryParamMatcher extends QueryParamDecoderMatcher[String]("city")
 object ZoomQueryParamMatcher extends QueryParamDecoderMatcher[String]("zoom")
 
@@ -38,6 +39,9 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
   implicit val placeTypeEncoder: Encoder[PlaceType] =
     Encoder.forProduct1("name")(u =>
       (u.name()))
+
+  implicit val placeSubTypeEncoder: Encoder[PlaceSubType] =
+    Encoder.forProduct1("name")(u => u.name)
 
   implicit val placeGroupEncoder: Encoder[PlaceGroup] = deriveEncoder[PlaceGroup]
 
@@ -69,13 +73,15 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
     case req@GET -> Root / "heatpoints"
       :? BoundsQueryParamMatcher(bounds)
       :? PlaceTypeQueryParamMatcher(placeType)
+      :? PlaceSubTypeQueryParamMatcher(subType)
       :? ZoomQueryParamMatcher(zoom) =>
-      logger.info(s"Servlet handling heatpoints request for bounds $bounds and placeType $placeType")
+      logger.info(s"Servlet handling heatpoints request for bounds $bounds, placeType $placeType, placeSubType $subType")
       val boundsConverted = getBounds(bounds)
       val density = zoomToDensity(zoom.toInt)
       val placeTypeConverted = PlaceType.valueOf(placeType)
+      val subTypeOpt = if(subType.toUpperCase() == "ALL") None else Some(PlaceSubType(subType))
       val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, Some(getBounds(bounds)), None) //Ignoring density for now
+      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), None) //Ignoring density for now
         .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
       Ok(jsonStr)
     }

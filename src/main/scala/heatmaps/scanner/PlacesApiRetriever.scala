@@ -2,7 +2,7 @@ package heatmaps.scanner
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.google.maps.errors.{NotFoundException, OverDailyLimitException}
+import com.google.maps.errors.{ApiException, NotFoundException, OverDailyLimitException, UnknownErrorException}
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
@@ -54,8 +54,9 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
         case _: NotFoundException =>
           logger.error(s"Place $placeId not found in API")
           Future("NOT_FOUND")
-        case _: OverDailyLimitException =>
-          logger.info("Over daily limit. Changing API key")
+        case ex: ApiException =>
+          logger.error("Api exception", ex)
+          logger.info("Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
           Thread.sleep(2000)
           getDetailsForPlaceId(placeId)
@@ -73,8 +74,9 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
     val apiKeyIndexInUse = activeApiKeyIndex.get()
     Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
       .recoverWith {
-        case _: OverDailyLimitException =>
-          logger.info("Over daily limit. Changing API key")
+        case ex: ApiException =>
+          logger.error("Api exception", ex)
+          logger.info("Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
           getPlacesFromApi(latLng, radius, placeType)
         case ex =>

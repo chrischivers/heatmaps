@@ -2,4 +2,6 @@ package heatmaps.models
 
 import com.google.maps.model.PlaceType
 
-case class PlaceGroup(placeType: PlaceType, subTypes: List[String])
+case class PlaceSubType(name: String)
+
+case class PlaceGroup(placeType: PlaceType, subTypes: List[PlaceSubType])

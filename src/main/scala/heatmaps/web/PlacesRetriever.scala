@@ -3,7 +3,7 @@ package heatmaps.web
 import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.db.PlacesTable
-import heatmaps.models.{LatLngBounds, LatLngRegion, Place}
+import heatmaps.models.{LatLngBounds, LatLngRegion, Place, PlaceSubType}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -22,7 +22,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
   private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Option[List[Place]]] =
     get[List[Place], NoSerialization](latLngRegion.toString, placeType.name())
 
-  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None, density: Option[Density] = None): Future[List[Place]] = {
+  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, latLngBounds: Option[LatLngBounds] = None, density: Option[Density] = None): Future[List[Place]] = {
     logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
     for {
      cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType).map(res => (region, res))))

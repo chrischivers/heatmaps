@@ -34,6 +34,7 @@
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceSubType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i>All</i>
                     </button>
                     <div class="dropdown-menu" id="place-sub-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceSubType"></div>
                 </div>
@@ -47,6 +48,9 @@
           var placeType = "RESTAURANT";
           var city = "London";
           var placeGroupData;
+          var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
+          var placeSubTypeDropdown = document.getElementById("place-sub-type-dropdown-menu");
+
 
           function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -59,26 +63,26 @@
             getPlaceGroupData();
 
             google.maps.event.addListener(map, 'idle', function () {
-              plotHeatMap(map.getBounds(), placeType, map.getZoom());
+              plotHeatMap(map.getBounds(), placeType, "All", map.getZoom());
             });
 
           }
 
-          function plotHeatMap(mapBounds, placeType, zoom) {
+          function plotHeatMap(mapBounds, placeType, placeSubType, zoom) {
 
               var boundsParams = "bounds=" + mapBounds.toString();
               var placeTypeParams = "placeType=" + placeType;
+              var placeSubTypeParams = "placeSubType=" + placeSubType;
               var zoomParams = "zoom=" + zoom.toString();
               var xmlhttp = new XMLHttpRequest();
               xmlhttp.onreadystatechange = function () {
                   if (this.readyState === 4 && this.status === 200) {
                       placeArray = JSON.parse(this.responseText);
+                      if (heatmap) {
+                          heatmap.setMap(null);
+                      }
                       if (placeArray.length !== 0) {
                           var heatmapData = getLatLngPoints(placeArray);
-
-                          if (heatmap) {
-                              heatmap.setMap(null);
-                          }
                           heatmap = new google.maps.visualization.HeatmapLayer({
                               data: heatmapData
                           });
@@ -86,7 +90,7 @@
                       }
                   }
               };
-              xmlhttp.open("GET", "/heatpoints?" + boundsParams + "&" + placeTypeParams + "&" + zoomParams, true);
+              xmlhttp.open("GET", "/heatpoints?" + boundsParams + "&" + placeTypeParams + "&" + placeSubTypeParams + "&" + zoomParams, true);
               xmlhttp.send();
 
               function getLatLngPoints(placeArray) {
@@ -141,38 +145,55 @@
 
           function setPlaceGroupsMenu() {
 
-              var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
-              var placeSubTypeDropdown = document.getElementById("place-sub-type-dropdown-menu");
               for (var i in placeGroupData) {
-                  var placeType = placeGroupData[i].placeType.name;
-                  var a = document.createElement('a');
-                  a.className = "dropdown-item";
-                  a.id = placeType;
-                  a.text = toTitleCase(placeType) + "s";
-                  a.addEventListener("click", function () {
-                      placeType = this.id;
-                      plotHeatMap(map.getBounds(), this.id, map.getZoom());
-                      $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
-
-                      for(var j in placeGroupData) {
-                          if (placeGroupData[j].placeType.name === this.id) {
-                              for (var k in placeGroupData[j].subTypes) {
-                                  var subType = placeGroupData[j].subTypes[k];
-                                  var b = document.createElement('a');
-                                  b.className = "dropdown-item";
-                                  b.id = subType;
-                                  b.text = toTitleCase(subType);
-                                  placeSubTypeDropdown.appendChild(b)
-                              }
-                          }
-                      }
-
-                  });
-                  placeTypesDropdown.appendChild(a);
+                  var dropDownItem = createPlaceTypeDropDownElement(placeGroupData[i].placeType.name);
+                  placeTypesDropdown.appendChild(dropDownItem);
 
               }
           }
 
+          function createPlaceTypeDropDownElement(placeTypeName) {
+              var a = document.createElement('a');
+              a.className = "dropdown-item";
+              a.id = placeTypeName;
+              a.text = toTitleCase(placeTypeName) + "s";
+              a.addEventListener("click", function () {
+                  placeType = this.id;
+                  plotHeatMap(map.getBounds(), this.id, "All", map.getZoom());
+                  $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
+
+
+                  $("#place-sub-type-dropdown-menu").children().remove();
+
+                  placeSubTypeDropdown.appendChild(createSubTypeDropDownElement("All", this.id));
+
+                  for(var j in placeGroupData) {
+                      if (placeGroupData[j].placeType.name === this.id) {
+                          for (var k in placeGroupData[j].subTypes) {
+                              var subType = placeGroupData[j].subTypes[k].name;
+                              var dropDownItem = createSubTypeDropDownElement(subType, this.id);
+                              placeSubTypeDropdown.appendChild(dropDownItem);
+                          }
+                      }
+                  }
+
+              });
+              return a;
+          }
+
+
+          function createSubTypeDropDownElement(subTypeName, parentName) {
+              var b = document.createElement('a');
+              b.className = "dropdown-item";
+              b.parentPlaceType = parentName;
+              b.id = subTypeName;
+              b.text = toTitleCase(subTypeName);
+              b.addEventListener("click", function () {
+                  plotHeatMap(map.getBounds(), this.parentPlaceType, this.id, map.getZoom());
+                  $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id));
+              });
+              return b;
+          }
 
           function getPlaceGroupData() {
               var xmlhttp = new XMLHttpRequest();
