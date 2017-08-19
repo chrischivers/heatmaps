@@ -120,7 +120,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
         s"(SELECT p.${schema.regionName}, p.${schema.placeType} " +
         s"FROM ${schema.tableName} p " +
         s"WHERE p.${schema.lastScanStarted} IS NULL " +
-        s"ORDER BY p.${schema.regionName} ASC, p.${schema.placeType} ASC " +
+        s"ORDER BY p.${schema.placeType} ASC, p.${schema.regionName} ASC " +
         s"LIMIT 1) " +
       s"RETURNING *"
     for {

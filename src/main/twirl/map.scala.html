@@ -148,22 +148,25 @@
                   var a = document.createElement('a');
                   a.className = "dropdown-item";
                   a.id = placeType;
-                  a.subtypes = placeGroupData[i].subtypes;
                   a.text = toTitleCase(placeType) + "s";
                   a.addEventListener("click", function () {
                       placeType = this.id;
                       plotHeatMap(map.getBounds(), this.id, map.getZoom());
                       $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
 
-                      for (var j in this.subtypes) {
-                          var subType = this.subtypes[j];
-                          var b = document.createElement('a');
-                          b.className = "dropdown-item";
-                          b.id = subType;
-                          a.text = toTitleCase(subType) + "s";
-
-                          placeSubTypeDropdown.appendChild(b);
+                      for(var j in placeGroupData) {
+                          if (placeGroupData[j].placeType.name === this.id) {
+                              for (var k in placeGroupData[j].subTypes) {
+                                  var subType = placeGroupData[j].subTypes[k];
+                                  var b = document.createElement('a');
+                                  b.className = "dropdown-item";
+                                  b.id = subType;
+                                  b.text = toTitleCase(subType);
+                                  placeSubTypeDropdown.appendChild(b)
+                              }
+                          }
                       }
+
                   });
                   placeTypesDropdown.appendChild(a);
 
