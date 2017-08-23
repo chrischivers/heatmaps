@@ -47,7 +47,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
     } yield result
   }
 
-  def getDetailsForPlaceId(placeId: String): Future[String] = {
+  def getNameForPlaceId(placeId: String): Future[String] = {
     val apiKeyIndexInUse = activeApiKeyIndex.get()
     Future(PlacesApi.placeDetails(context, placeId).await().name)
       .recoverWith {
@@ -59,7 +59,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
           logger.info("Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
           Thread.sleep(2000)
-          getDetailsForPlaceId(placeId)
+          getNameForPlaceId(placeId)
         case ex =>
           logger.error("Unknown exception thrown", ex)
           throw ex

@@ -3,7 +3,7 @@ package heatmaps
 import com.google.maps.model.PlaceType
 import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.LatLngRegion
+import heatmaps.models.{LatLngRegion, McDonalds}
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
 import org.scalatest.Matchers._
@@ -83,6 +83,43 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     resultsFromDB.size shouldBe locationScanResult1.size + locationScanResult2.size
     resultsFromDB.map(_.placeId) should contain allElementsOf locationScanResult1.map(_.placeId) ++ locationScanResult2.map(_.placeId)
 
+  }
+
+  test("A record in places table can be updated with a name and a subtype added") { f =>
+    val schema = f.placesTable.schema
+    val mcDonaldsPlaceId = "ChIJ4VsFx-FFzDERn7dTZs447D4"
+    val latLngRegion = LatLngRegion(3,101)
+    val statement =
+      s"""
+         |
+         |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.lastUpdated})
+         |    VALUES (?,?,?,?,?,'now');
+         |
+      """.stripMargin
+
+    f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(mcDonaldsPlaceId, PlaceType.RESTAURANT.name(), latLngRegion.toString, latLngRegion.lat, latLngRegion.lng)).futureValue
+
+    val regionsContainingNullNames = f.placesTable.getLatLngRegionsContainingNullPlaceNames(PlaceType.RESTAURANT).futureValue
+    regionsContainingNullNames should have size 1
+    regionsContainingNullNames.head shouldBe latLngRegion
+
+    f.placesTable.countPlacesForLatLngRegion(latLngRegion, PlaceType.RESTAURANT).futureValue shouldBe 1
+
+    f.placesTable.updatePlace(mcDonaldsPlaceId, PlaceType.RESTAURANT.name(), "McDonald's Test").futureValue
+    val resultsWithoutSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), PlaceType.RESTAURANT).futureValue
+
+    resultsWithoutSubType should have size 1
+    resultsWithoutSubType.head.placeId shouldBe mcDonaldsPlaceId
+    resultsWithoutSubType.head.placeName.get shouldBe "McDonald's Test"
+    resultsWithoutSubType.head.placeSubType.isDefined shouldBe false
+
+    f.placesTable.updateSubtypes(McDonalds).futureValue
+
+    val resultsWithSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), PlaceType.RESTAURANT).futureValue
+    resultsWithSubType should have size 1
+    resultsWithSubType.head.placeId shouldBe mcDonaldsPlaceId
+    resultsWithSubType.head.placeName.get shouldBe "McDonald's Test"
+    resultsWithSubType.head.placeSubType.get shouldBe McDonalds.name
   }
 }
 

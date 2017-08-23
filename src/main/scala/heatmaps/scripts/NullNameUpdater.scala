@@ -35,7 +35,7 @@ object NullNameUpdater extends App with StrictLogging {
         .map(_.filter(_.placeName.isEmpty)
           .foreach(place =>
             Await.result(for {
-              name <- placesApiRetriever.getDetailsForPlaceId(place.placeId)
+              name <- placesApiRetriever.getNameForPlaceId(place.placeId)
               _ <- placesTable.updatePlace(place.placeId, place.placeType, name)
             } yield {
               logger.info(s"Sucessfully persisted ${place.placeId} to DB")

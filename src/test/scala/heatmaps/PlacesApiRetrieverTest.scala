@@ -59,4 +59,12 @@ class PlacesApiRetrieverTest extends fixture.FunSuite with StrictLogging with Sc
       SphericalUtil.computeDistanceBetween(searchLocation, placeLocation).toInt should be <= radius
     })
   }
+
+  test("Place Details Retriever should retrieve the name of a place given its place_id") { f =>
+
+    val mcDonaldsPlaceId = "ChIJ4VsFx-FFzDERn7dTZs447D4"
+
+    val result = f.placesApiRetriever.getNameForPlaceId(mcDonaldsPlaceId).futureValue
+    result shouldBe "McDonald's"
+  }
 }

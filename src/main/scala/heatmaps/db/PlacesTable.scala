@@ -2,9 +2,10 @@ package heatmaps.db
 
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
+import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
 import heatmaps.config.{ConfigLoader, MetricsConfig}
-import heatmaps.models.{LatLngRegion, Place}
+import heatmaps.models.{LatLngRegion, Place, PlaceSubType}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -34,6 +35,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
            |    ${schema.placeId} varchar NOT NULL,
            |    ${schema.placeType} varchar NOT NULL,
            |    ${schema.placeName} varchar,
+           |    ${schema.placeSubType} varchar,
            |    ${schema.latLngRegion} varchar,
            |    ${schema.lat} real NOT NULL,
            |    ${schema.lng} real NOT NULL,
@@ -66,7 +68,12 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       """.stripMargin
 
     db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
-
+    .recoverWith {
+      case ex: GenericDatabaseException if ex.errorMessage.message.contains("already exists") =>
+        logger.error("Database exception - already exists. Ignoring. Error message: " +  ex.errorMessage, ex)
+        Future.successful(new QueryResult(0, "")) // Ignores and returns an empty query result
+      case ex => Future.failed(ex)
+    }
   }
 
   def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType): Future[List[Place]] = {
@@ -89,6 +96,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
               res.apply(schema.placeId).asInstanceOf[String],
               Option(res.apply(schema.placeName).asInstanceOf[String]),
               res.apply(schema.placeType).asInstanceOf[String],
+              Option(res.apply(schema.placeSubType).asInstanceOf[String]),
               new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble),
               LatLngRegion(latLngRegStr(0).toInt, latLngRegStr(1).toInt)
             )
@@ -179,5 +187,22 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         case None => Set.empty
       }
     }
+  }
+
+  def updateSubtypes(subType: PlaceSubType): Future[List[QueryResult]] = {
+    logger.info(s"Updating subtype ${subType.name} in place type ${subType.parentType} for places starting with ${subType.searchMatches}")
+    val statement =
+      s"""
+         |
+         |UPDATE ${schema.tableName}
+         |SET ${schema.placeSubType} = ?, ${schema.lastUpdated} = 'now'
+         |WHERE ${schema.placeType} = ?
+         |AND UPPER(${schema.placeName}) LIKE ?
+         |
+      """.stripMargin
+
+    Future.sequence(subType.searchMatches.map { searchMatch =>
+      db.connectionPool.sendPreparedStatement(statement, List(subType.name, subType.parentType.name(), searchMatch.toUpperCase + "%"))
+    })
   }
 }

@@ -8,6 +8,7 @@ case class PlaceTableSchema(
                              tableName: String = "places",
                              placeId: String = "place_id",
                              placeType: String = "place_type",
+                             placeSubType: String = "place_sub_type",
                              placeName: String = "place_name",
                              latLngRegion: String = "lat_lng_region",
                              lat: String = "lat",
