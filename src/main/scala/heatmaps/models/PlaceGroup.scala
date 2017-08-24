@@ -19,7 +19,7 @@ case object McDonalds extends PlaceSubType {
 
 case object Starbucks extends PlaceSubType {
   override val name: String = "STARBUCKS"
-  override val searchMatches: List[String] = List("Starbuck", "Starbucks", "Starbuck's")
+  override val searchMatches: List[String] = List("Starbuck")
   override val parentType: PlaceType = PlaceType.CAFE
 }
 

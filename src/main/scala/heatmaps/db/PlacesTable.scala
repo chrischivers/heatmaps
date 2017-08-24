@@ -192,16 +192,12 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def updateSubtypes(subType: PlaceSubType): Future[List[QueryResult]] = {
-    logger.info(s"Updating subtype ${subType.name} in place type ${subType.parentType} for places starting with ${subType.searchMatches}")
+    logger.info(s"Updating subtype ${subType.name} in place type ${subType.parentType.name()} for places starting with ${subType.searchMatches}")
     val statement =
-      s"""
-         |
-         |UPDATE ${schema.tableName}
-         |SET ${schema.placeSubType} = ?, ${schema.lastUpdated} = 'now'
-         |WHERE ${schema.placeType} = ?
-         |AND UPPER(${schema.placeName}) LIKE ?
-         |
-      """.stripMargin
+      s"UPDATE ${schema.tableName} " +
+      s"SET ${schema.placeSubType} = ?, ${schema.lastUpdated} = 'now' " +
+      s"WHERE ${schema.placeType} = ? " +
+      s"AND UPPER(${schema.placeName}) LIKE ?"
 
     Future.sequence(subType.searchMatches.map { searchMatch =>
       db.connectionPool.sendPreparedStatement(statement, List(subType.name, subType.parentType.name(), searchMatch.toUpperCase + "%"))
