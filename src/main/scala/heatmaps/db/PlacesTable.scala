@@ -69,10 +69,12 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
 
     db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, placeType, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
     .recoverWith {
-      case ex: GenericDatabaseException if ex.errorMessage.message.contains("already exists") =>
+      case ex: GenericDatabaseException if ex.errorMessage.message.contains("duplicate key value") =>
         logger.error("Database exception - already exists. Ignoring. Error message: " +  ex.errorMessage, ex)
         Future.successful(new QueryResult(0, "")) // Ignores and returns an empty query result
-      case ex => Future.failed(ex)
+      case ex =>
+        logger.info(s"Unhandled exception on insert place.")
+        Future.failed(ex)
     }
   }
 
