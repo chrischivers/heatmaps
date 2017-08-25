@@ -5,7 +5,8 @@ import heatmaps.config.ConfigLoader
 import heatmaps.db._
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
-import scala.concurrent.Await
+
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
@@ -28,6 +29,13 @@ object ScannerApp extends App with StrictLogging {
       _ = logger.info(s"Inserted ${scanResults.size} places into DB table")
       _ <- regionStatusTable.updateRegionScanCompleted(latLngRegion, placeType.name(), scanResults.size)
       _ = logger.info(s"Recorded $latLngRegion region as scan complete with ${scanResults.size} places")
+      _ <- Future.sequence(scanResults.map(result => {
+          placesApiRetriever.getNameForPlaceId(result.placeId).flatMap(name => {
+            logger.info(s"Names fetched Will now update")
+            placesTable.updatePlace(result.placeId, placeType.name(), name)
+          })
+       }))
+      _ = logger.info(s"Names fetched and db records updated for $latLngRegion region")
     } yield (), 99 hours)
   }
 }
