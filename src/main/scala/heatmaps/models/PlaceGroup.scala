@@ -25,6 +25,6 @@ case object Starbucks extends PlaceSubType {
 
 object PlaceSubType {
   def fromString(str: String): Option[PlaceSubType] = {
-    List(McDonalds).find(_.name == str.toUpperCase)
+    List(McDonalds, Starbucks).find(_.name == str.toUpperCase)
   }
 }
