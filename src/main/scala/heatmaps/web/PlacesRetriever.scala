@@ -14,38 +14,58 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
 
   implicit private val scalaCache = ScalaCache(GuavaCache())
 
-  private def storeInCache(latLngRegion: LatLngRegion, placeType: PlaceType, placeList: List[Place]): Future[Unit] = {
+  private def storeInCache(latLngRegion: LatLngRegion, placeType: PlaceType, placeList: List[Place], zoom: Int): Future[Unit] = {
     logger.info(s"Adding $latLngRegion to cache")
-    put(latLngRegion.toString, placeType.name())(placeList, ttl = Some(cacheConfig.timeToLive))
+    put(latLngRegion.toString, placeType.name(), zoom)(placeList, ttl = Some(cacheConfig.timeToLive))
   }
 
-  private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType, placeSubType: Option[PlaceSubType]): Future[Option[List[Place]]] =
-    get[List[Place], NoSerialization](latLngRegion.toString, placeType.name()).map(_.map(list => {
-      placeSubType.fold(list)(subType => list.filter(place => place.placeSubType.contains(subType.name)))
+  private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType, placeSubTypeOpt: Option[PlaceSubType], zoomOpt: Option[Int]): Future[Option[List[Place]]] = {
+    logger.info(s"Attempting to get region $latLngRegion from cache (placetype: ${placeType.name()}, subtype: $placeSubTypeOpt, zoom: $zoomOpt)")
 
-    }))
+    def getRecordsForZoomRange(fromZoom: Int, toZoom: Int): Future[Option[List[Place]]] = {
+      logger.info(s"Getting cached records for region $latLngRegion and zoom range $fromZoom -> $toZoom")
+      Future.sequence((fromZoom to toZoom).toList.map(zoom => {
+        print("Here: " + zoom)
+        get[List[Place], NoSerialization](latLngRegion.toString, placeType.name(), zoom).map(_.map(list => {
+          placeSubTypeOpt.fold(list)(subType => list.filter(place => place.placeSubType.contains(subType.name)))
+        })
+        )
+      }))
+    }.map(x => if (x.exists(_.isEmpty)) None else Some(x.flatten).map(_.flatten))
 
-  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, latLngBounds: Option[LatLngBounds] = None, zoom: Option[Int] = None): Future[List[Place]] = {
+    zoomOpt match {
+      case Some(zoom) => getRecordsForZoomRange(2, zoom) //TODO put in config
+      case None => getRecordsForZoomRange(2, 18) //TODO put in config
+    }
+  }
+
+  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, latLngBounds: Option[LatLngBounds] = None, zoomOpt: Option[Int] = None): Future[List[Place]] = {
     logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
     for {
-      cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType, placeSubType).map(res => (region, res))))
+      cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType, placeSubType, zoomOpt).map(res => (region, res))))
+      _ = logger.info(s"$cachedResults returned from cache")
       (inCache, notInCache) = cachedResults.partition(_._2.isDefined)
-      _ = logger.info(s"Unable to find latLngRegions $notInCache in cache. Getting from DB")
-      resultsFromDb <- placesTable.getPlacesForLatLngRegions(notInCache.map(_._1), placeType, placeSubType)
-      _ = logger.info(s"Retrieved ${resultsFromDb.size} records from DB.")
+      resultsFromDb <- if (notInCache.nonEmpty) {
+        logger.info(s"Unable to get latLngRegions $notInCache in cache for zoom $zoomOpt. Getting from DB")
+        placesTable.getPlacesForLatLngRegions(notInCache.map(_._1), placeType, placeSubType, zoomOpt)
+      } else Future(List.empty)
 
     } yield {
 
       if (placeSubType.isEmpty) {
-        // Only persist to cache if no subtype defined - otherwise cached record will be partial
-        Future.sequence(notInCache.map(latLngReg =>
-          storeInCache(latLngReg._1, placeType, resultsFromDb.filter(_.latLngRegion == latLngReg._1))))
-          .onComplete {
+        // Only persist to cache if no subtype  - otherwise cached record will be partial
+        zoomOpt.fold(()) { _ =>
+          Future.sequence(notInCache.flatMap(latLngReg =>
+            resultsFromDb.groupBy(_.zoom).map { case (zoom, results) =>
+              zoom.fold(Future(()))(z => storeInCache(latLngReg._1, placeType, results, z))
+            }
+          )).onComplete {
             case Success(_) => logger.info(s"Successfully persisted ${notInCache.map(_._1)} regions to cache")
             case Failure(e) =>
               logger.error(s"Error persisting ${notInCache.map(_._1)} regions to cache", e)
               throw e
           }
+        }
       }
 
       val result: Set[Place] = (inCache.flatMap(_._2).flatten ++ resultsFromDb).toSet

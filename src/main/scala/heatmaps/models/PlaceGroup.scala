@@ -37,7 +37,10 @@ case object Travelodge extends PlaceSubType {
 
 
 object PlaceSubType {
+
+  val allSubTypes = List(McDonalds, Starbucks, BurgerKing, Travelodge)
+
   def fromString(str: String): Option[PlaceSubType] = {
-    List(McDonalds, Starbucks, BurgerKing, Travelodge).find(_.name == str.toUpperCase)
+    allSubTypes.find(_.name == str.toUpperCase)
   }
 }

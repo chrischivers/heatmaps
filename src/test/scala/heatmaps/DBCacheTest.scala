@@ -1,11 +1,11 @@
 package heatmaps
 
 import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
-import com.google.maps.model.PlaceType
+import com.google.maps.model.{PlaceType, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.LatLngRegion
+import heatmaps.models.{LatLngRegion, McDonalds}
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
 import org.scalatest.Matchers._
@@ -14,7 +14,9 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.fixture
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.util.Random
 
 class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging {
 
@@ -110,5 +112,93 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
     results.size shouldBe locationScanResult1.size + locationScanResult2.size
     results.map(_.placeId) should contain allElementsOf locationScanResult1.map(_.placeId) ++ locationScanResult2.map(_.placeId)
 
+  }
+
+  test("places fetched from cache are filtered by place subtype if provided") { f =>
+
+    val schema = f.placesTable.schema
+    val placeIdsAndNames = (1 to 42).map(i => (s"Id$i", Random.nextString(10)))
+    val latLngRegion = LatLngRegion(3,101)
+    val placeType = PlaceType.RESTAURANT
+    val placeSubType = McDonalds
+    val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig)
+    val zoom = 2
+
+    val statement =
+      s"""
+         |
+         |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.placeName}, ${schema.minZoomLevel}, ${schema.lastUpdated})
+         |    VALUES (?,?,?,?,?,?,?,'now');
+         |
+      """.stripMargin
+
+    Future.sequence(placeIdsAndNames.map{ case(placeId, name) =>
+      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, placeType.name(), latLngRegion.toString, latLngRegion.lat, latLngRegion.lng,
+        if(placeId == "Id1") "McDonald's" else name, zoom))
+    }).futureValue
+
+    f.placesTable.updateSubtypes(placeSubType).futureValue
+
+    val fromDb = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(zoom)).futureValue
+    fromDb should have size 42
+
+    f.placesTable.dropTable.futureValue
+    f.placesTable.createTable.futureValue
+
+    val fromCache = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(zoom)).futureValue
+    fromCache should have size 42
+
+    val fromCacheWithSubType = placesDBRetriever.getPlaces(List(latLngRegion), placeType, Some(McDonalds), None, Some(zoom)).futureValue
+    fromCacheWithSubType should have size 1
+  }
+
+  test("places fetched from cache correspond to zoom level (correct cache logic)") { f =>
+
+    val schema = f.placesTable.schema
+    val placeIdsWithIndex = (1 to 42).map(i => s"Id$i").zipWithIndex
+    val latLngRegion = LatLngRegion(3,101)
+    val placeType = PlaceType.RESTAURANT
+    val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig)
+
+    val statement =
+      s"""
+         |
+         |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.minZoomLevel}, ${schema.lastUpdated})
+         |    VALUES (?,?,?,?,?,?,'now');
+         |
+      """.stripMargin
+
+    Future.sequence(placeIdsWithIndex.map{ case(placeId, index) =>
+      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, placeType.name(), latLngRegion.toString, latLngRegion.lat, latLngRegion.lng,
+        if(index % 2 == 0) 2 else 3))
+    }).futureValue
+
+    val fromDb1 = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(2)).futureValue
+    fromDb1 should have size 21
+
+    val fromDb2 = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(3)).futureValue
+    fromDb2 should have size 42
+
+    val fromDb3 = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(4)).futureValue
+    fromDb3 should have size 42
+
+    val fromDBWithNoneZoom = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, None).futureValue
+    fromDBWithNoneZoom should have size 42
+
+    f.placesTable.dropTable.futureValue
+    f.placesTable.createTable.futureValue
+
+    val fromCache1 = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(2)).futureValue
+    fromCache1 should have size 21
+
+    val fromCache2 = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(3)).futureValue
+    fromCache2 should have size 42
+
+    // Result set will be empty as cache does not hold enough information to get all zoom range
+    val fromCache3 = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, Some(4)).futureValue
+    fromCache3 should have size 0
+
+    val fromCacheWithNoneZoom = placesDBRetriever.getPlaces(List(latLngRegion), placeType, None, None, None).futureValue
+    fromCacheWithNoneZoom should have size 0
   }
 }

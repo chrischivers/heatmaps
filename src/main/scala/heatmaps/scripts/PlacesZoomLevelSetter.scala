@@ -1,22 +1,22 @@
 package heatmaps.scripts
 
+import com.google.maps.model.PlaceType
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.config.{ConfigLoader, Definitions}
+import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.{PlaceSubType, Starbucks}
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-object PlaceSubTypeSetter extends App with StrictLogging {
+object PlacesZoomLevelSetter extends App with StrictLogging {
   val config = ConfigLoader.defaultConfig
   val db = new PostgresDB(config.dBConfig)
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
+  val zoomRange = 2 to 18
 
-  Definitions.placeGroups.foreach { placeGroup =>
-    placeGroup.subTypes.foreach { subtype =>
-      Await.result(placesTable.updateSubtypes(subtype), 10 minutes)
-    }
+  zoomRange.foreach { zoom =>
+    Await.result(placesTable.updateMinZooms(zoom, PlaceType.RESTAURANT), 120 minutes)
   }
+
 }

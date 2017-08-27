@@ -77,8 +77,10 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
       val boundsConverted = getBounds(bounds)
       val placeTypeConverted = PlaceType.valueOf(placeType)
       val subTypeOpt: Option[PlaceSubType] = if(subType.toUpperCase() == "ALL") None else PlaceSubType.fromString(subType)
+      //TODO set these in config
+      val zoomCorrected = if (zoom.toInt > 18) 18 else if (zoom.toInt < 2) 2 else zoom.toInt
       val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), Some(zoom.toInt)) //Ignoring density for now
+      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), Some(zoomCorrected)) //Ignoring density for now
         .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
       Ok(jsonStr)
     }

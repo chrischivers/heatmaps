@@ -82,13 +82,15 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, zoom: Option[Int] = None): Future[List[Place]] = {
     if (latLngRegions.isEmpty) Future(List.empty)
     else {
-      logger.info(s"getting places for latLngRegions $latLngRegions from DB")
+      logger.info(s"getting places for latLngRegions $latLngRegions from DB with place type ${placeType.name()}, placeSubType $placeSubType and zoom $zoom")
+      println("QUERY: " +  zoom.fold("")(zoom => s"AND ${schema.minZoomLevel} <= '${zoom.toString}'"))
       val query =
         s"SELECT * " +
         s"FROM ${schema.tableName} " +
         s"WHERE ${schema.latLngRegion} IN (${latLngRegions.map(str => s"'${str.toString}'").mkString(",")}) " +
         s"AND ${schema.placeType} = ? " +
-        placeSubType.fold("")(subType => s"AND ${schema.placeSubType} = '${subType.name}'")
+        placeSubType.fold("")(subType => s"AND ${schema.placeSubType} = '${subType.name}' ") +
+        zoom.fold("")(zoom => s"AND ${schema.minZoomLevel} <= '${zoom.toString}'")
       for {
         _ <- db.connectToDB
         queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.name()))
@@ -101,6 +103,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
               Option(res.apply(schema.placeName).asInstanceOf[String]),
               res.apply(schema.placeType).asInstanceOf[String],
               Option(res.apply(schema.placeSubType).asInstanceOf[String]),
+              Option(res.apply(schema.minZoomLevel).asInstanceOf[Int]),
               new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble),
               LatLngRegion(latLngRegStr(0).toInt, latLngRegStr(1).toInt)
             )
@@ -112,7 +115,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def countPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Long] = {
-    logger.info(s"getting count of places for latLngRegions $latLngRegion from DB")
+    logger.info(s"getting count of places for latLngRegions $latLngRegion and place type ${placeType.name()} from DB")
     val query =
       s"SELECT COUNT(*) " +
         s"FROM ${schema.tableName} " +
@@ -125,6 +128,25 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
          res.apply("count").asInstanceOf[Long]
+        }).toList.headOption.fold(throw new RuntimeException("Unable to get count of places from DB"))(identity)
+        case None => throw new RuntimeException("Unable to get count of places from DB")
+      }
+    }
+  }
+
+  def countPlacesForPlaceType(placeType: PlaceType): Future[Long] = {
+    logger.info(s"getting count of places for place type ${placeType.name()} from DB")
+    val query =
+      s"SELECT COUNT(*) " +
+        s"FROM ${schema.tableName} " +
+        s"WHERE ${schema.placeType} = ?"
+    for {
+      _ <- db.connectToDB
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.name()))
+    } yield {
+      queryResult.rows match {
+        case Some(resultSet) => resultSet.map(res => {
+          res.apply("count").asInstanceOf[Long]
         }).toList.headOption.fold(throw new RuntimeException("Unable to get count of places from DB"))(identity)
         case None => throw new RuntimeException("Unable to get count of places from DB")
       }
@@ -204,5 +226,26 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     Future.sequence(subType.searchMatches.map { searchMatch =>
       db.connectionPool.sendPreparedStatement(statement, List(subType.name, subType.parentType.name(), searchMatch.toUpperCase + "%"))
     })
+  }
+
+  def updateMinZooms(minZoomToSet: Int, placeType: PlaceType, minPossibleZoom: Int = 2, maxPossibleZoom: Int = 18): Future[QueryResult] = {
+    val numberOfZoomLevels = (maxPossibleZoom - minPossibleZoom) + 1
+    logger.info(s"Updating minZoom $minZoomToSet for place type ${placeType.name()}")
+    for {
+      numberRecordsForPlaceType <- countPlacesForPlaceType(placeType)
+      _ = logger.info(s"$numberRecordsForPlaceType records retrieved from DB for place type ${placeType.name()}")
+      statement =
+      s"UPDATE ${schema.tableName} " +
+        s"SET ${schema.minZoomLevel} = ?, ${schema.lastUpdated} = 'now' " +
+        s"WHERE (${schema.placeId}, ${schema.placeType}) IN " +
+            s"(SELECT p.${schema.placeId}, p.${schema.placeType} " +
+            s"FROM ${schema.tableName} p " +
+            s"WHERE p.${schema.placeType} = ? " +
+            s"AND p.${schema.minZoomLevel} IS NULL " +
+            s"ORDER BY RANDOM() " +
+            s"LIMIT ${numberRecordsForPlaceType / numberOfZoomLevels})"
+
+      queryResult <- db.connectionPool.sendPreparedStatement(statement, List(minZoomToSet, placeType.name()))
+    } yield queryResult
   }
 }

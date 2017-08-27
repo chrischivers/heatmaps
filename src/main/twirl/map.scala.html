@@ -61,6 +61,7 @@
               getPlaceGroupData();
 
               google.maps.event.addListener(map, 'idle', function () {
+                  alert(map.getZoom());
                   plotHeatMap(map.getBounds(), placeType, placeSubType, map.getZoom());
               });
 
