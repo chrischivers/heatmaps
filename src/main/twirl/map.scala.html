@@ -28,7 +28,7 @@
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Restaurants
+                        Restaurants
                     </button>
                     <div class="dropdown-menu" id="place-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceType"></div>
                 </div>
@@ -46,25 +46,23 @@
           var map;
           var heatmap;
           var placeType = "RESTAURANT";
+          var placeSubType = "All";
           var city = "London";
           var placeGroupData;
-          var placeTypesDropdown = document.getElementById("place-type-dropdown-menu");
-          var placeSubTypeDropdown = document.getElementById("place-sub-type-dropdown-menu");
 
 
           function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-              center: {lat: 51.505485, lng: -0.127889},
-              zoom: 14
-            });
+              map = new google.maps.Map(document.getElementById('map'), {
+                  center: {lat: 51.505485, lng: -0.127889},
+                  zoom: 14
+              });
 
+              getCities();
+              getPlaceGroupData();
 
-            getCities();
-            getPlaceGroupData();
-
-            google.maps.event.addListener(map, 'idle', function () {
-              plotHeatMap(map.getBounds(), placeType, "All", map.getZoom());
-            });
+              google.maps.event.addListener(map, 'idle', function () {
+                  plotHeatMap(map.getBounds(), placeType, placeSubType, map.getZoom());
+              });
 
           }
 
@@ -123,19 +121,19 @@
               xmlhttp.onreadystatechange = function () {
                   if (this.readyState === 4 && this.status === 200) {
                       var citiesArray = JSON.parse(this.responseText);
-                      var cityDropdown = document.getElementById("city-dropdown-menu");
+                      var cityDropdown = $("#city-dropdown-menu");
                       for (var i in citiesArray) {
                           var c = citiesArray[i];
                           var a = document.createElement('a');
                           a.className = "dropdown-item";
                           a.id = c;
                           a.text = c;
-                          a.addEventListener("click",function() {
+                          a.addEventListener("click", function () {
                               city = this.id;
                               setCityDefaultView(this.id);
                               $(this).closest(".btn-group").find('.btn').text(this.id);
                           });
-                          cityDropdown.appendChild(a);
+                          cityDropdown.append(a);
                       }
                   }
               };
@@ -143,13 +141,36 @@
               xmlhttp.send();
           }
 
-          function setPlaceGroupsMenu() {
+          function setPlaceMenusStartingState() {
 
+              setPlaceTypesMenu();
+              setSubTypesMenuForParent(placeType);
+          }
+
+          function setPlaceTypesMenu() {
+              var placeTypesDropdown = $("#place-type-dropdown-menu");
               for (var i in placeGroupData) {
-                  var dropDownItem = createPlaceTypeDropDownElement(placeGroupData[i].placeType.name);
-                  placeTypesDropdown.appendChild(dropDownItem);
-
+                  var dropDownTypeItem = createPlaceTypeDropDownElement(placeGroupData[i].placeType.name);
+                  placeTypesDropdown.append(dropDownTypeItem);
               }
+          }
+
+          function setSubTypesMenuForParent(parentId) {
+
+              var subTypeDropdown = $("#place-sub-type-dropdown-menu");
+              subTypeDropdown.children().remove();
+              subTypeDropdown.append(createSubTypeDropDownElement("All", parentId));
+
+              for (var j in placeGroupData) {
+                  if (placeGroupData[j].placeType.name === parentId) {
+                      for (var k in placeGroupData[j].subTypes) {
+                          var subType = placeGroupData[j].subTypes[k].name;
+                          var dropDownItem = createSubTypeDropDownElement(subType, parentId);
+                          subTypeDropdown.append(dropDownItem);
+                      }
+                  }
+              }
+              subTypeDropdown.closest(".btn-group").find('.btn').text("All");
           }
 
           function createPlaceTypeDropDownElement(placeTypeName) {
@@ -162,25 +183,10 @@
                   plotHeatMap(map.getBounds(), this.id, "All", map.getZoom());
                   $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
 
-
-                  $("#place-sub-type-dropdown-menu").children().remove();
-
-                  placeSubTypeDropdown.appendChild(createSubTypeDropDownElement("All", this.id));
-
-                  for(var j in placeGroupData) {
-                      if (placeGroupData[j].placeType.name === this.id) {
-                          for (var k in placeGroupData[j].subTypes) {
-                              var subType = placeGroupData[j].subTypes[k].name;
-                              var dropDownItem = createSubTypeDropDownElement(subType, this.id);
-                              placeSubTypeDropdown.appendChild(dropDownItem);
-                          }
-                      }
-                  }
-
+                  setSubTypesMenuForParent(this.id);
               });
               return a;
           }
-
 
           function createSubTypeDropDownElement(subTypeName, parentName) {
               var b = document.createElement('a');
@@ -189,6 +195,7 @@
               b.id = subTypeName;
               b.text = toTitleCase(subTypeName);
               b.addEventListener("click", function () {
+                  placeSubType = this.id;
                   plotHeatMap(map.getBounds(), this.parentPlaceType, this.id, map.getZoom());
                   $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id));
               });
@@ -200,7 +207,7 @@
               xmlhttp.onreadystatechange = function () {
                   if (this.readyState === 4 && this.status === 200) {
                       placeGroupData = JSON.parse(this.responseText);
-                      setPlaceGroupsMenu();
+                      setPlaceMenusStartingState();
                   }
               };
               xmlhttp.open("GET", "/placegroups", true);
@@ -209,7 +216,9 @@
 
 
           function toTitleCase(str) {
-              return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+              return str.replace(/\w\S*/g, function (txt) {
+                  return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+              });
           }
 
         </script>

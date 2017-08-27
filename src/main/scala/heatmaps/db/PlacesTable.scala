@@ -78,7 +78,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     }
   }
 
-  def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType): Future[List[Place]] = {
+  def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None): Future[List[Place]] = {
     if (latLngRegions.isEmpty) Future(List.empty)
     else {
       logger.info(s"getting places for latLngRegions $latLngRegions from DB")
@@ -86,7 +86,8 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         s"SELECT * " +
         s"FROM ${schema.tableName} " +
         s"WHERE ${schema.latLngRegion} IN (${latLngRegions.map(str => s"'${str.toString}'").mkString(",")}) " +
-        s"AND ${schema.placeType} = ?"
+        s"AND ${schema.placeType} = ? " +
+        placeSubType.fold("")(subType => s"AND ${schema.placeSubType} = '${subType.name}'")
       for {
         _ <- db.connectToDB
         queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.name()))

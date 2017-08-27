@@ -20,7 +20,7 @@
   "place-groups" : [
     {
       "type" : "RESTAURANT",
-      "sub-type" : ["MCDONALDS", "BURGER KING"]
+      "sub-type" : ["MCDONALDS", "BURGERKING"]
     },
     {
       "type" : "CAFE",

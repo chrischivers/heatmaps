@@ -36,6 +36,6 @@ object ScannerApp extends App with StrictLogging {
           })
        }))
       _ = logger.info(s"Names fetched and db records updated for $latLngRegion region")
-    } yield (), 99 hours)
+    } yield (), 999 hours)
   }
 }
