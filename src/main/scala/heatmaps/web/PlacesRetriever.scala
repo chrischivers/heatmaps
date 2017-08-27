@@ -25,7 +25,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
 
     }))
 
-  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, latLngBounds: Option[LatLngBounds] = None, density: Option[Density] = None): Future[List[Place]] = {
+  def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, latLngBounds: Option[LatLngBounds] = None, zoom: Option[Int] = None): Future[List[Place]] = {
     logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
     for {
       cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType, placeSubType).map(res => (region, res))))
@@ -36,14 +36,17 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
 
     } yield {
 
-      Future.sequence(notInCache.map(latLngReg =>
-        storeInCache(latLngReg._1, placeType, resultsFromDb.filter(_.latLngRegion == latLngReg._1))))
-        .onComplete {
-          case Success(_) => logger.info(s"Successfully persisted ${notInCache.map(_._1)} regions to cache")
-          case Failure(e) =>
-            logger.error(s"Error persisting ${notInCache.map(_._1)} regions to cache", e)
-            throw e
-        }
+      if (placeSubType.isEmpty) {
+        // Only persist to cache if no subtype defined - otherwise cached record will be partial
+        Future.sequence(notInCache.map(latLngReg =>
+          storeInCache(latLngReg._1, placeType, resultsFromDb.filter(_.latLngRegion == latLngReg._1))))
+          .onComplete {
+            case Success(_) => logger.info(s"Successfully persisted ${notInCache.map(_._1)} regions to cache")
+            case Failure(e) =>
+              logger.error(s"Error persisting ${notInCache.map(_._1)} regions to cache", e)
+              throw e
+          }
+      }
 
       val result: Set[Place] = (inCache.flatMap(_._2).flatten ++ resultsFromDb).toSet
       logger.info(s"getPlaces found ${result.size} results before latLng filtering")
@@ -55,17 +58,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
           logger.info("No bounds parameter set")
           result
       }
-
-      val resultsAtDensity = density match {
-        case Some(d) =>
-          logger.info(s"Density parameter set at ${d.value}")
-          resultsWithinBounds.take((resultsWithinBounds.size * (d.value / 100)).toInt)
-        case None =>
-          logger.info("No density parameter set")
-          resultsWithinBounds
-      }
-      logger.info(s"getPlaces returning ${resultsAtDensity.size} results after latLng filtering")
-      resultsAtDensity.toList
+      resultsWithinBounds.toList
     }
   }
 

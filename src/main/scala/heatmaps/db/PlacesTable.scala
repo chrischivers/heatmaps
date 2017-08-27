@@ -39,6 +39,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
            |    ${schema.latLngRegion} varchar,
            |    ${schema.lat} real NOT NULL,
            |    ${schema.lng} real NOT NULL,
+           |    ${schema.minZoomLevel} integer,
            |    ${schema.lastUpdated} timestamp NOT NULL,
            |    PRIMARY KEY(${schema.primaryKey.mkString(",")})
            |);
@@ -78,7 +79,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     }
   }
 
-  def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None): Future[List[Place]] = {
+  def getPlacesForLatLngRegions(latLngRegions: List[LatLngRegion], placeType: PlaceType, placeSubType: Option[PlaceSubType] = None, zoom: Option[Int] = None): Future[List[Place]] = {
     if (latLngRegions.isEmpty) Future(List.empty)
     else {
       logger.info(s"getting places for latLngRegions $latLngRegions from DB")

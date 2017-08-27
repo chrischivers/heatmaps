@@ -11,6 +11,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.fixture
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
@@ -83,6 +84,42 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     resultsFromDB.size shouldBe locationScanResult1.size + locationScanResult2.size
     resultsFromDB.map(_.placeId) should contain allElementsOf locationScanResult1.map(_.placeId) ++ locationScanResult2.map(_.placeId)
 
+  }
+
+  test("Place results persisted to DB should correspond to correct zoom level ") { f =>
+    val schema = f.placesTable.schema
+    val placeIdsAndMinZooms = List(("Id1", 5), ("Id2", 10), ("Id3", 15))
+    val latLngRegion = LatLngRegion(3,101)
+    val placeType = PlaceType.RESTAURANT
+    val statement =
+      s"""
+         |
+         |INSERT INTO ${schema.tableName} (${schema.placeId}, ${schema.placeType}, ${schema.latLngRegion}, ${schema.lat}, ${schema.lng}, ${schema.minZoomLevel}, ${schema.lastUpdated})
+         |    VALUES (?,?,?,?,?,?,'now');
+         |
+      """.stripMargin
+
+    Future.sequence(placeIdsAndMinZooms.map{ case(placeId, minZoom) =>
+      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, PlaceType.RESTAURANT.name(), latLngRegion.toString, latLngRegion.lat, latLngRegion.lng, minZoom))
+    }).futureValue
+
+   val regionsAtZoom1 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, zoom =  Some(1)).futureValue
+    regionsAtZoom1 should have size 0
+
+    val regionsAtZoom5 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, zoom =  Some(5)).futureValue
+    regionsAtZoom5 should have size 1
+
+    val regionsAtZoom9 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, zoom =  Some(9)).futureValue
+    regionsAtZoom9 should have size 1
+
+    val regionsAtZoom10 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, zoom =  Some(10)).futureValue
+    regionsAtZoom10 should have size 2
+
+    val regionsAtZoom15 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, zoom =  Some(15)).futureValue
+    regionsAtZoom15 should have size 3
+
+    val regionsAtZoom16 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, zoom =  Some(16)).futureValue
+    regionsAtZoom16 should have size 3
   }
 
   test("A record in places table can be updated with a name and a subtype added") { f =>

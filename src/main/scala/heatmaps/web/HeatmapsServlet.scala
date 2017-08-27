@@ -22,8 +22,6 @@ object PlaceSubTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("p
 object CityDefaultViewQueryParamMatcher extends QueryParamDecoderMatcher[String]("city")
 object ZoomQueryParamMatcher extends QueryParamDecoderMatcher[String]("zoom")
 
-case class Density(value: Double)
-
 class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging {
 
   import HeatmapsServlet._
@@ -77,11 +75,10 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
       :? ZoomQueryParamMatcher(zoom) =>
       logger.info(s"Servlet handling heatpoints request for bounds $bounds, placeType $placeType, placeSubType $subType")
       val boundsConverted = getBounds(bounds)
-      val density = zoomToDensity(zoom.toInt)
       val placeTypeConverted = PlaceType.valueOf(placeType)
       val subTypeOpt: Option[PlaceSubType] = if(subType.toUpperCase() == "ALL") None else PlaceSubType.fromString(subType)
       val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), None) //Ignoring density for now
+      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), Some(zoom.toInt)) //Ignoring density for now
         .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
       Ok(jsonStr)
     }
@@ -92,13 +89,5 @@ object HeatmapsServlet extends StrictLogging {
   def getBounds(boundsStr: String): LatLngBounds = {
     val boundsSplit = boundsStr.replaceAll("[() ]", "").split(",").map(_.toDouble)
     LatLngBounds(new LatLng(boundsSplit(0), boundsSplit(1)), new LatLng(boundsSplit(2), boundsSplit(3)))
-  }
-
-  //Returns the density (%) of places required based on zoom level
-  def zoomToDensity(zoom: Int): Density = {
-    val minZoom = 1
-    val maxZoom = 20
-    val normalisedZoom = if (zoom < minZoom) minZoom else if (zoom > maxZoom) maxZoom else zoom
-    Density(normalisedZoom * (100.0 / maxZoom))
   }
 }

@@ -13,6 +13,7 @@ case class PlaceTableSchema(
                              latLngRegion: String = "lat_lng_region",
                              lat: String = "lat",
                              lng: String = "lng",
+                             minZoomLevel: String = "min_zoom",
                              lastUpdated: String = "last_updated") extends Schema {
   override val primaryKey: List[String] = List(placeId, placeType)
 }
