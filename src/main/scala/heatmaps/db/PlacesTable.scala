@@ -83,7 +83,6 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     if (latLngRegions.isEmpty) Future(List.empty)
     else {
       logger.info(s"getting places for latLngRegions $latLngRegions from DB with place type ${placeType.name()}, placeSubType $placeSubType and zoom $zoom")
-      println("QUERY: " +  zoom.fold("")(zoom => s"AND ${schema.minZoomLevel} <= '${zoom.toString}'"))
       val query =
         s"SELECT * " +
         s"FROM ${schema.tableName} " +
@@ -228,24 +227,29 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     })
   }
 
-  def updateMinZooms(minZoomToSet: Int, placeType: PlaceType, minPossibleZoom: Int = 2, maxPossibleZoom: Int = 18): Future[QueryResult] = {
+  def updateZooms(placeType: PlaceType, minPossibleZoom: Int = 2, maxPossibleZoom: Int = 18): Unit = {
     val numberOfZoomLevels = (maxPossibleZoom - minPossibleZoom) + 1
-    logger.info(s"Updating minZoom $minZoomToSet for place type ${placeType.name()}")
-    for {
-      numberRecordsForPlaceType <- countPlacesForPlaceType(placeType)
-      _ = logger.info(s"$numberRecordsForPlaceType records retrieved from DB for place type ${placeType.name()}")
-      statement =
-      s"UPDATE ${schema.tableName} " +
-        s"SET ${schema.minZoomLevel} = ?, ${schema.lastUpdated} = 'now' " +
-        s"WHERE (${schema.placeId}, ${schema.placeType}) IN " +
-            s"(SELECT p.${schema.placeId}, p.${schema.placeType} " +
-            s"FROM ${schema.tableName} p " +
-            s"WHERE p.${schema.placeType} = ? " +
-            s"AND p.${schema.minZoomLevel} IS NULL " +
-            s"ORDER BY RANDOM() " +
-            s"LIMIT ${numberRecordsForPlaceType / numberOfZoomLevels})"
+    logger.info(s"Updating zooms for place type ${placeType.name()} with $numberOfZoomLevels zoom levels")
+    (minPossibleZoom to maxPossibleZoom).toList.foreach(zoom => {
+      logger.info(s"Processing zoom level $zoom")
+      Await.result(for {
+        numberRecordsForPlaceType <- countPlacesForPlaceType(placeType)
+        recordsForEach = numberRecordsForPlaceType / numberOfZoomLevels
+        remainder = numberRecordsForPlaceType - (recordsForEach * numberOfZoomLevels)
+        _ = logger.info(s"$numberRecordsForPlaceType records retrieved from DB for place type ${placeType.name()}")
+        statement =
+        s"UPDATE ${schema.tableName} " +
+          s"SET ${schema.minZoomLevel} = ?, ${schema.lastUpdated} = 'now' " +
+          s"WHERE (${schema.placeId}, ${schema.placeType}) IN " +
+              s"(SELECT p.${schema.placeId}, p.${schema.placeType} " +
+              s"FROM ${schema.tableName} p " +
+              s"WHERE p.${schema.placeType} = ? " +
+              s"AND p.${schema.minZoomLevel} IS NULL " +
+              s"ORDER BY RANDOM() " +
+              s"LIMIT ${if (zoom == maxPossibleZoom) recordsForEach + remainder else recordsForEach})"
 
-      queryResult <- db.connectionPool.sendPreparedStatement(statement, List(minZoomToSet, placeType.name()))
-    } yield queryResult
+        queryResult <- db.connectionPool.sendPreparedStatement(statement, List(zoom, placeType.name()))
+      } yield queryResult, 2 hours)
+    })
   }
 }

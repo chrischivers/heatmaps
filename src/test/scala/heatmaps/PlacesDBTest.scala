@@ -144,18 +144,12 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     }).futureValue.filter(queryResult => queryResult.rowsAffected == 0) should have size 0
 
     val zoomRange = 0 to 20
-    Future.sequence(zoomRange.map { zoom =>
-      f.placesTable.updateMinZooms(minZoomToSet = zoom, placeType, minPossibleZoom = 0, maxPossibleZoom = 20)
-    }).futureValue
+    f.placesTable.updateZooms(placeType, minPossibleZoom = 0, maxPossibleZoom = 20)
 
     zoomRange.foreach { zoom =>
       val results = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeType, None, Some(zoom)).futureValue
       results should have size ((zoom + 1) * 2)
     }
-
-    Future.sequence(zoomRange.map { zoom =>
-      f.placesTable.updateMinZooms(minZoomToSet = zoom, placeType, minPossibleZoom = 0, maxPossibleZoom = 20)
-    }).futureValue.filter(queryResult => queryResult.rowsAffected > 0) should have size 0
   }
 
   test("A record in places table can be updated with a name and a subtype added") { f =>

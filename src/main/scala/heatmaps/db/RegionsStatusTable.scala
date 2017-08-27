@@ -64,8 +64,8 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
   def getRegionsFor(placeType: String): Future[List[LatLngRegion]] = {
     val query =
       s"SELECT * " +
-      s"FROM ${schema.tableName} " +
-      s"WHERE ${schema.placeType} = ?"
+        s"FROM ${schema.tableName} " +
+        s"WHERE ${schema.placeType} = ?"
     for {
       _ <- db.connectToDB
       queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType))
@@ -115,17 +115,20 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
     logger.info(s"getting next region to process from RegionsStatus DB")
     val updateAndQuery =
       s"UPDATE ${schema.tableName} " +
-      s"SET ${schema.lastScanStarted} = 'now' " +
-      s"WHERE (${schema.regionName}, ${schema.placeType}) IN " +
-        s"(SELECT p.${schema.regionName}, p.${schema.placeType} " +
-        s"FROM ${schema.tableName} p " +
-        s"WHERE p.${schema.lastScanStarted} IS NULL " +
-        s"ORDER BY p.${schema.placeType} ASC, p.${schema.regionName} ASC " +
-        s"LIMIT 1) " +
-      s"RETURNING *"
+        s"SET ${schema.lastScanStarted} = 'now' " +
+        s"WHERE (${schema.regionName}, ${schema.placeType}) IN " +
+            s"(SELECT p.${schema.regionName}, p.${schema.placeType} " +
+            s"FROM ${schema.tableName} p " +
+            s"WHERE p.${schema.lastScanStarted} IS NULL " +
+            s"ORDER BY p.${schema.placeType} ASC, p.${schema.regionName} ASC " +
+            s"LIMIT 1) " +
+            s"RETURNING *"
     for {
       _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(updateAndQuery)
+      queryResult <- db.connectionPool.inTransaction { c =>
+        c.sendPreparedStatement(s"LOCK TABLE ${schema.tableName}")
+          .flatMap(_ => c.sendPreparedStatement(updateAndQuery))
+      }
     } yield {
       val results = queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
