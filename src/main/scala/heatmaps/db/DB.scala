@@ -6,6 +6,7 @@ import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.DBConfig
+import scala.concurrent.duration._
 
 import scala.concurrent.Future
 
@@ -34,7 +35,9 @@ class PostgresDB(dBConfig: DBConfig) extends DB[PostgreSQLConnection] {
   password = Some(dBConfig.password),
   host = dBConfig.host,
   port = dBConfig.port,
-  database = Some(dBConfig.dbName))
+  database = Some(dBConfig.dbName),
+  connectTimeout = 120.seconds,
+  testTimeout = 120.seconds)
 
   override val connectionPoolConfig: PoolConfiguration = new PoolConfiguration(maxObjects = 5, maxIdle = 5000, maxQueueSize = 100000)
   override val connection: ObjectFactory[PostgreSQLConnection] = new PostgreSQLConnectionFactory(connectionConfiguration)

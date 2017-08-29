@@ -25,7 +25,6 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
     def getRecordsForZoomRange(fromZoom: Int, toZoom: Int): Future[Option[List[Place]]] = {
       logger.info(s"Getting cached records for region $latLngRegion and zoom range $fromZoom -> $toZoom")
       Future.sequence((fromZoom to toZoom).toList.map(zoom => {
-        print("Here: " + zoom)
         get[List[Place], NoSerialization](latLngRegion.toString, placeType.name(), zoom).map(_.map(list => {
           placeSubTypeOpt.fold(list)(subType => list.filter(place => place.placeSubType.contains(subType.name)))
         })
