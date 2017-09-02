@@ -41,6 +41,30 @@
     {
       "type" : "LODGING",
       "sub-type" : ["TRAVELODGE"]
+    },
+    {
+      "type" : "STORE",
+      "sub-type" : []
+    },
+    {
+      "type" : "SCHOOL",
+      "sub-type" : []
+    },
+    {
+      "type" : "PARK",
+      "sub-type" : []
+    },
+    {
+      "type" : "MUSEUM",
+      "sub-type" : []
+    },
+    {
+      "type" : "BAR",
+      "sub-type" : []
+    },
+    {
+      "type": "BANK",
+      "sub-type": []
     }
   ]
 }

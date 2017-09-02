@@ -1,7 +1,8 @@
 package heatmaps.scripts
 
-import com.google.maps.model.PlaceType
+import com.google.maps.model.{PlaceType => GooglePlaceType}
 import com.typesafe.scalalogging.StrictLogging
+import heatmaps.ScannerApp.config
 import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
 import heatmaps.scanner.PlacesApiRetriever
@@ -20,7 +21,7 @@ object NullNameUpdater extends App with StrictLogging {
   Definitions.placeGroups.foreach(placeGroup => {
     val regionsWithNullPlaceNames = {
       logger.info("Getting regions containing null place names from DB")
-      val result = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(placeGroup.placeType), 10 minutes)
+      val result = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(placeGroup.placeCategory), 10 minutes)
       logger.info(s"${result.size} regions containing null place names")
       Random.shuffle(result)
     }
@@ -32,14 +33,15 @@ object NullNameUpdater extends App with StrictLogging {
            |**************
          """.stripMargin)
       Await.result({
-        placesTable.getPlacesForLatLngRegions(List(region), placeGroup.placeType)
+        placesTable.getPlacesForLatLngRegions(List(region), placeGroup.placeCategory)
           .map(_.filter(_.placeName.isEmpty)
             .foreach(place =>
               Await.result(for {
                 name <- placesApiRetriever.getNameForPlaceId(place.placeId)
-                _ <- placesTable.updatePlace(place.placeId, place.placeType, name)
+                zoomLevel = config.mapsConfig.minZoom + Random.nextInt((config.mapsConfig.maxZoom - config.mapsConfig.minZoom) + 1)
+                _ <- placesTable.updatePlace(place.placeId, placeGroup.placeCategory, name, zoomLevel)
               } yield {
-                logger.info(s"Sucessfully persisted ${place.placeId} to DB for place type ${placeGroup.placeType}")
+                logger.info(s"Sucessfully persisted ${place.placeId} to DB for place category ${placeGroup.placeCategory}")
               }, 24 hour)))
       }, 999 hours)
     }

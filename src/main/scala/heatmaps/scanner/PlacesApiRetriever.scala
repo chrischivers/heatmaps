@@ -9,6 +9,7 @@ import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
 import heatmaps.config.Config
 import heatmaps.metrics.MetricsLogging
+import heatmaps.models.Category
 import nl.grons.metrics.scala.{DefaultInstrumented, Meter}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,12 +38,12 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
 
   private val returnLimit = config.placesApiConfig.returnLimt
 
-  def getPlaces(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
+  def getPlaces(latLng: LatLng, radius: Int, category: Category): Future[List[PlacesSearchResult]] = {
     for {
-      placesFromApi <- getPlacesFromApi(latLng, radius, placeType)
+      placesFromApi <- getPlacesFromApi(latLng, radius, category)
       result <- if (placesFromApi.length > returnLimit) {
         logger.info(s"Size of response for $latLng with radius $radius exceeded $returnLimit. Size = ${placesFromApi.length}. Breaking down...")
-        getPlacesFromApiIfLimitReached(latLng, radius / 2, placeType)
+        getPlacesFromApiIfLimitReached(latLng, radius / 2, category)
       } else Future(placesFromApi)
     } yield result
   }
@@ -70,15 +71,15 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
     })
   }
 
-  private def getPlacesFromApi(latLng: LatLng, radius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
+  private def getPlacesFromApi(latLng: LatLng, radius: Int, category: Category): Future[List[PlacesSearchResult]] = {
     val apiKeyIndexInUse = activeApiKeyIndex.get()
-    Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(placeType).await().results.toList)
+    Future(PlacesApi.radarSearchQuery(context, latLng, radius).`type`(category.googlePlaceType).await().results.toList)
       .recoverWith {
         case ex: ApiException =>
           logger.error("Api exception", ex)
           logger.info("Changing API key")
           updateExpiredApiKey(apiKeyIndexInUse)
-          getPlacesFromApi(latLng, radius, placeType)
+          getPlacesFromApi(latLng, radius, category)
         case ex =>
           logger.error("Unknown exception thrown", ex)
           throw ex
@@ -89,14 +90,14 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
     }
   }
 
-  private def getPlacesFromApiIfLimitReached(latLng: LatLng, newRadius: Int, placeType: PlaceType): Future[List[PlacesSearchResult]] = {
+  private def getPlacesFromApiIfLimitReached(latLng: LatLng, newRadius: Int, category: Category): Future[List[PlacesSearchResult]] = {
     if (newRadius <= 0) Future(List.empty[PlacesSearchResult])
     else {
       val angle = 60
       val distanceToShift = newRadius / Math.sin(angle / 2)
-      getPlaces(latLng, newRadius, placeType).flatMap(places => {
+      getPlaces(latLng, newRadius, category).flatMap(places => {
         Future.sequence(List(0, 60, 120, 180, 240, 300).map(angle => {
-          getPlaces(SphericalUtil.computeOffset(latLng, distanceToShift, angle), newRadius, placeType)
+          getPlaces(SphericalUtil.computeOffset(latLng, distanceToShift, angle), newRadius, category)
         })).map(_.flatten ++ places)
       })
     }

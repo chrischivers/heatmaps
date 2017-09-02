@@ -3,7 +3,7 @@ package heatmaps.db
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.google.maps.model.{LatLng, PlaceType}
-import heatmaps.models.LatLngRegion
+import heatmaps.models.{Category, LatLngRegion}
 import org.joda.time.LocalDateTime
 
 import scala.concurrent.duration._
@@ -13,7 +13,6 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
 
   if (createNewTable) {
     Await.result({
-      logger.info(s"Creating new table ${schema.tableName}")
       for {
         _ <- dropTable
         newTable <- createTable
@@ -31,7 +30,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
            |CREATE TABLE IF NOT EXISTS
            |${schema.tableName} (
            |    ${schema.regionName} varchar NOT NULL,
-           |    ${schema.placeType} varchar NOT NULL,
+           |    ${schema.category} varchar NOT NULL,
            |    ${schema.lastScanStarted} timestamp,
            |    ${schema.lastScanCompleted} timestamp,
            |    ${schema.numberPlaces} integer,
@@ -41,34 +40,34 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
     } yield queryResult
   }
 
-  def bulkInsertRegionsForPlaceType(regions: List[LatLngRegion], placeType: String) = {
-    logger.info(s"Inserting regions for placetype $placeType")
+  def bulkInsertRegionsForPlaceType(regions: List[LatLngRegion], category: Category) = {
+    logger.info(s"Inserting regions for category $category")
     Future.sequence(regions.map { region =>
-      insertRegion(region, placeType)
+      insertRegion(region, category)
     })
   }
 
 
-  def insertRegion(latLngRegion: LatLngRegion, placeType: String): Future[QueryResult] = {
+  def insertRegion(latLngRegion: LatLngRegion, category: Category): Future[QueryResult] = {
     val statement =
       s"""
          |
-        |INSERT INTO ${schema.tableName} (${schema.regionName}, ${schema.placeType})
+        |INSERT INTO ${schema.tableName} (${schema.regionName}, ${schema.category})
          |    VALUES (?,?);
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, placeType))
+    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, category.name))
   }
 
-  def getRegionsFor(placeType: String): Future[List[LatLngRegion]] = {
+  def getRegionsFor(category: Category): Future[List[LatLngRegion]] = {
     val query =
       s"SELECT * " +
         s"FROM ${schema.tableName} " +
-        s"WHERE ${schema.placeType} = ?"
+        s"WHERE ${schema.category} = ?"
     for {
       _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType))
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(category.name))
     } yield {
       queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
@@ -80,7 +79,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
     }
   }
 
-  def updateRegionScanStarted(latLngRegion: LatLngRegion, placeType: String) = {
+  def updateRegionScanStarted(latLngRegion: LatLngRegion, category: Category) = {
     logger.info(s"updating region $latLngRegion to set scan started")
     val statement =
       s"""
@@ -88,14 +87,14 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
          |UPDATE ${schema.tableName}
          |SET ${schema.lastScanStarted} = 'now'
          |WHERE ${schema.regionName} = ?
-         |AND ${schema.placeType} = ?
+         |AND ${schema.category} = ?
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, placeType))
+    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, category.name))
   }
 
-  def updateRegionScanCompleted(latLngRegion: LatLngRegion, placeType: String, numberPlaces: Int) = {
+  def updateRegionScanCompleted(latLngRegion: LatLngRegion, category: Category, numberPlaces: Int) = {
     logger.info(s"updating region $latLngRegion to set scan completed")
     val statement =
       s"""
@@ -103,24 +102,24 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
          |UPDATE ${schema.tableName}
          |SET ${schema.lastScanCompleted} = 'now', ${schema.numberPlaces} = ?
          |WHERE ${schema.regionName} = ?
-         |AND ${schema.placeType} = ?
+         |AND ${schema.category} = ?
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(numberPlaces, latLngRegion.toString, placeType))
+    db.connectionPool.sendPreparedStatement(statement, List(numberPlaces, latLngRegion.toString, category))
   }
 
 
-  def getNextRegionToProcess: Future[(LatLngRegion, PlaceType)] = {
+  def getNextRegionToProcess: Future[(LatLngRegion, Category)] = {
     logger.info(s"getting next region to process from RegionsStatus DB")
     val updateAndQuery =
       s"UPDATE ${schema.tableName} " +
         s"SET ${schema.lastScanStarted} = 'now' " +
-        s"WHERE (${schema.regionName}, ${schema.placeType}) IN " +
-            s"(SELECT p.${schema.regionName}, p.${schema.placeType} " +
+        s"WHERE (${schema.regionName}, ${schema.category}) IN " +
+            s"(SELECT p.${schema.regionName}, p.${schema.category} " +
             s"FROM ${schema.tableName} p " +
             s"WHERE p.${schema.lastScanStarted} IS NULL " +
-            s"ORDER BY p.${schema.placeType} ASC, p.${schema.regionName} ASC " +
+            s"ORDER BY p.${schema.category} ASC, p.${schema.regionName} ASC " +
             s"LIMIT 1) " +
             s"RETURNING *"
     for {
@@ -133,8 +132,9 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
       val results = queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
           val latLngRegion = res.apply(schema.regionName).asInstanceOf[String].split(",")
-          val placeType = res.apply(schema.placeType).asInstanceOf[String]
-          (LatLngRegion(latLngRegion(0).toInt, latLngRegion(1).toInt), PlaceType.valueOf(placeType))
+          val category = res.apply(schema.category).asInstanceOf[String]
+          (LatLngRegion(latLngRegion(0).toInt, latLngRegion(1).toInt), Category.fromString(category)
+            .getOrElse(throw new RuntimeException("Unable to get category from $category")))
         })
         case None => throw new RuntimeException("Unable to get next region to process. Empty results set returned")
       }

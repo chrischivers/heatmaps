@@ -81,11 +81,20 @@
                           heatmap.setMap(null);
                       }
                       if (placeArray.length !== 0) {
-                          var heatmapData = getLatLngPoints(placeArray);
-                          heatmap = new google.maps.visualization.HeatmapLayer({
-                              data: heatmapData
-                          });
-                          heatmap.setMap(map);
+                          var pointsData = getLatLngPoints(placeArray);
+                          if (placeSubType === "All") {
+                              heatmap = new google.maps.visualization.HeatmapLayer({
+                                  data: pointsData
+                              });
+                              heatmap.setMap(map);
+                          } else {
+                              for (i = 0; i < pointsData.length; i++) {
+                                  marker = new google.maps.Marker({
+                                      position: pointsData[i],
+                                      map: map
+                                  });
+                              }
+                          }
                       }
                   }
               };

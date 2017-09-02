@@ -1,7 +1,7 @@
 package heatmaps.config
 
-import com.google.maps.model.{LatLng, PlaceType}
-import heatmaps.models.{City, DefaultView, PlaceGroup, PlaceSubType}
+import com.google.maps.model.{LatLng, PlaceType => GooglePlaceType}
+import heatmaps.models._
 import io.circe.{Decoder, DecodingFailure, HCursor}
 
 import scala.util.{Success, Try}
@@ -27,8 +27,8 @@ object JsonDecoders {
         name <- c.downField("type").as[String]
         subTypes <- c.downField("sub-type").as[List[String]]
       } yield {
-        PlaceGroup(PlaceType.valueOf(name),
-          subTypes.map(subType => PlaceSubType.fromString(subType).getOrElse(throw new RuntimeException(s"Unable to match subtype $subType"))))
+        PlaceGroup(Category.fromString(name).getOrElse(throw new RuntimeException(s"Unable to decode Category for $name")),
+          subTypes.map(subType => Company.fromString(subType).getOrElse(throw new RuntimeException(s"Unable to match subtype $subType"))))
       }
   }
 

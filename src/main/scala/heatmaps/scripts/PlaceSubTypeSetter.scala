@@ -3,7 +3,6 @@ package heatmaps.scripts
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.{PlaceSubType, Starbucks}
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -15,8 +14,8 @@ object PlaceSubTypeSetter extends App with StrictLogging {
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
 
   Definitions.placeGroups.foreach { placeGroup =>
-    placeGroup.subTypes.foreach { subtype =>
-      Await.result(placesTable.updateSubtypes(subtype), 10 minutes)
+    placeGroup.companies.foreach { company =>
+      Await.result(placesTable.updateSubtypes(company), 10 minutes)
     }
   }
 }

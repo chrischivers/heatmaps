@@ -2,7 +2,7 @@ package heatmaps
 
 import java.util.concurrent.{ExecutorService, Executors}
 
-import com.google.maps.model.PlaceType
+import com.google.maps.model.{PlaceType => GooglePlaceType}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
@@ -26,10 +26,10 @@ object Main extends ServerApp with StrictLogging {
   val config = ConfigLoader.defaultConfig
   val db = new PostgresDB(config.dBConfig)
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
-  val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig)
+  val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig, config.mapsConfig)
 
 
-  val heatmapsServlet = new HeatmapsServlet(placesDBRetriever)
+  val heatmapsServlet = new HeatmapsServlet(placesDBRetriever, config.mapsConfig)
   override def server(args: List[String]): Task[Server] = {
     logger.info(s"Starting up servlet using port $port bound to ip $ip")
     BlazeBuilder

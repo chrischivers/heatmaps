@@ -8,8 +8,9 @@ case class PostgresDBConfig(host: String, port: Int, username: String, password:
 case class CacheConfig(timeToLive: Duration)
 case class PlacesApiConfig(apiKeys: List[String], returnLimt: Int)
 case class MetricsConfig(host: String, port: Int, dbName: String)
+case class MapsConfig(minZoom: Int, maxZoom: Int)
 
-case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiConfig: PlacesApiConfig, metricsConfig: MetricsConfig)
+case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiConfig: PlacesApiConfig, metricsConfig: MetricsConfig, mapsConfig: MapsConfig)
 sealed trait DBConfig {
   val host: String
   val port: Int
@@ -47,6 +48,10 @@ object ConfigLoader {
         defaultConfigFactory.getString("metrics.host"),
         defaultConfigFactory.getInt("metrics.port"),
         defaultConfigFactory.getString("metrics.dbName")
+      ),
+      MapsConfig(
+        defaultConfigFactory.getInt("maps.minZoom"),
+        defaultConfigFactory.getInt("maps.maxZoom")
       )
     )
   }

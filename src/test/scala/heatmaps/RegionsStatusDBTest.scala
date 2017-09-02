@@ -1,8 +1,9 @@
 package heatmaps
 
-import com.google.maps.model.PlaceType
+import com.google.maps.model.{PlaceType => GooglePlaceType}
 import heatmaps.config.ConfigLoader
 import heatmaps.db._
+import heatmaps.models.Category.Restaurant
 import heatmaps.models.LatLngRegion
 import org.joda.time.{DateTimeZone, LocalDateTime}
 import org.scalatest.Matchers._
@@ -41,11 +42,11 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
   test("region is persisted into DB and retrieved") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val placeType = PlaceType.RESTAURANT
+    val category = Restaurant
 
-    f.regionsStatusTable.insertRegion(latLngRegion, placeType.name()).futureValue
+    f.regionsStatusTable.insertRegion(latLngRegion, category).futureValue
 
-    val regions = f.regionsStatusTable.getRegionsFor(placeType.name()).futureValue
+    val regions = f.regionsStatusTable.getRegionsFor(category).futureValue
     regions should have size 1
     regions should contain(latLngRegion)
   }
@@ -54,43 +55,43 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
   test("Next region produces next region to process") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val placeType = PlaceType.RESTAURANT
+    val category = Restaurant
 
-    f.regionsStatusTable.insertRegion(latLngRegion, placeType.name()).futureValue
+    f.regionsStatusTable.insertRegion(latLngRegion, category).futureValue
 
-    val (region, place) = f.regionsStatusTable.getNextRegionToProcess.futureValue
+    val (region, catReturned) = f.regionsStatusTable.getNextRegionToProcess.futureValue
     region shouldBe latLngRegion
-    place shouldBe placeType
+    catReturned shouldBe category
   }
 
   test("Next region produces next region to process, ignoring those already in progress") { f =>
 
     val latLngRegion1 = LatLngRegion(45, 25)
     val latLngRegion2 = LatLngRegion(46, 25)
-    val placeType = PlaceType.RESTAURANT
+    val category = Restaurant
 
-    f.regionsStatusTable.insertRegion(latLngRegion1, placeType.name()).futureValue
-    f.regionsStatusTable.insertRegion(latLngRegion2, placeType.name()).futureValue
+    f.regionsStatusTable.insertRegion(latLngRegion1, category).futureValue
+    f.regionsStatusTable.insertRegion(latLngRegion2, category).futureValue
 
     val (region1, place1) = f.regionsStatusTable.getNextRegionToProcess.futureValue
     region1 shouldBe latLngRegion1
-    place1 shouldBe placeType
+    place1 shouldBe category
 
     val (region2, place2) = f.regionsStatusTable.getNextRegionToProcess.futureValue
     region2 shouldBe latLngRegion2
-    place2 shouldBe placeType
+    place2 shouldBe category
   }
 
   test("Error thrown when no new regions to process") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val placeType = PlaceType.RESTAURANT
+    val category = Restaurant
 
-    f.regionsStatusTable.insertRegion(latLngRegion, placeType.name()).futureValue
+    f.regionsStatusTable.insertRegion(latLngRegion, category).futureValue
 
-    val (region, place) = f.regionsStatusTable.getNextRegionToProcess.futureValue
+    val (region, categoryReturned) = f.regionsStatusTable.getNextRegionToProcess.futureValue
     region shouldBe latLngRegion
-    place shouldBe placeType
+    categoryReturned shouldBe category
 
     assertThrows[RuntimeException] {
       f.regionsStatusTable.getNextRegionToProcess.futureValue

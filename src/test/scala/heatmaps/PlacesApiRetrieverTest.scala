@@ -5,6 +5,7 @@ import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
 import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
+import heatmaps.models.Category.Restaurant
 import heatmaps.models.LatLngRegion
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
@@ -30,7 +31,7 @@ class PlacesApiRetrieverTest extends fixture.FunSuite with StrictLogging with Sc
     val placesApiRetriever = new PlacesApiRetriever(config)
     val db = new PostgresDB(config.dBConfig)
     val placesTable = new PlacesTable(db, PlaceTableSchema(tableName = "placestest"), createNewTable = true)
-    val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig)
+    val placesDBRetriever = new PlacesRetriever(placesTable, config.cacheConfig, config.mapsConfig)
     val locationScanner = new LocationScanner(placesApiRetriever, placesDBRetriever)
 
     val testFixture = FixtureParam(placesApiRetriever, locationScanner, placesTable)
@@ -48,12 +49,12 @@ class PlacesApiRetrieverTest extends fixture.FunSuite with StrictLogging with Sc
   test("Place Retriever should retrieve a list of places for a given location, falling within radius") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, PlaceType.RESTAURANT).futureValue
-    f.placesTable.insertPlaces(locationScanResult, latLngRegion, PlaceType.RESTAURANT).futureValue
+    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, Restaurant).futureValue
+    f.placesTable.insertPlaces(locationScanResult, latLngRegion, Restaurant).futureValue
 
     val searchLocation = new LatLng(45.4, 25.5)
     val radius = 1000
-    val results1 = f.placesApiRetriever.getPlaces(searchLocation, radius, PlaceType.RESTAURANT).futureValue
+    val results1 = f.placesApiRetriever.getPlaces(searchLocation, radius, Restaurant).futureValue
     results1.foreach(result => {
       val placeLocation = result.geometry.location
       SphericalUtil.computeDistanceBetween(searchLocation, placeLocation).toInt should be <= radius

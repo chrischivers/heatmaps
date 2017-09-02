@@ -14,15 +14,15 @@ object UpdateRegionsStatusTable extends App with StrictLogging {
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
   val regionsStatusTable = new RegionsStatusTable(db, RegionsStatusTableSchema(), createNewTable = false)
 
-  val result = Future.sequence(Definitions.placeGroups.map(_.placeType).map { placeType =>
+  val result = Future.sequence(Definitions.placeGroups.map(_.placeCategory).map { placeCategory =>
     for {
       activeRegions <- placesTable.getActiveLatLngRegions
       _ = logger.info(s"Got ${activeRegions.size} activeRegions from Places table")
-      existingRegions <- regionsStatusTable.getRegionsFor(placeType.name())
-      _ = logger.info(s"Got ${existingRegions.size} existing regions from Regions Status table for place type $placeType")
+      existingRegions <- regionsStatusTable.getRegionsFor(placeCategory)
+      _ = logger.info(s"Got ${existingRegions.size} existing regions from Regions Status table for place type $placeCategory")
       regionsNotAlreadyInTable = activeRegions.diff(existingRegions.toSet)
-      _ = logger.info(s"Found ${regionsNotAlreadyInTable.size} active regions for $placeType not already in Regions Status table")
-      _ <- regionsStatusTable.bulkInsertRegionsForPlaceType(regionsNotAlreadyInTable.toList, placeType.name())
+      _ = logger.info(s"Found ${regionsNotAlreadyInTable.size} active regions for $placeCategory not already in Regions Status table")
+      _ <- regionsStatusTable.bulkInsertRegionsForPlaceType(regionsNotAlreadyInTable.toList, placeCategory)
       _ = logger.info(s"Inserted ${regionsNotAlreadyInTable.size} regions into RegionsStatusTable")
     } yield ()
   })

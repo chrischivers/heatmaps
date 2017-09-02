@@ -1,7 +1,8 @@
 package heatmaps
 
-import com.google.maps.model.{LatLng, PlaceType}
+import com.google.maps.model.LatLng
 import heatmaps.config.Definitions
+import heatmaps.models.Category.Restaurant
 import heatmaps.models.{LatLngBounds, LatLngRegion}
 import org.scalatest.{FunSuite, Matchers}
 
@@ -48,7 +49,7 @@ class DefinitionsTest extends FunSuite with Matchers {
   }
 
   test("place type list should be returned") {
-    val placeTypes = Definitions.placeGroups.map(_.placeType)
-    placeTypes should contain (PlaceType.RESTAURANT)
+    val placeCategories = Definitions.placeGroups.map(_.placeCategory)
+    placeCategories should contain (Restaurant)
   }
 }

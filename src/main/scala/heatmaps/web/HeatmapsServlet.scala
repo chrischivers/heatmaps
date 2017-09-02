@@ -2,27 +2,24 @@ package heatmaps.web
 
 import com.google.maps.model.{LatLng, PlaceType}
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.config.Definitions.{allLatLngRegions, logger}
+import heatmaps.config.{Definitions, MapsConfig}
 import heatmaps.models._
-import heatmaps.config.Definitions
 import io.circe.Encoder
-import io.circe.syntax._
-import io.circe._
 import io.circe.generic.semiauto._
+import io.circe.syntax._
 import org.http4s._
 import org.http4s.dsl._
 import org.http4s.twirl._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds")
-object PlaceTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeType")
+object CategoryQueryParamMatcher extends QueryParamDecoderMatcher[String]("category")
 object PlaceSubTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeSubType")
 object CityDefaultViewQueryParamMatcher extends QueryParamDecoderMatcher[String]("city")
 object ZoomQueryParamMatcher extends QueryParamDecoderMatcher[String]("zoom")
 
-class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging {
+class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig) extends StrictLogging {
 
   import HeatmapsServlet._
 
@@ -34,11 +31,10 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
     Encoder.forProduct3("lat", "lng", "zoom")(u =>
       (u.latLng.lat, u.latLng.lng, u.zoom))
 
-  implicit val placeTypeEncoder: Encoder[PlaceType] =
-    Encoder.forProduct1("name")(u =>
-      (u.name()))
+  implicit val placeCategoryEncoder: Encoder[Category] =
+    Encoder.forProduct1("name")(u => u.name)
 
-  implicit val placeSubTypeEncoder: Encoder[PlaceSubType] =
+  implicit val companyEncoder: Encoder[Company] =
     Encoder.forProduct1("name")(u => u.name)
 
   implicit val placeGroupEncoder: Encoder[PlaceGroup] = deriveEncoder[PlaceGroup]
@@ -70,19 +66,41 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever) extends StrictLogging 
 
     case req@GET -> Root / "heatpoints"
       :? BoundsQueryParamMatcher(bounds)
-      :? PlaceTypeQueryParamMatcher(placeType)
-      :? PlaceSubTypeQueryParamMatcher(subType)
+      :? CategoryQueryParamMatcher(category)
       :? ZoomQueryParamMatcher(zoom) =>
-      logger.info(s"Servlet handling heatpoints request for bounds $bounds, placeType $placeType, placeSubType $subType")
+      logger.info(s"Servlet handling heatpoints request for bounds $bounds and category $category")
       val boundsConverted = getBounds(bounds)
-      val placeTypeConverted = PlaceType.valueOf(placeType)
-      val subTypeOpt: Option[PlaceSubType] = if(subType.toUpperCase() == "ALL") None else PlaceSubType.fromString(subType)
-      //TODO set these in config
-      val zoomCorrected = if (zoom.toInt > 18) 18 else if (zoom.toInt < 2) 2 else zoom.toInt
-      val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), Some(zoomCorrected)) //Ignoring density for now
-        .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
-      Ok(jsonStr)
+      val categoryConverted = Category.fromString(category)
+      val zoomCorrected =
+        if (zoom.toInt > mapsConfig.maxZoom) mapsConfig.maxZoom
+        else if (zoom.toInt < mapsConfig.minZoom) mapsConfig.minZoom
+        else zoom.toInt
+
+      categoryConverted.fold(NotFound()) { category =>
+        val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+        val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(zoomCorrected)) //Ignoring density for now
+          .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
+        Ok(jsonStr)
+      }
+
+//    case req@GET -> Root / "heatpoints"
+//      :? BoundsQueryParamMatcher(bounds)
+//      :? PlaceTypeQueryParamMatcher(placeType)
+//      :? PlaceSubTypeQueryParamMatcher(subType)
+//      :? ZoomQueryParamMatcher(zoom) =>
+//      logger.info(s"Servlet handling heatpoints request for bounds $bounds, placeType $placeType, placeSubType $subType")
+//      val boundsConverted = getBounds(bounds)
+//      val placeTypeConverted = PlaceType.valueOf(placeType)
+//      val subTypeOpt: Option[Company] = if(subType.toUpperCase() == "ALL") None else Company.fromString(subType)
+//      val zoomCorrected =
+//        if (zoom.toInt > mapsConfig.maxZoom) mapsConfig.maxZoom
+//        else if (zoom.toInt < mapsConfig.minZoom) mapsConfig.minZoom
+//        else zoom.toInt
+//      //TODO
+//      val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+//      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), Some(zoomCorrected)) //Ignoring density for now
+//        .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
+//      Ok(jsonStr)
     }
 }
 

@@ -1,9 +1,9 @@
 package heatmaps.scanner
 
-import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
+import com.google.maps.model.{LatLng, PlacesSearchResult}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
-import heatmaps.models.LatLngRegion
+import heatmaps.models.{Category, LatLngRegion}
 import heatmaps.web.PlacesRetriever
 
 import scala.annotation.tailrec
@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever: PlacesRetriever)(implicit executionContext: ExecutionContext) extends StrictLogging {
 
-  def scanForPlacesInLatLngRegion(latLngRegion: LatLngRegion, scanSeparation: Int, placeType: PlaceType, removePlacesAlreadyInDb: Boolean = true): Future[List[PlacesSearchResult]] = {
+  def scanForPlacesInLatLngRegion(latLngRegion: LatLngRegion, scanSeparation: Int, category: Category, removePlacesAlreadyInDb: Boolean = true): Future[List[PlacesSearchResult]] = {
 
     val bottomLeft = new LatLng(latLngRegion.lat, latLngRegion.lng)
     val topRight = new LatLng(latLngRegion.lat + 1, latLngRegion.lng + 1)
@@ -48,7 +48,7 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     }
 
     def removePlacesAlreadyInDB(searchResults: List[PlacesSearchResult]): Future[List[PlacesSearchResult]] = {
-      placesDBRetriever.getPlaces(List(latLngRegion), placeType).map { placesInDB =>
+      placesDBRetriever.getPlaces(List(latLngRegion), category).map { placesInDB =>
         searchResults.filterNot(searchResult => placesInDB.map(_.placeId).contains(searchResult.placeId))
       }
     }
@@ -58,7 +58,7 @@ class LocationScanner(placesApiRetriever: PlacesApiRetriever, placesDBRetriever:
     logger.info(s"Points list calculated. Contains ${pointList.size} points")
     logger.info(s"Getting places from API for points in list")
     val placesList = Future.sequence(pointList.zipWithIndex.map { case (point, index) =>
-      placesApiRetriever.getPlaces(point, scanSeparation, placeType).map { list =>
+      placesApiRetriever.getPlaces(point, scanSeparation, category).map { list =>
         logger.info(s"Got places for index $index of ${pointList.size} (${(index.toDouble / pointList.size.toDouble) * 100}% complete)")
         list
       }
