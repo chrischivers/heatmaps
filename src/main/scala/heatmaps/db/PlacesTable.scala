@@ -4,7 +4,6 @@ import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.google.maps.model.{LatLng, PlacesSearchResult}
-import heatmaps.config.{ConfigLoader, MetricsConfig}
 import heatmaps.models._
 
 import scala.concurrent.duration._

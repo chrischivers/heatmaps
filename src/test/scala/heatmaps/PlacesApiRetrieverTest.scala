@@ -1,6 +1,6 @@
 package heatmaps
 
-import com.google.maps.model.{LatLng, PlaceType}
+import com.google.maps.model.LatLng
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
 import heatmaps.config.ConfigLoader
@@ -9,9 +9,9 @@ import heatmaps.models.Category.Restaurant
 import heatmaps.models.LatLngRegion
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
-import org.scalatest.{FunSuite, fixture}
 import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.fixture
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._

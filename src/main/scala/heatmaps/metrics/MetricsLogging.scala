@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.{ConfigLoader, MetricsConfig}
 import metrics_influxdb.{HttpInfluxdbProtocol, InfluxdbReporter}
-import nl.grons.metrics.scala.{Counter, DefaultInstrumented, Meter, MetricName}
+import nl.grons.metrics.scala.{DefaultInstrumented, Meter, MetricName}
 
 object MetricsLogging extends StrictLogging with DefaultInstrumented {
 

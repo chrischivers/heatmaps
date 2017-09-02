@@ -34,6 +34,8 @@ object Main extends ServerApp with StrictLogging {
     logger.info(s"Starting up servlet using port $port bound to ip $ip")
     BlazeBuilder
       .bindHttp(port, ip)
+      .enableHttp2(true)
+      .withIdleTimeout(3.minutes)
       .mountService(heatmapsServlet.service)
       .withServiceExecutor(pool)
       .start

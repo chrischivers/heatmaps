@@ -1,6 +1,6 @@
 package heatmaps.config
 
-import com.google.maps.model.{LatLng, PlaceType}
+import com.google.maps.model.LatLng
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.JsonDecoders._
 import heatmaps.models.{City, LatLngBounds, LatLngRegion, PlaceGroup}

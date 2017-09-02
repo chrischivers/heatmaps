@@ -1,6 +1,6 @@
 package heatmaps
 
-import com.google.maps.model.{LatLng, PlaceType}
+import com.google.maps.model.LatLng
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.ConfigLoader
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}

@@ -3,7 +3,7 @@ package heatmaps.models
 import com.google.maps.model.{PlaceType => GooglePlaceType}
 import heatmaps.models.Category.{Cafe, Lodging, Restaurant}
 
-case class PlaceGroup(placeCategory: Category, companies: List[Company])
+case class PlaceGroup(category: Category, companies: List[Company])
 
 sealed trait PlaceType {
   val name: String

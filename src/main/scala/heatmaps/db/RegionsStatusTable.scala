@@ -2,9 +2,7 @@ package heatmaps.db
 
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
-import com.google.maps.model.{LatLng, PlaceType}
 import heatmaps.models.{Category, LatLngRegion}
-import org.joda.time.LocalDateTime
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}

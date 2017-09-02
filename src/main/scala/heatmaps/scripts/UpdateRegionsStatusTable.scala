@@ -14,7 +14,7 @@ object UpdateRegionsStatusTable extends App with StrictLogging {
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
   val regionsStatusTable = new RegionsStatusTable(db, RegionsStatusTableSchema(), createNewTable = false)
 
-  val result = Future.sequence(Definitions.placeGroups.map(_.placeCategory).map { placeCategory =>
+  val result = Future.sequence(Definitions.placeGroups.map(_.category).map { placeCategory =>
     for {
       activeRegions <- placesTable.getActiveLatLngRegions
       _ = logger.info(s"Got ${activeRegions.size} activeRegions from Places table")

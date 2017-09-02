@@ -14,9 +14,13 @@ import org.http4s.twirl._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object BoundsQueryParamMatcher extends QueryParamDecoderMatcher[String]("bounds")
+
 object CategoryQueryParamMatcher extends QueryParamDecoderMatcher[String]("category")
-object PlaceSubTypeQueryParamMatcher extends QueryParamDecoderMatcher[String]("placeSubType")
+
+object CompanyQueryParamMatcher extends QueryParamDecoderMatcher[String]("company")
+
 object CityDefaultViewQueryParamMatcher extends QueryParamDecoderMatcher[String]("city")
+
 object ZoomQueryParamMatcher extends QueryParamDecoderMatcher[String]("zoom")
 
 class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig) extends StrictLogging {
@@ -40,11 +44,11 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
   implicit val placeGroupEncoder: Encoder[PlaceGroup] = deriveEncoder[PlaceGroup]
 
   val service = HttpService {
-    case req@GET -> Root / "map" =>
+    case _@GET -> Root / "map" =>
       logger.info(s"Servlet handling map request")
       Ok(html.map())
 
-    case req@GET -> Root / "defaultView" :? CityDefaultViewQueryParamMatcher(city) =>
+    case _@GET -> Root / "defaultView" :? CityDefaultViewQueryParamMatcher(city) =>
       logger.info(s"Servlet handling defaultView request")
       Definitions.cities.find(_.name == city) match {
         case Some(cityDef) =>
@@ -56,52 +60,55 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
           Ok("{}")
       }
 
-    case req@GET -> Root / "cities" =>
+    case _@GET -> Root / "cities" =>
       logger.info("Servlet handling cities request")
       Ok(Definitions.cities.map(_.name).asJson.noSpaces)
 
-    case req@GET -> Root / "placegroups" =>
+    case _@GET -> Root / "placegroups" =>
       logger.info("Servlet handling placegroups request")
       Ok(Definitions.placeGroups.asJson.noSpaces)
 
-    case req@GET -> Root / "heatpoints"
+    case _@GET -> Root / "category-points"
       :? BoundsQueryParamMatcher(bounds)
       :? CategoryQueryParamMatcher(category)
       :? ZoomQueryParamMatcher(zoom) =>
-      logger.info(s"Servlet handling heatpoints request for bounds $bounds and category $category")
+      println(
+        """
+          |
+          |
+          |HERE
+          |
+          |
+          |
+        """.stripMargin)
+      logger.info(s"Servlet handling category points request for bounds $bounds, category $category and zoom $zoom")
       val boundsConverted = getBounds(bounds)
       val categoryConverted = Category.fromString(category)
-      val zoomCorrected =
-        if (zoom.toInt > mapsConfig.maxZoom) mapsConfig.maxZoom
-        else if (zoom.toInt < mapsConfig.minZoom) mapsConfig.minZoom
-        else zoom.toInt
+      val normalisedZoom = normaliseZoom(zoom.toInt, mapsConfig)
 
       categoryConverted.fold(NotFound()) { category =>
         val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-        val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(zoomCorrected)) //Ignoring density for now
+        val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(normalisedZoom)) //Ignoring density for now
           .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
         Ok(jsonStr)
       }
 
-//    case req@GET -> Root / "heatpoints"
-//      :? BoundsQueryParamMatcher(bounds)
-//      :? PlaceTypeQueryParamMatcher(placeType)
-//      :? PlaceSubTypeQueryParamMatcher(subType)
-//      :? ZoomQueryParamMatcher(zoom) =>
-//      logger.info(s"Servlet handling heatpoints request for bounds $bounds, placeType $placeType, placeSubType $subType")
-//      val boundsConverted = getBounds(bounds)
-//      val placeTypeConverted = PlaceType.valueOf(placeType)
-//      val subTypeOpt: Option[Company] = if(subType.toUpperCase() == "ALL") None else Company.fromString(subType)
-//      val zoomCorrected =
-//        if (zoom.toInt > mapsConfig.maxZoom) mapsConfig.maxZoom
-//        else if (zoom.toInt < mapsConfig.minZoom) mapsConfig.minZoom
-//        else zoom.toInt
-//      //TODO
-//      val latLngRegionsInFocus: List[LatLngRegion] =  Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-//      val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, placeTypeConverted, subTypeOpt, Some(getBounds(bounds)), Some(zoomCorrected)) //Ignoring density for now
-//        .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
-//      Ok(jsonStr)
-    }
+    case _@GET -> Root / "company-points"
+      :? BoundsQueryParamMatcher(bounds)
+      :? CompanyQueryParamMatcher(company)
+      :? ZoomQueryParamMatcher(zoom) =>
+      logger.info(s"Servlet handling company points request for bounds $bounds, company $company and zoom $zoom")
+      val boundsConverted = getBounds(bounds)
+      val companyConverted = Company.fromString(company)
+      val normalisedZoom = normaliseZoom(zoom.toInt, mapsConfig)
+
+      companyConverted.fold(NotFound()) { company =>
+        val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+        val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, company, Some(getBounds(bounds)), Some(normalisedZoom)) //Ignoring density for now
+          .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
+        Ok(jsonStr)
+      }
+  }
 }
 
 object HeatmapsServlet extends StrictLogging {
@@ -109,5 +116,11 @@ object HeatmapsServlet extends StrictLogging {
   def getBounds(boundsStr: String): LatLngBounds = {
     val boundsSplit = boundsStr.replaceAll("[() ]", "").split(",").map(_.toDouble)
     LatLngBounds(new LatLng(boundsSplit(0), boundsSplit(1)), new LatLng(boundsSplit(2), boundsSplit(3)))
+  }
+
+  def normaliseZoom(zoom: Int, mapsConfig: MapsConfig): Int = {
+    if (zoom.toInt > mapsConfig.maxZoom) mapsConfig.maxZoom
+    else if (zoom.toInt < mapsConfig.minZoom) mapsConfig.minZoom
+    else zoom.toInt
   }
 }

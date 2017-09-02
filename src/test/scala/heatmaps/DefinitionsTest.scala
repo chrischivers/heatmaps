@@ -8,7 +8,6 @@ import org.scalatest.{FunSuite, Matchers}
 
 class DefinitionsTest extends FunSuite with Matchers {
 
-  import heatmaps.web.HeatmapsServlet._
   import Definitions._
 
   test("Latlng bounds inside London should return 51,0 and 51,-1 as latLngRegion") {
@@ -49,7 +48,7 @@ class DefinitionsTest extends FunSuite with Matchers {
   }
 
   test("place type list should be returned") {
-    val placeCategories = Definitions.placeGroups.map(_.placeCategory)
+    val placeCategories = Definitions.placeGroups.map(_.category)
     placeCategories should contain (Restaurant)
   }
 }

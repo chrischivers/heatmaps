@@ -21,7 +21,7 @@ case class PlaceTableSchema(
 case class RegionsStatusTableSchema(
                                      tableName: String = "regions_status",
                                      regionName: String = "name",
-                                     category: String = "place_type",
+                                     category: String = "category",
                                      lastScanStarted: String = "last_scan_started",
                                      lastScanCompleted: String = "last_scan_completed",
                                      numberPlaces: String = "number_places"

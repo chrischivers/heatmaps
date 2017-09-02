@@ -16,7 +16,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
   implicit private val scalaCache = ScalaCache(GuavaCache())
 
   private def storeInCache(latLngRegion: LatLngRegion, category: Category, placeList: List[Place], zoom: Int): Future[Unit] = {
-    logger.info(s"Adding $latLngRegion to cache for category $category with ${placeList.size} places")
+    logger.info(s"Adding to cache $latLngRegion for category $category, zoom $zoom and with ${placeList.size} places")
     put(latLngRegion.toString, category.name, zoom)(placeList, ttl = Some(cacheConfig.timeToLive))
   }
 
@@ -45,7 +45,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
     logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
     for {
       cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType, zoomOpt).map(res => (region, res))))
-      _ = logger.info(s"$cachedResults returned from cache")
+      _ = logger.info(s"${cachedResults.size} results returned from cache")
       (inCache, notInCache) = cachedResults.partition(_._2.isDefined)
       resultsFromDb <- if (notInCache.nonEmpty) {
         logger.info(s"Unable to get latLngRegions $notInCache in cache for zoom $zoomOpt. Getting from DB")
@@ -55,7 +55,8 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
     } yield {
 
       placeType match {
-        case category: Category =>  persistToCache(category)
+        case category: Category if notInCache.nonEmpty => persistToCache(category)
+        case category: Category if notInCache.isEmpty => logger.info("Not persisting to cache no new records")
         case _ => logger.info("Not persisting to cache as only companies retrieved from DB")
       }
 
@@ -79,9 +80,11 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
       val resultsWithinBounds = latLngBounds match {
         case Some(bounds) =>
           logger.info(s"Bounds parameter set at $bounds")
-          result.filter(place => placeWithinBounds(place, bounds))
+          val filteredResult = result.filter(place => placeWithinBounds(place, bounds))
+          logger.info(s"${filteredResult.size} records remaining after bounds filtering")
+          filteredResult
         case None =>
-          logger.info("No bounds parameter set")
+          logger.info("No bounds parameter set. Returning full results.")
           result
       }
       resultsWithinBounds.toList

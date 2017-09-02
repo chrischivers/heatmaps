@@ -27,16 +27,16 @@
                     <div class="dropdown-menu" id="city-dropdown-menu" aria-labelledby="dropdownMenuButtonCity"></div>
                 </div>
                 <div class="btn-group">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCategory" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Restaurants
                     </button>
-                    <div class="dropdown-menu" id="place-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceType"></div>
+                    <div class="dropdown-menu" id="category-dropdown-menu" aria-labelledby="dropdownMenuButtonCategory"></div>
                 </div>
                 <div class="btn-group">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonPlaceSubType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i>All</i>
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCompany" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i>None</i>
                     </button>
-                    <div class="dropdown-menu" id="place-sub-type-dropdown-menu" aria-labelledby="dropdownMenuButtonPlaceSubType"></div>
+                    <div class="dropdown-menu" id="company-dropdown-menu" aria-labelledby="dropdownMenuButtonCompany"></div>
                 </div>
             </div>
         </div>
@@ -45,10 +45,11 @@
 
           var map;
           var heatmap;
-          var placeType = "RESTAURANT";
-          var placeSubType = "All";
+          var category = "RESTAURANT";
+          var company = "None";
           var city = "London";
           var placeGroupData;
+          var markersArray = [];
 
 
           function initMap() {
@@ -61,17 +62,16 @@
               getPlaceGroupData();
 
               google.maps.event.addListener(map, 'idle', function () {
-                  alert(map.getZoom());
-                  plotHeatMap(map.getBounds(), placeType, placeSubType, map.getZoom());
+                  plotCategory(map.getBounds(), category, map.getZoom());
+                  plotCompany(map.getBounds(), company, map.getZoom());
               });
 
           }
 
-          function plotHeatMap(mapBounds, placeType, placeSubType, zoom) {
+          function plotCategory(mapBounds, category, zoom) {
 
               var boundsParams = "bounds=" + mapBounds.toString();
-              var placeTypeParams = "placeType=" + placeType;
-              var placeSubTypeParams = "placeSubType=" + placeSubType;
+              var categoryParams = "category=" + category;
               var zoomParams = "zoom=" + zoom.toString();
               var xmlhttp = new XMLHttpRequest();
               xmlhttp.onreadystatechange = function () {
@@ -82,34 +82,60 @@
                       }
                       if (placeArray.length !== 0) {
                           var pointsData = getLatLngPoints(placeArray);
-                          if (placeSubType === "All") {
-                              heatmap = new google.maps.visualization.HeatmapLayer({
-                                  data: pointsData
-                              });
-                              heatmap.setMap(map);
-                          } else {
-                              for (i = 0; i < pointsData.length; i++) {
-                                  marker = new google.maps.Marker({
-                                      position: pointsData[i],
-                                      map: map
-                                  });
-                              }
-                          }
+                          heatmap = new google.maps.visualization.HeatmapLayer({
+                              data: pointsData
+                          });
+                          heatmap.setMap(map);
                       }
                   }
               };
-              xmlhttp.open("GET", "/heatpoints?" + boundsParams + "&" + placeTypeParams + "&" + placeSubTypeParams + "&" + zoomParams, true);
+              xmlhttp.open("GET", "/category-points?" + boundsParams + "&" + categoryParams + "&" + zoomParams, true);
               xmlhttp.send();
+          }
 
-              function getLatLngPoints(placeArray) {
-                  var latLngArray = [];
-                  for (var i in placeArray) {
-                      var lat = placeArray[i].lat;
-                      var lng = placeArray[i].lng;
-                      latLngArray.push(new google.maps.LatLng(lat, lng));
-                  }
-                  return latLngArray;
+          function plotCompany(mapBounds, company, zoom) {
+
+              if (company !== "None") {
+                  var boundsParams = "bounds=" + mapBounds.toString();
+                  var companyParams = "company=" + company;
+                  var zoomParams = "zoom=" + zoom.toString();
+                  var xmlhttp = new XMLHttpRequest();
+                  xmlhttp.onreadystatechange = function () {
+                      if (this.readyState === 4 && this.status === 200) {
+                          placeArray = JSON.parse(this.responseText);
+                          clearMarkers();
+                          if (placeArray.length !== 0) {
+                              var pointsData = getLatLngPoints(placeArray);
+                              for (var i = 0; i < pointsData.length; i++) {
+                                  var marker = new google.maps.Marker({
+                                      position: pointsData[i],
+                                      map: map
+                                  });
+                                  markersArray.push(marker);
+                              }
+                          }
+                      }
+                  };
+                  xmlhttp.open("GET", "/company-points?" + boundsParams + "&" + companyParams + "&" + zoomParams, true);
+                  xmlhttp.send();
               }
+          }
+
+          function getLatLngPoints(placeArray) {
+              var latLngArray = [];
+              for (var i in placeArray) {
+                  var lat = placeArray[i].lat;
+                  var lng = placeArray[i].lng;
+                  latLngArray.push(new google.maps.LatLng(lat, lng));
+              }
+              return latLngArray;
+          }
+
+          function clearMarkers() {
+              for (var i = 0; i < markersArray.length; i++ ) {
+                  markersArray[i].setMap(null);
+              }
+              markersArray.length = 0;
           }
 
           function setCityDefaultView(cityName) {
@@ -153,60 +179,60 @@
 
           function setPlaceMenusStartingState() {
 
-              setPlaceTypesMenu();
-              setSubTypesMenuForParent(placeType);
+              setCategoryMenu();
+              setCompanyMenuForParent(category);
           }
 
-          function setPlaceTypesMenu() {
-              var placeTypesDropdown = $("#place-type-dropdown-menu");
+          function setCategoryMenu() {
+              var CategoryDropdown = $("#category-dropdown-menu");
               for (var i in placeGroupData) {
-                  var dropDownTypeItem = createPlaceTypeDropDownElement(placeGroupData[i].placeType.name);
-                  placeTypesDropdown.append(dropDownTypeItem);
+                  var dropDownTypeItem = createCategoryDropDownElement(placeGroupData[i].category.name);
+                  CategoryDropdown.append(dropDownTypeItem);
               }
           }
 
-          function setSubTypesMenuForParent(parentId) {
+          function setCompanyMenuForParent(parentId) {
 
-              var subTypeDropdown = $("#place-sub-type-dropdown-menu");
-              subTypeDropdown.children().remove();
-              subTypeDropdown.append(createSubTypeDropDownElement("All", parentId));
+              var companyDropdown = $("#company-dropdown-menu");
+              companyDropdown.children().remove();
+              companyDropdown.append(createCompanyDropDownElement("None", parentId));
 
               for (var j in placeGroupData) {
-                  if (placeGroupData[j].placeType.name === parentId) {
-                      for (var k in placeGroupData[j].subTypes) {
-                          var subType = placeGroupData[j].subTypes[k].name;
-                          var dropDownItem = createSubTypeDropDownElement(subType, parentId);
-                          subTypeDropdown.append(dropDownItem);
+                  if (placeGroupData[j].category.name === parentId) {
+                      for (var k in placeGroupData[j].companies) {
+                          var company = placeGroupData[j].companies[k].name;
+                          var dropDownItem = createCompanyDropDownElement(company, parentId);
+                          companyDropdown.append(dropDownItem);
                       }
                   }
               }
-              subTypeDropdown.closest(".btn-group").find('.btn').text("All");
+              companyDropdown.closest(".btn-group").find('.btn').text("None");
           }
 
-          function createPlaceTypeDropDownElement(placeTypeName) {
+          function createCategoryDropDownElement(categoryName) {
               var a = document.createElement('a');
               a.className = "dropdown-item";
-              a.id = placeTypeName;
-              a.text = toTitleCase(placeTypeName) + "s";
+              a.id = categoryName;
+              a.text = toTitleCase(categoryName) + "s";
               a.addEventListener("click", function () {
-                  placeType = this.id;
-                  plotHeatMap(map.getBounds(), this.id, "All", map.getZoom());
+                  category = this.id;
+                  plotCategory(map.getBounds(), this.id, map.getZoom());
                   $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
 
-                  setSubTypesMenuForParent(this.id);
+                  setCompanyMenuForParent(this.id);
               });
               return a;
           }
 
-          function createSubTypeDropDownElement(subTypeName, parentName) {
+          function createCompanyDropDownElement(companyName, parentName) {
               var b = document.createElement('a');
               b.className = "dropdown-item";
-              b.parentPlaceType = parentName;
-              b.id = subTypeName;
-              b.text = toTitleCase(subTypeName);
+              b.parentCategory = parentName;
+              b.id = companyName;
+              b.text = toTitleCase(companyName);
               b.addEventListener("click", function () {
-                  placeSubType = this.id;
-                  plotHeatMap(map.getBounds(), this.parentPlaceType, this.id, map.getZoom());
+                  company = this.id;
+                  plotCompany(map.getBounds(), this.id, map.getZoom());
                   $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id));
               });
               return b;

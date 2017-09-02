@@ -5,7 +5,6 @@ import heatmaps.config.ConfigLoader
 import heatmaps.db._
 import heatmaps.models.Category.Restaurant
 import heatmaps.models.LatLngRegion
-import org.joda.time.{DateTimeZone, LocalDateTime}
 import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.fixture

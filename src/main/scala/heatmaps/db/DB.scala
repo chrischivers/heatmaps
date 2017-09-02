@@ -1,14 +1,14 @@
 package heatmaps.db
 
-import com.github.mauricio.async.db.{Configuration, Connection, QueryResult}
 import com.github.mauricio.async.db.pool.{ConnectionPool, ObjectFactory, PoolConfiguration}
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
+import com.github.mauricio.async.db.{Configuration, Connection}
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.DBConfig
-import scala.concurrent.duration._
 
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 trait DB[T <: Connection] extends StrictLogging {
 

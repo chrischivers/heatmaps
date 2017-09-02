@@ -2,15 +2,14 @@ package heatmaps.scanner
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.google.maps.errors.{ApiException, NotFoundException, OverDailyLimitException, UnknownErrorException}
-import com.google.maps.model.{LatLng, PlaceType, PlacesSearchResult}
+import com.google.maps.errors.{ApiException, NotFoundException}
+import com.google.maps.model.{LatLng, PlacesSearchResult}
 import com.google.maps.{GeoApiContext, PlacesApi}
 import com.typesafe.scalalogging.StrictLogging
 import googleutils.SphericalUtil
 import heatmaps.config.Config
 import heatmaps.metrics.MetricsLogging
 import heatmaps.models.Category
-import nl.grons.metrics.scala.{DefaultInstrumented, Meter}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
