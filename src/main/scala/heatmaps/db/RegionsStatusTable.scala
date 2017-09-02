@@ -38,7 +38,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
     } yield queryResult
   }
 
-  def bulkInsertRegionsForPlaceType(regions: List[LatLngRegion], category: Category) = {
+  def bulkInsertRegionsForCategory(regions: List[LatLngRegion], category: Category) = {
     logger.info(s"Inserting regions for category $category")
     Future.sequence(regions.map { region =>
       insertRegion(region, category)

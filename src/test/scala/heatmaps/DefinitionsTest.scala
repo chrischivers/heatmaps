@@ -47,7 +47,7 @@ class DefinitionsTest extends FunSuite with Matchers {
     latLngRegions should contain (LatLngRegion(52,1))
   }
 
-  test("place type list should be returned") {
+  test("place category list should be returned") {
     val placeCategories = Definitions.placeGroups.map(_.category)
     placeCategories should contain (Restaurant)
   }

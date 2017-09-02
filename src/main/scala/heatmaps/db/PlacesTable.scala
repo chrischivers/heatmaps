@@ -216,7 +216,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def updateSubtypes(company: Company): Future[List[QueryResult]] = {
-    logger.info(s"Updating subtype ${company.name} in place type ${company.placeCategory.name} for places starting with ${company.searchMatches}")
+    logger.info(s"Updating company ${company.name} in category ${company.placeCategory.name} for places starting with ${company.searchMatches}")
     val statement =
       s"UPDATE ${schema.tableName} " +
         s"SET ${schema.company} = ?, ${schema.lastUpdated} = 'now' " +

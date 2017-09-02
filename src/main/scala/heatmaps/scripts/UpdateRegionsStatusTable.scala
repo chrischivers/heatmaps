@@ -19,10 +19,10 @@ object UpdateRegionsStatusTable extends App with StrictLogging {
       activeRegions <- placesTable.getActiveLatLngRegions
       _ = logger.info(s"Got ${activeRegions.size} activeRegions from Places table")
       existingRegions <- regionsStatusTable.getRegionsFor(placeCategory)
-      _ = logger.info(s"Got ${existingRegions.size} existing regions from Regions Status table for place type $placeCategory")
+      _ = logger.info(s"Got ${existingRegions.size} existing regions from Regions Status table for category $placeCategory")
       regionsNotAlreadyInTable = activeRegions.diff(existingRegions.toSet)
       _ = logger.info(s"Found ${regionsNotAlreadyInTable.size} active regions for $placeCategory not already in Regions Status table")
-      _ <- regionsStatusTable.bulkInsertRegionsForPlaceType(regionsNotAlreadyInTable.toList, placeCategory)
+      _ <- regionsStatusTable.bulkInsertRegionsForCategory(regionsNotAlreadyInTable.toList, placeCategory)
       _ = logger.info(s"Inserted ${regionsNotAlreadyInTable.size} regions into RegionsStatusTable")
     } yield ()
   })

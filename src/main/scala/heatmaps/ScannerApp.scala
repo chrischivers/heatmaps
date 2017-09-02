@@ -23,7 +23,7 @@ object ScannerApp extends App with StrictLogging {
   while (true) {
     Await.result(for {
       (latLngRegion, category) <- regionStatusTable.getNextRegionToProcess
-      _ = logger.info(s"Processing region $latLngRegion for place type: $category")
+      _ = logger.info(s"Processing region $latLngRegion for category: $category")
       scanResults <- ls.scanForPlacesInLatLngRegion(latLngRegion, 10000, category)
       _ = logger.info(s"Scanned for places in $latLngRegion. ${scanResults.size} results obtained")
       _ <- placesTable.insertPlaces(scanResults, latLngRegion, category)

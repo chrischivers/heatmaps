@@ -95,6 +95,7 @@
 
           function plotCompany(mapBounds, company, zoom) {
 
+              clearMarkers();
               if (company !== "None") {
                   var boundsParams = "bounds=" + mapBounds.toString();
                   var companyParams = "company=" + company;
@@ -103,7 +104,6 @@
                   xmlhttp.onreadystatechange = function () {
                       if (this.readyState === 4 && this.status === 200) {
                           placeArray = JSON.parse(this.responseText);
-                          clearMarkers();
                           if (placeArray.length !== 0) {
                               var pointsData = getLatLngPoints(placeArray);
                               for (var i = 0; i < pointsData.length; i++) {
@@ -197,6 +197,7 @@
               companyDropdown.children().remove();
               companyDropdown.append(createCompanyDropDownElement("None", parentId));
 
+
               for (var j in placeGroupData) {
                   if (placeGroupData[j].category.name === parentId) {
                       for (var k in placeGroupData[j].companies) {
@@ -207,6 +208,7 @@
                   }
               }
               companyDropdown.closest(".btn-group").find('.btn').text("None");
+              clearMarkers();
           }
 
           function createCategoryDropDownElement(categoryName) {
