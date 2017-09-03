@@ -72,25 +72,21 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
       :? BoundsQueryParamMatcher(bounds)
       :? CategoryQueryParamMatcher(category)
       :? ZoomQueryParamMatcher(zoom) =>
-      println(
-        """
-          |
-          |
-          |HERE
-          |
-          |
-          |
-        """.stripMargin)
       logger.info(s"Servlet handling category points request for bounds $bounds, category $category and zoom $zoom")
       val boundsConverted = getBounds(bounds)
       val categoryConverted = Category.fromString(category)
       val normalisedZoom = normaliseZoom(zoom.toInt, mapsConfig)
-
-      categoryConverted.fold(NotFound()) { category =>
-        val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-        val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(normalisedZoom)) //Ignoring density for now
-          .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
-        Ok(jsonStr)
+      if (zoomTooLow(normalisedZoom)) {
+        logger.info(s"Zoom level too low $normalisedZoom. Ignoring request")
+        Ok("{}")
+      }
+      else {
+        categoryConverted.fold(NotFound()) { category =>
+          val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+          val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(normalisedZoom)) //Ignoring density for now
+            .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
+          Ok(jsonStr)
+        }
       }
 
     case _@GET -> Root / "company-points"
@@ -101,13 +97,18 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
       val boundsConverted = getBounds(bounds)
       val companyConverted = Company.fromString(company)
       val normalisedZoom = normaliseZoom(zoom.toInt, mapsConfig)
-
-      companyConverted.fold(NotFound()) { company =>
-        val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-        val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, company, Some(getBounds(bounds)), Some(normalisedZoom)) //Ignoring density for now
-          .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
-        Ok(jsonStr)
-      }
+//      if (zoomTooLow(normalisedZoom)) {
+//        logger.info(s"Zoom level too low $normalisedZoom. Ignoring request")
+//        Ok("{}")
+//      }
+//      else {
+        companyConverted.fold(NotFound()) { company =>
+          val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
+          val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, company, Some(getBounds(bounds)), None) //Ignoring zoom for now - should return all
+            .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
+          Ok(jsonStr)
+        }
+//      }
   }
 }
 
@@ -123,4 +124,6 @@ object HeatmapsServlet extends StrictLogging {
     else if (zoom.toInt < mapsConfig.minZoom) mapsConfig.minZoom
     else zoom.toInt
   }
+
+  def zoomTooLow(zoom: Int): Boolean = zoom < 5 //TODO put in config
 }

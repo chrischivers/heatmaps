@@ -28,28 +28,31 @@
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCategory" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Restaurants
+                        <i>Categories</i>
                     </button>
                     <div class="dropdown-menu" id="category-dropdown-menu" aria-labelledby="dropdownMenuButtonCategory"></div>
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCompany" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i>None</i>
+                        <i>Companies</i>
                     </button>
                     <div class="dropdown-menu" id="company-dropdown-menu" aria-labelledby="dropdownMenuButtonCompany"></div>
                 </div>
             </div>
         </div>
         <div id="map"></div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
 
           var map;
           var heatmap;
-          var category = "RESTAURANT";
+          var category = "None";
           var company = "None";
           var city = "London";
           var placeGroupData;
           var markersArray = [];
+          var categoryDropDownMenu = $("#category-dropdown-menu");
+          var companyDropDownMenu = $("#company-dropdown-menu");
 
 
           function initMap() {
@@ -68,50 +71,59 @@
 
           }
 
-          function plotCategory(mapBounds, category, zoom) {
-
-              var boundsParams = "bounds=" + mapBounds.toString();
-              var categoryParams = "category=" + category;
-              var zoomParams = "zoom=" + zoom.toString();
-              var xmlhttp = new XMLHttpRequest();
-              xmlhttp.onreadystatechange = function () {
-                  if (this.readyState === 4 && this.status === 200) {
-                      placeArray = JSON.parse(this.responseText);
-                      if (heatmap) {
-                          heatmap.setMap(null);
+          function plotCategory(mapBounds, cat, zoom) {
+              if (heatmap) {
+                  heatmap.setMap(null);
+              }
+              if (cat !== "None") {
+                  var boundsParams = "bounds=" + mapBounds.toString();
+                  var categoryParams = "category=" + cat;
+                  var zoomParams = "zoom=" + zoom.toString();
+                  var xmlhttp = new XMLHttpRequest();
+                  xmlhttp.onreadystatechange = function () {
+                      if (this.readyState === 4 && this.status === 200) {
+                          if (category === cat) {
+                              placeArray = JSON.parse(this.responseText);
+                              if (placeArray.length !== 0) {
+                                  var pointsData = getLatLngPoints(placeArray);
+                                  if (heatmap) {
+                                      heatmap.setMap(null);
+                                  }
+                                  heatmap = new google.maps.visualization.HeatmapLayer({
+                                      data: pointsData
+                                  });
+                                  heatmap.setMap(map);
+                              }
+                          }
                       }
-                      if (placeArray.length !== 0) {
-                          var pointsData = getLatLngPoints(placeArray);
-                          heatmap = new google.maps.visualization.HeatmapLayer({
-                              data: pointsData
-                          });
-                          heatmap.setMap(map);
-                      }
-                  }
-              };
-              xmlhttp.open("GET", "/category-points?" + boundsParams + "&" + categoryParams + "&" + zoomParams, true);
-              xmlhttp.send();
+                  };
+                  xmlhttp.open("GET", "/category-points?" + boundsParams + "&" + categoryParams + "&" + zoomParams, true);
+                  xmlhttp.send();
+              }
           }
 
-          function plotCompany(mapBounds, company, zoom) {
+          function plotCompany(mapBounds, comp, zoom) {
 
               clearMarkers();
-              if (company !== "None") {
+              if (comp !== "None") {
                   var boundsParams = "bounds=" + mapBounds.toString();
-                  var companyParams = "company=" + company;
+                  var companyParams = "company=" + comp;
                   var zoomParams = "zoom=" + zoom.toString();
                   var xmlhttp = new XMLHttpRequest();
                   xmlhttp.onreadystatechange = function () {
                       if (this.readyState === 4 && this.status === 200) {
                           placeArray = JSON.parse(this.responseText);
                           if (placeArray.length !== 0) {
-                              var pointsData = getLatLngPoints(placeArray);
-                              for (var i = 0; i < pointsData.length; i++) {
-                                  var marker = new google.maps.Marker({
-                                      position: pointsData[i],
-                                      map: map
-                                  });
-                                  markersArray.push(marker);
+                              if (company === comp) {
+                                  var pointsData = getLatLngPoints(placeArray);
+                                  clearMarkers();
+                                  for (var i = 0; i < pointsData.length; i++) {
+                                      var marker = new google.maps.Marker({
+                                          position: pointsData[i],
+                                          map: map
+                                      });
+                                      markersArray.push(marker);
+                                  }
                               }
                           }
                       }
@@ -132,7 +144,7 @@
           }
 
           function clearMarkers() {
-              for (var i = 0; i < markersArray.length; i++ ) {
+              for (var i = 0; i < markersArray.length; i++) {
                   markersArray[i].setMap(null);
               }
               markersArray.length = 0;
@@ -184,30 +196,24 @@
           }
 
           function setCategoryMenu() {
-              var CategoryDropdown = $("#category-dropdown-menu");
               for (var i in placeGroupData) {
                   var dropDownTypeItem = createCategoryDropDownElement(placeGroupData[i].category.name);
-                  CategoryDropdown.append(dropDownTypeItem);
+                  categoryDropDownMenu.append(dropDownTypeItem);
               }
           }
 
           function setCompanyMenuForParent(parentId) {
-
-              var companyDropdown = $("#company-dropdown-menu");
-              companyDropdown.children().remove();
-              companyDropdown.append(createCompanyDropDownElement("None", parentId));
-
 
               for (var j in placeGroupData) {
                   if (placeGroupData[j].category.name === parentId) {
                       for (var k in placeGroupData[j].companies) {
                           var company = placeGroupData[j].companies[k].name;
                           var dropDownItem = createCompanyDropDownElement(company, parentId);
-                          companyDropdown.append(dropDownItem);
+                          companyDropDownMenu.append(dropDownItem);
                       }
                   }
               }
-              companyDropdown.closest(".btn-group").find('.btn').text("None");
+              companyDropDownMenu.closest(".btn-group").find('.btn').html("<i>Companies</i>");
               clearMarkers();
           }
 
@@ -215,13 +221,22 @@
               var a = document.createElement('a');
               a.className = "dropdown-item";
               a.id = categoryName;
-              a.text = toTitleCase(categoryName) + "s";
+              a.text = toTitleCase(categoryName);
               a.addEventListener("click", function () {
                   category = this.id;
                   plotCategory(map.getBounds(), this.id, map.getZoom());
-                  $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id) + "s");
+                  companyDropDownMenu.children().remove();
+                  categoryDropDownMenu.children().remove();
 
-                  setCompanyMenuForParent(this.id);
+                  if (category !== "None") {
+                      categoryDropDownMenu.append(createCategoryDropDownElement("None"));
+                      setCategoryMenu();
+                      categoryDropDownMenu.closest(".btn-group").find('.btn').text(toTitleCase(this.id));
+                      setCompanyMenuForParent(this.id);
+                  } else {
+                      categoryDropDownMenu.closest(".btn-group").find('.btn').html("<i>Categories</i>");
+                      setPlaceMenusStartingState();
+                  }
               });
               return a;
           }
@@ -235,7 +250,16 @@
               b.addEventListener("click", function () {
                   company = this.id;
                   plotCompany(map.getBounds(), this.id, map.getZoom());
-                  $(this).closest(".btn-group").find('.btn').text(toTitleCase(this.id));
+                  companyDropDownMenu.children().remove();
+
+                  if (company !== "None") {
+                      companyDropDownMenu.append(createCompanyDropDownElement("None", parentName));
+                      setCompanyMenuForParent(parentName);
+                      companyDropDownMenu.closest(".btn-group").find('.btn').text(toTitleCase(this.id));
+                  } else {
+                      companyDropDownMenu.closest(".btn-group").find('.btn').html("<i>Companies</i>");
+                      setCompanyMenuForParent(parentName);
+                  }
               });
               return b;
           }
@@ -260,11 +284,9 @@
           }
 
         </script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsL6wsuPFovAUq8STgMIp0xrOqMjv3F6A&libraries=visualization&callback=initMap">
         </script>
-        <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     </body>
