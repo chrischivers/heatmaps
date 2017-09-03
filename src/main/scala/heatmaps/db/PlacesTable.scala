@@ -95,17 +95,17 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
           case Some(resultSet) =>
             logger.info(s"${resultSet.size} results returned from DB for query: $query")
             resultSet.map(res => {
-            val latLngRegStr = res.apply(schema.latLngRegion).asInstanceOf[String].split(",")
-            Place(
-              res.apply(schema.placeId).asInstanceOf[String],
-              Option(res.apply(schema.placeName).asInstanceOf[String]),
-              res.apply(schema.category).asInstanceOf[String],
-              Option(res.apply(schema.company).asInstanceOf[String]),
-              Option(res.apply(schema.minZoomLevel).asInstanceOf[Int]),
-              new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble),
-              LatLngRegion(latLngRegStr(0).toInt, latLngRegStr(1).toInt)
-            )
-          }).toList
+              val latLngRegStr = res.apply(schema.latLngRegion).asInstanceOf[String].split(",")
+              Place(
+                res.apply(schema.placeId).asInstanceOf[String],
+                Option(res.apply(schema.placeName).asInstanceOf[String]),
+                res.apply(schema.category).asInstanceOf[String],
+                Option(res.apply(schema.company).asInstanceOf[String]),
+                Option(res.apply(schema.minZoomLevel).asInstanceOf[Int]),
+                new LatLng(res.apply(schema.lat).asInstanceOf[Float].toDouble, res.apply(schema.lng).asInstanceOf[Float].toDouble),
+                LatLngRegion(latLngRegStr(0).toInt, latLngRegStr(1).toInt)
+              )
+            }).toList
           case None =>
             logger.info(s"No results returned from DB for query: $query")
             List.empty
@@ -153,7 +153,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     }
   }
 
-  def  updatePlace(placeID: String, category: Category, name: String, zoom: Int): Future[QueryResult] = {
+  def updatePlace(placeID: String, category: Category, name: String, zoom: Int): Future[QueryResult] = {
     logger.info(s"updating place $placeID, $name in DB")
     val statement =
       s"""
@@ -168,26 +168,27 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     db.connectionPool.sendPreparedStatement(statement, List(name, zoom, placeID, category.name))
   }
 
-  def getLatLngRegionsContainingNullPlaceNames(category: Category): Future[List[LatLngRegion]] = {
+  def getLatLngRegionsContainingNullPlaceNames(category: Category): Future[Option[List[LatLngRegion]]] = {
     logger.info(s"getting latLngRegions containing null place names")
     val query = s"SELECT DISTINCT(${schema.latLngRegion}) " +
       s"FROM ${schema.tableName} " +
       s"WHERE ${schema.category} = ? " +
-      s"AND ${schema.placeName} IS NULL " +
-      s"ORDER BY ${schema.latLngRegion} ASC"
+      s"AND ${schema.placeName} IS NULL"
     for {
       _ <- db.connectToDB
       queryResult <- db.connectionPool.sendPreparedStatement(query, List(category.name))
     } yield {
       queryResult.rows match {
-        case Some(resultSet) => resultSet.map(res => {
-          val regionStr = res.apply(schema.latLngRegion).asInstanceOf[String]
-          LatLngRegion(
-            regionStr.split(",")(0).toInt,
-            regionStr.split(",")(1).toInt
-          )
-        }).toList
-        case None => List.empty
+        case Some(resultSet) if resultSet.nonEmpty =>
+          Some(resultSet.map(res => {
+            val regionStr = res.apply(schema.latLngRegion).asInstanceOf[String]
+            LatLngRegion(
+              regionStr.split(",")(0).toInt,
+              regionStr.split(",")(1).toInt
+            )
+          }).toList)
+        case Some(resultSet) if resultSet.isEmpty => None
+        case None => throw new RuntimeException("Unable to get next latLngRegion (null place names) from DB")
       }
     }
   }

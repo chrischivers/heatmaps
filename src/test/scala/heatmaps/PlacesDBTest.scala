@@ -144,8 +144,8 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(mcDonaldsPlaceId, Restaurant.name, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng)).futureValue
 
     val regionsContainingNullNames = f.placesTable.getLatLngRegionsContainingNullPlaceNames(Restaurant).futureValue
-    regionsContainingNullNames should have size 1
-    regionsContainingNullNames.head shouldBe latLngRegion
+    regionsContainingNullNames.get should have size 1
+    regionsContainingNullNames.get.head shouldBe latLngRegion
 
     f.placesTable.countPlacesForLatLngRegion(latLngRegion, Restaurant).futureValue shouldBe 1
     val zoomLevel = config.mapsConfig.minZoom + Random.nextInt((config.mapsConfig.maxZoom - config.mapsConfig.minZoom) + 1)

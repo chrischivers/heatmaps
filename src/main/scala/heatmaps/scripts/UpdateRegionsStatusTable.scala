@@ -28,5 +28,6 @@ object UpdateRegionsStatusTable extends App with StrictLogging {
   })
 
   Await.result(result, 10 hours)
+  logger.info("Update regions status table complete")
 
 }

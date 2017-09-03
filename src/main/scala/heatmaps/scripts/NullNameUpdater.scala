@@ -3,6 +3,7 @@ package heatmaps.scripts
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
+import heatmaps.models.LatLngRegion
 import heatmaps.scanner.PlacesApiRetriever
 
 import scala.concurrent.Await
@@ -17,13 +18,22 @@ object NullNameUpdater extends App with StrictLogging {
   val placesApiRetriever = new PlacesApiRetriever(config)
 
   Definitions.placeGroups.foreach(placeGroup => {
-    val regionsWithNullPlaceNames = {
-      logger.info("Getting regions containing null place names from DB")
-      val result = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(placeGroup.category), 10 minutes)
-      logger.info(s"${result.size} regions containing null place names")
-      Random.shuffle(result)
+    logger.info(s"Currently scanning for null place names in category ${placeGroup.category}")
+    iterator
+
+    def iterator: Unit = {
+      val regionsWithNulPlaceName = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(placeGroup.category), 5 minutes)
+      regionsWithNulPlaceName match {
+        case Some(regions) =>
+          val randomRegion = Random.shuffle(regions).headOption.getOrElse(throw new RuntimeException("Regions list is empty"))
+          processNullNamesFor(randomRegion)
+          iterator
+        case None =>
+          logger.info(s"No more null place names for ${placeGroup.category}. Moving on to next")
+      }
     }
-    regionsWithNullPlaceNames.foreach { region =>
+
+    def processNullNamesFor(region: LatLngRegion): Unit = {
       logger.info(
         s"""
            |**************
@@ -39,9 +49,10 @@ object NullNameUpdater extends App with StrictLogging {
                 zoomLevel = config.mapsConfig.minZoom + Random.nextInt((config.mapsConfig.maxZoom - config.mapsConfig.minZoom) + 1)
                 _ <- placesTable.updatePlace(place.placeId, placeGroup.category, name, zoomLevel)
               } yield {
-                logger.info(s"Sucessfully persisted ${place.placeId} to DB for place category ${placeGroup.category} with generated zoom $zoomLevel")
+                logger.info(s"Successfully persisted ${place.placeId} to DB for place category ${placeGroup.category} with generated zoom $zoomLevel")
               }, 24 hour)))
       }, 999 hours)
     }
   })
+  logger.info("Scan of all categories for null place names completed.")
 }
