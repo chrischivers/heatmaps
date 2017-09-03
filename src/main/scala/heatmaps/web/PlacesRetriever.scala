@@ -42,7 +42,7 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
   }
 
   def getPlaces(latLngRegions: List[LatLngRegion], placeType: PlaceType, latLngBounds: Option[LatLngBounds] = None, zoomOpt: Option[Int] = None): Future[List[Place]] = {
-    logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds")
+    logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds and zoom $zoomOpt")
     for {
       cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType, zoomOpt).map(res => (region, res))))
       _ = logger.info(s"${cachedResults.size} results returned from cache")
@@ -61,18 +61,26 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
       }
 
       def persistToCache(category: Category) = {
-        zoomOpt.fold(()) { _ =>
-          Future.sequence(notInCache.flatMap(latLngReg =>
-            resultsFromDb.groupBy(_.zoom).map { case (zoom, results) =>
-              zoom.fold(Future(()))(z => storeInCache(latLngReg._1, category, results, z))
-            }
-          )).onComplete {
-            case Success(_) => logger.info(s"Successfully persisted to cache regions: ${notInCache.map(_._1)}")
-            case Failure(e) =>
-              logger.error(s"Error persisting ${notInCache.map(_._1)} regions to cache", e)
-              throw e
+        Future.sequence(notInCache.map { regionNotInCache =>
+          val regionToHandle = regionNotInCache._1
+          resultsFromDb.filter(_.latLngRegion == regionToHandle) match {
+            case Nil =>
+              zoomOpt match {
+                case None => Future.sequence((mapsConfig.minZoom to mapsConfig.maxZoom).map(z => storeInCache(regionToHandle, category, List.empty, z)))
+                case Some(zoom) => Future.sequence((mapsConfig.minZoom to zoom).map(z => storeInCache(regionToHandle, category, List.empty, z)))
+              }
+            case list =>
+              Future.sequence(list.groupBy(results => (results.latLngRegion, results.zoom)).map { case ((latLngRegion, zoom), results) =>
+                zoom.fold(Future(()))(z => storeInCache(latLngRegion, category, results, z))
+              })
           }
+        }).onComplete {
+          case Success(_) => logger.info(s"Successfully persisted to cache regions: ${notInCache.map(_._1)}")
+          case Failure(e) =>
+            logger.error(s"Error persisting ${notInCache.map(_._1)} regions to cache", e)
+            throw e
         }
+
       }
 
       val result: Set[Place] = (inCache.flatMap(_._2).flatten ++ resultsFromDb).toSet
