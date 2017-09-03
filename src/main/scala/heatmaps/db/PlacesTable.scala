@@ -154,7 +154,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def updatePlace(placeID: String, category: Category, name: String, zoom: Int): Future[QueryResult] = {
-    logger.info(s"updating place $placeID, $name in DB")
+    logger.info(s"updating placeId: $placeID, name: $name in DB")
     val statement =
       s"""
          |

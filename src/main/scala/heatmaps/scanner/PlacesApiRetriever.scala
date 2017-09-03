@@ -49,10 +49,7 @@ class PlacesApiRetriever(config: Config)(implicit val executionContext: Executio
 
   def getNameForPlaceId(placeId: String): Future[String] = {
     val apiKeyIndexInUse = activeApiKeyIndex.get()
-    Future(PlacesApi.placeDetails(context, placeId).await().name match {
-      case str if str == "null" || str == "" => "NOT_FOUND"
-      case str => str
-    })
+    Future(Option(PlacesApi.placeDetails(context, placeId).await().name).getOrElse("NOT_FOUND"))
       .recoverWith {
         case _: NotFoundException =>
           logger.error(s"Place $placeId not found in API")
