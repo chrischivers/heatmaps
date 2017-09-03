@@ -145,7 +145,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
         if(placeId == "Id1") "McDonald's" else name, zoom))
     }).futureValue
 
-    f.placesTable.updateSubtypes(company).futureValue
+    f.placesTable.updateCompany(company).futureValue
 
     val fromDb = placesDBRetriever.getPlaces(List(latLngRegion), category, None, Some(zoom)).futureValue
     fromDb should have size 42

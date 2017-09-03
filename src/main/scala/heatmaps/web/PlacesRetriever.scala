@@ -45,8 +45,8 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
     logger.info(s"Getting places for $latLngRegions with latLngBounds $latLngBounds and zoom $zoomOpt")
     for {
       cachedResults <- Future.sequence(latLngRegions.map(region => getFromCache(region, placeType, zoomOpt).map(res => (region, res))))
-      _ = logger.info(s"${cachedResults.size} results returned from cache")
       (inCache, notInCache) = cachedResults.partition(_._2.isDefined)
+      _ = logger.info(s"${inCache.size} results returned available in cache, ${notInCache.size} results not in cache")
       resultsFromDb <- if (notInCache.nonEmpty) {
         logger.info(s"Unable to get latLngRegions $notInCache in cache for zoom $zoomOpt. Getting from DB")
         placesTable.getPlacesForLatLngRegions(notInCache.map(_._1), placeType, zoomOpt)

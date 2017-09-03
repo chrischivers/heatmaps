@@ -157,7 +157,7 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     resultsWithoutSubType.head.placeName.get shouldBe "McDonald's Test"
     resultsWithoutSubType.head.company.isDefined shouldBe false
 
-    f.placesTable.updateSubtypes(McDonalds).futureValue
+    f.placesTable.updateCompany(McDonalds).futureValue
 
     val resultsWithSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), Restaurant).futureValue
     resultsWithSubType should have size 1

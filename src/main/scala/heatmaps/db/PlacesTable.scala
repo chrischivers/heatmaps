@@ -216,7 +216,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
     }
   }
 
-  def updateSubtypes(company: Company): Future[List[QueryResult]] = {
+  def updateCompany(company: Company): Future[List[QueryResult]] = {
     logger.info(s"Updating company ${company.name} in category ${company.placeCategory.name} for places starting with ${company.searchMatches}")
     val statement =
       s"UPDATE ${schema.tableName} " +
@@ -225,6 +225,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         s"AND UPPER(${schema.placeName}) LIKE ?"
 
     Future.sequence(company.searchMatches.map { searchMatch =>
+      logger.info(s"Updating ${company.name} for search match $searchMatch")
       db.connectionPool.sendPreparedStatement(statement, List(company.name, company.placeCategory.name, searchMatch.toUpperCase + "%"))
     })
   }

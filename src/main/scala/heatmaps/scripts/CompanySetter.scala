@@ -15,7 +15,8 @@ object CompanySetter extends App with StrictLogging {
 
   Definitions.placeGroups.foreach { placeGroup =>
     placeGroup.companies.foreach { company =>
-      Await.result(placesTable.updateSubtypes(company), 10 minutes)
+      Await.result(placesTable.updateCompany(company), 10 minutes)
     }
   }
+  logger.info("Company update finished")
 }
