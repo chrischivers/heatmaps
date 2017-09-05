@@ -3,7 +3,7 @@ package heatmaps.config
 import com.google.maps.model.LatLng
 import com.typesafe.scalalogging.StrictLogging
 import heatmaps.config.JsonDecoders._
-import heatmaps.models.{City, LatLngBounds, LatLngRegion, PlaceGroup}
+import heatmaps.models._
 import io.circe.parser.decode
 
 import scala.io.Source
@@ -23,10 +23,17 @@ object Definitions extends StrictLogging {
     for (lat <- List.range(-85, 84); lng <- List.range(-180, 179)) yield LatLngRegion(lat, lng)
   }
 
-  lazy val placeGroups: List[PlaceGroup] = decode(definitionsFile)(decodePlaceGroups) match {
+  lazy val categories: List[Category] = decode(definitionsFile)(decodeCategories) match {
     case Left(e) => throw e
     case Right(list) => list
   }
+
+  lazy val companies: List[Company] = decode(definitionsFile)(decodeCompanies) match {
+    case Left(e) => throw e
+    case Right(list) => list
+  }
+
+  lazy val placeGroups: List[PlaceGroup] = categories.map(category => PlaceGroup(category, companies.filter(_.parentCategoryId == category.id)))
 
 
   def getLatLngRegionsForLatLngBounds(latLngbounds: LatLngBounds): List[LatLngRegion] = {

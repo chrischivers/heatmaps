@@ -2,9 +2,8 @@ package heatmaps
 
 import com.google.maps.model.LatLng
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.config.ConfigLoader
+import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.Category.Restaurant
 import heatmaps.models.LatLngRegion
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
@@ -24,6 +23,8 @@ class LocationScannerTest extends fixture.FunSuite with StrictLogging with Scala
     timeout = scaled(5 minutes),
     interval = scaled(500 millis)
   )
+
+  val restaurant = Definitions.categories.find(_.id == "RESTAURANT").get
 
   case class FixtureParam(placesApiRetriever: PlacesApiRetriever, locationScanner: LocationScanner, placesTable: PlacesTable)
 
@@ -48,7 +49,7 @@ class LocationScannerTest extends fixture.FunSuite with StrictLogging with Scala
   test("Location Scanner should retrieve a list of all places in a given latLngRegion") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, Restaurant).futureValue
+    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, restaurant).futureValue
 
     locationScanResult.size should be > 500
     locationScanResult.size should be < 1000
@@ -57,9 +58,9 @@ class LocationScannerTest extends fixture.FunSuite with StrictLogging with Scala
   test("place retriever results for mid point of a given area should be a subset of location scanner results for the entire area") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, Restaurant).futureValue
+    val locationScanResult = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, restaurant).futureValue
 
-    val midPointResults = f.placesApiRetriever.getPlaces(new LatLng(45.5, 25.5), 1000, Restaurant).futureValue
+    val midPointResults = f.placesApiRetriever.getPlaces(new LatLng(45.5, 25.5), 1000, restaurant).futureValue
 
     midPointResults.size should be < locationScanResult.size
 
@@ -75,10 +76,10 @@ class LocationScannerTest extends fixture.FunSuite with StrictLogging with Scala
 
     val latLngRegion = LatLngRegion(45, 25)
 
-    val scanResultsLargeRadius = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, Restaurant).futureValue
+    val scanResultsLargeRadius = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, restaurant).futureValue
     val scanResultsLargeRadiusPlaceIds = scanResultsLargeRadius.map(result => result.placeId)
 
-    val scanResultsSmallRadius = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 50000, Restaurant).futureValue
+    val scanResultsSmallRadius = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 50000, restaurant).futureValue
     val scanResultsSmallRadiusPlaceIds = scanResultsSmallRadius.map(result => result.placeId)
 
     scanResultsSmallRadiusPlaceIds.foreach(placeId => scanResultsLargeRadiusPlaceIds should contain (placeId))

@@ -1,10 +1,8 @@
 package heatmaps
 
 import com.google.maps.model.{PlaceType => GooglePlaceType}
-import heatmaps.config.ConfigLoader
+import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.Category.{Lodging, Restaurant}
-import heatmaps.models.Company.McDonalds
 import heatmaps.models.LatLngRegion
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
@@ -48,8 +46,8 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
 
   test("Place results persisted to DB should match those retrieved") { f =>
 
-    val placeCategory1 = Restaurant
-    val placeCategory2 = Lodging
+    val placeCategory1 = Definitions.categories.find(_.id == "RESTAURANT").get
+    val placeCategory2 = Definitions.categories.find(_.id == "LODGING").get
 
     val latLngRegion = LatLngRegion(45, 25)
     val locationScanResult1 = f.locationScanner.scanForPlacesInLatLngRegion(latLngRegion, 10000, placeCategory1).futureValue
@@ -73,7 +71,7 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
 
   test("Place results persisted separately for two regions should all be obtained using bulk get") { f =>
 
-    val placeCategory = Restaurant
+    val placeCategory = Definitions.categories.find(_.id == "RESTAURANT").get
 
     val latLngRegion1 = LatLngRegion(45, 25)
     val latLngRegion2 = LatLngRegion(46, 25)
@@ -93,7 +91,7 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     val schema = f.placesTable.schema
     val placeIdsAndMinZooms = List(("Id1", 5), ("Id2", 10), ("Id3", 15))
     val latLngRegion = LatLngRegion(3,101)
-    val placeCategory = Restaurant
+    val placeCategory = Definitions.categories.find(_.id == "RESTAURANT").get
     val statement =
       s"""
          |
@@ -103,7 +101,7 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
       """.stripMargin
 
     Future.sequence(placeIdsAndMinZooms.map{ case(placeId, minZoom) =>
-      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, placeCategory.name, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng, minZoom))
+      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, placeCategory.id, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng, minZoom))
     }).futureValue
 
    val regionsAtZoom1 = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), placeCategory, zoom = Some(1)).futureValue
@@ -133,6 +131,8 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
     val schema = f.placesTable.schema
     val mcDonaldsPlaceId = "ChIJ4VsFx-FFzDERn7dTZs447D4"
     val latLngRegion = LatLngRegion(3,101)
+    val restaurant = Definitions.categories.find(_.id == "RESTAURANT").get
+    val mcdonalds = Definitions.companies.find(_.id == "MCDONALDS").get
     val statement =
       s"""
          |
@@ -141,29 +141,29 @@ class PlacesDBTest extends fixture.FunSuite with ScalaFutures {
          |
       """.stripMargin
 
-    f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(mcDonaldsPlaceId, Restaurant.name, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng)).futureValue
+    f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(mcDonaldsPlaceId, restaurant.id, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng)).futureValue
 
-    val regionsContainingNullNames = f.placesTable.getLatLngRegionsContainingNullPlaceNames(Restaurant).futureValue
+    val regionsContainingNullNames = f.placesTable.getLatLngRegionsContainingNullPlaceNames(restaurant).futureValue
     regionsContainingNullNames.get should have size 1
     regionsContainingNullNames.get.head shouldBe latLngRegion
 
-    f.placesTable.countPlacesForLatLngRegion(latLngRegion, Restaurant).futureValue shouldBe 1
+    f.placesTable.countPlacesForLatLngRegion(latLngRegion, restaurant).futureValue shouldBe 1
     val zoomLevel = config.mapsConfig.minZoom + Random.nextInt((config.mapsConfig.maxZoom - config.mapsConfig.minZoom) + 1)
-    f.placesTable.updatePlace(mcDonaldsPlaceId, Restaurant, "McDonald's Test", zoomLevel).futureValue
-    val resultsWithoutSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), Restaurant).futureValue
+    f.placesTable.updatePlace(mcDonaldsPlaceId, restaurant, "McDonald's Test", zoomLevel).futureValue
+    val resultsWithoutSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), restaurant).futureValue
 
     resultsWithoutSubType should have size 1
     resultsWithoutSubType.head.placeId shouldBe mcDonaldsPlaceId
     resultsWithoutSubType.head.placeName.get shouldBe "McDonald's Test"
     resultsWithoutSubType.head.company.isDefined shouldBe false
 
-    f.placesTable.updateCompany(McDonalds).futureValue
+    f.placesTable.updateCompany(mcdonalds).futureValue
 
-    val resultsWithSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), Restaurant).futureValue
+    val resultsWithSubType = f.placesTable.getPlacesForLatLngRegions(List(latLngRegion), restaurant).futureValue
     resultsWithSubType should have size 1
     resultsWithSubType.head.placeId shouldBe mcDonaldsPlaceId
     resultsWithSubType.head.placeName.get shouldBe "McDonald's Test"
-    resultsWithSubType.head.company.get shouldBe McDonalds.name
+    resultsWithSubType.head.company.get shouldBe mcdonalds.id
     resultsWithSubType.head.zoom.get shouldBe zoomLevel
   }
 }

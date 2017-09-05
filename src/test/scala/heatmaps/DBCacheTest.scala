@@ -2,10 +2,8 @@ package heatmaps
 
 import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.typesafe.scalalogging.StrictLogging
-import heatmaps.config.ConfigLoader
+import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db.{PlaceTableSchema, PlacesTable, PostgresDB}
-import heatmaps.models.Category.Restaurant
-import heatmaps.models.Company.McDonalds
 import heatmaps.models.LatLngRegion
 import heatmaps.scanner.{LocationScanner, PlacesApiRetriever}
 import heatmaps.web.PlacesRetriever
@@ -51,7 +49,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
 
   test("places fetched from cache are same as those fetched directly from DB") { f =>
 
-    val category = Restaurant
+    val category = Definitions.categories.find(_.id == "RESTAURANT").get
     val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig, config.mapsConfig)
 
     val latLngRegion = LatLngRegion(45, 25)
@@ -72,7 +70,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
 
   test("places are fetched again from db when cached records expire") { f =>
 
-    val category = Restaurant
+    val category = Definitions.categories.find(_.id == "RESTAURANT").get
     val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig.copy(timeToLive = 5 seconds), config.mapsConfig)
 
     val latLngRegion = LatLngRegion(45, 25)
@@ -96,7 +94,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
 
   test("get requests for multiple LatLng regions are fetched both from cache and DB combined") { f =>
 
-    val category = Restaurant
+    val category = Definitions.categories.find(_.id == "RESTAURANT").get
     val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig, config.mapsConfig)
 
     val latLngRegion1 = LatLngRegion(45, 25)
@@ -127,8 +125,8 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
     val schema = f.placesTable.schema
     val placeIdsAndNames = (1 to 42).map(i => (s"Id$i", Random.nextString(10)))
     val latLngRegion = LatLngRegion(3,101)
-    val category = Restaurant
-    val company = McDonalds
+    val category = Definitions.categories.find(_.id == "RESTAURANT").get
+    val company = Definitions.companies.find(_.id == "MCDONALDS").get
     val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig, config.mapsConfig)
     val zoom = 2
 
@@ -141,7 +139,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
       """.stripMargin
 
     Future.sequence(placeIdsAndNames.map{ case(placeId, name) =>
-      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, category.name, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng,
+      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, category.id, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng,
         if(placeId == "Id1") "McDonald's" else name, zoom))
     }).futureValue
 
@@ -156,7 +154,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
     val fromCache = placesDBRetriever.getPlaces(List(latLngRegion), category, None, Some(zoom)).futureValue
     fromCache should have size 42
 
-    val fromCacheWithSubType = placesDBRetriever.getPlaces(List(latLngRegion), McDonalds, None, Some(zoom)).futureValue
+    val fromCacheWithSubType = placesDBRetriever.getPlaces(List(latLngRegion), company, None, Some(zoom)).futureValue
     fromCacheWithSubType should have size 1
   }
 
@@ -165,7 +163,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
     val schema = f.placesTable.schema
     val placeIdsWithIndex = (1 to 42).map(i => s"Id$i").zipWithIndex
     val latLngRegion = LatLngRegion(3,101)
-    val category = Restaurant
+    val category = Definitions.categories.find(_.id == "RESTAURANT").get
     val placesDBRetriever = new PlacesRetriever(f.placesTable, config.cacheConfig, config.mapsConfig)
 
     val statement =
@@ -177,7 +175,7 @@ class DBCacheTest extends fixture.FunSuite with ScalaFutures with StrictLogging 
       """.stripMargin
 
     Future.sequence(placeIdsWithIndex.map{ case(placeId, index) =>
-      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, category.name, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng,
+      f.placesTable.db.connectionPool.sendPreparedStatement(statement, List(placeId, category.id, latLngRegion.toString, latLngRegion.lat, latLngRegion.lng,
         if(index % 2 == 0) 2 else 3))
     }).futureValue
 

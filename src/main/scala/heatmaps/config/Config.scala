@@ -7,7 +7,7 @@ import scala.collection.JavaConverters._
 case class PostgresDBConfig(host: String, port: Int, username: String, password: String, dbName: String) extends DBConfig
 case class CacheConfig(timeToLive: Duration)
 case class PlacesApiConfig(apiKeys: List[String], returnLimt: Int)
-case class MetricsConfig(host: String, port: Int, dbName: String)
+case class MetricsConfig(host: String, port: Int, dbName: String, enabled: Boolean)
 case class MapsConfig(minZoom: Int, maxZoom: Int)
 
 case class Config(dBConfig: DBConfig, cacheConfig: CacheConfig, placesApiConfig: PlacesApiConfig, metricsConfig: MetricsConfig, mapsConfig: MapsConfig)
@@ -47,7 +47,8 @@ object ConfigLoader {
       MetricsConfig(
         defaultConfigFactory.getString("metrics.host"),
         defaultConfigFactory.getInt("metrics.port"),
-        defaultConfigFactory.getString("metrics.dbName")
+        defaultConfigFactory.getString("metrics.dbName"),
+        defaultConfigFactory.getBoolean("metrics.enabled")
       ),
       MapsConfig(
         defaultConfigFactory.getInt("maps.minZoom"),

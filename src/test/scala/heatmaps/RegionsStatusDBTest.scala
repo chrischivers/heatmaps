@@ -1,9 +1,8 @@
 package heatmaps
 
 import com.google.maps.model.{PlaceType => GooglePlaceType}
-import heatmaps.config.ConfigLoader
+import heatmaps.config.{ConfigLoader, Definitions}
 import heatmaps.db._
-import heatmaps.models.Category.Restaurant
 import heatmaps.models.LatLngRegion
 import org.scalatest.Matchers._
 import org.scalatest.concurrent.ScalaFutures
@@ -20,6 +19,7 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
     timeout = scaled(5 minutes),
     interval = scaled(500 millis)
   )
+  val restaurant = Definitions.categories.find(_.id == "RESTAURANT").get
 
   case class FixtureParam(regionsStatusTable: RegionsStatusTable)
 
@@ -41,7 +41,7 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
   test("region is persisted into DB and retrieved") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val category = Restaurant
+    val category = restaurant
 
     f.regionsStatusTable.insertRegion(latLngRegion, category).futureValue
 
@@ -54,7 +54,7 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
   test("Next region produces next region to process") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val category = Restaurant
+    val category = restaurant
 
     f.regionsStatusTable.insertRegion(latLngRegion, category).futureValue
 
@@ -67,7 +67,7 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
 
     val latLngRegion1 = LatLngRegion(45, 25)
     val latLngRegion2 = LatLngRegion(46, 25)
-    val category = Restaurant
+    val category = restaurant
 
     f.regionsStatusTable.insertRegion(latLngRegion1, category).futureValue
     f.regionsStatusTable.insertRegion(latLngRegion2, category).futureValue
@@ -84,7 +84,7 @@ class RegionsStatusDBTest extends fixture.FunSuite with ScalaFutures {
   test("Error thrown when no new regions to process") { f =>
 
     val latLngRegion = LatLngRegion(45, 25)
-    val category = Restaurant
+    val category = restaurant
 
     f.regionsStatusTable.insertRegion(latLngRegion, category).futureValue
 

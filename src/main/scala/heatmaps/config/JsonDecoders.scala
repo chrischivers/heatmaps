@@ -21,18 +21,30 @@ object JsonDecoders {
       }
   }
 
-  implicit val decodePlaceGroup: Decoder[PlaceGroup] = new Decoder[PlaceGroup] {
-    final def apply(c: HCursor): Decoder.Result[PlaceGroup] =
+  implicit val decodeCategory: Decoder[Category] = new Decoder[Category] {
+    final def apply(c: HCursor): Decoder.Result[Category] =
       for {
-        name <- c.downField("type").as[String]
-        subTypes <- c.downField("sub-type").as[List[String]]
+        id <- c.downField("id").as[String]
+        friendlyName <- c.downField("friendly-name").as[String]
       } yield {
-        PlaceGroup(Category.fromString(name).getOrElse(throw new RuntimeException(s"Unable to decode Category for $name")),
-          subTypes.map(subType => Company.fromString(subType).getOrElse(throw new RuntimeException(s"Unable to match subtype $subType"))))
+        Category(id, friendlyName, GooglePlaceType.valueOf(id))
+      }
+  }
+
+  implicit val decodeCompany: Decoder[Company] = new Decoder[Company] {
+    final def apply(c: HCursor): Decoder.Result[Company] =
+      for {
+        id <- c.downField("id").as[String]
+        friendlyName <- c.downField("friendly-name").as[String]
+        parentCategoryId <-  c.downField("parent-category").as[String]
+        searchMatches <-  c.downField("search-matches").as[List[String]]
+      } yield {
+        Company(id, friendlyName, parentCategoryId, searchMatches)
       }
   }
 
   val decodeCities = Decoder[List[City]].prepare(_.downField("cities"))
-  val decodePlaceGroups = Decoder[List[PlaceGroup]].prepare(_.downField("place-groups"))
+  val decodeCategories = Decoder[List[Category]].prepare(_.downField("categories"))
+  val decodeCompanies = Decoder[List[Company]].prepare(_.downField("companies"))
 
 }

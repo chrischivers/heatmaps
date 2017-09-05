@@ -66,7 +66,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, category.name, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
+    db.connectionPool.sendPreparedStatement(statement, List(placeSearchResult.placeId, category.id, latLngRegion.toString, placeSearchResult.geometry.location.lat, placeSearchResult.geometry.location.lng))
       .recoverWith {
         case ex: GenericDatabaseException if ex.errorMessage.message.contains("duplicate key value") =>
           logger.error("Database exception - already exists. Ignoring. Error message: " + ex.errorMessage, ex)
@@ -85,7 +85,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         s"SELECT * " +
           s"FROM ${schema.tableName} " +
           s"WHERE ${schema.latLngRegion} IN (${latLngRegions.map(str => s"'${str.toString}'").mkString(",")}) " +
-          s"AND ${getWhereFieldFor(placeType)} = '${placeType.name}' " +
+          s"AND ${getWhereFieldFor(placeType)} = '${placeType.id}' " +
           zoom.fold("")(zoom => s"AND ${schema.minZoomLevel} <= ${zoom.toString}")
       for {
         _ <- db.connectToDB
@@ -115,7 +115,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def countPlacesForLatLngRegion(latLngRegion: LatLngRegion, placeType: PlaceType): Future[Long] = {
-    logger.info(s"getting count of places for latLngRegions $latLngRegion and place type ${placeType.name} from DB")
+    logger.info(s"getting count of places for latLngRegions $latLngRegion and place type ${placeType.id} from DB")
     val query =
       s"SELECT COUNT(*) " +
         s"FROM ${schema.tableName} " +
@@ -123,7 +123,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         s"AND ${getWhereFieldFor(placeType)} = ?"
     for {
       _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(query, List(latLngRegion.toString, placeType.name))
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(latLngRegion.toString, placeType.id))
     } yield {
       queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
@@ -135,14 +135,14 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def countPlacesForPlaceType(placeType: PlaceType): Future[Long] = {
-    logger.info(s"getting count of places for place type ${placeType.name} from DB")
+    logger.info(s"getting count of places for place type ${placeType.id} from DB")
     val query =
       s"SELECT COUNT(*) " +
         s"FROM ${schema.tableName} " +
         s"WHERE ${getWhereFieldFor(placeType)} = ?"
     for {
       _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.name))
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(placeType.id))
     } yield {
       queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
@@ -165,7 +165,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(name, zoom, placeID, category.name))
+    db.connectionPool.sendPreparedStatement(statement, List(name, zoom, placeID, category.id))
   }
 
   def getLatLngRegionsContainingNullPlaceNames(category: Category): Future[Option[List[LatLngRegion]]] = {
@@ -176,7 +176,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
       s"AND ${schema.placeName} IS NULL"
     for {
       _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(query, List(category.name))
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(category.id))
     } yield {
       queryResult.rows match {
         case Some(resultSet) if resultSet.nonEmpty =>
@@ -217,7 +217,7 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
   }
 
   def updateCompany(company: Company): Future[List[QueryResult]] = {
-    logger.info(s"Updating company ${company.name} in category ${company.placeCategory.name} for places starting with ${company.searchMatches}")
+    logger.info(s"Updating company ${company.id} in category ${company.parentCategoryId} for places starting with ${company.searchMatches}")
     val statement =
       s"UPDATE ${schema.tableName} " +
         s"SET ${schema.company} = ?, ${schema.lastUpdated} = 'now' " +
@@ -225,8 +225,8 @@ class PlacesTable(val db: DB[PostgreSQLConnection], val schema: PlaceTableSchema
         s"AND UPPER(${schema.placeName}) LIKE ?"
 
     Future.sequence(company.searchMatches.map { searchMatch =>
-      logger.info(s"Updating ${company.name} for search match $searchMatch")
-      db.connectionPool.sendPreparedStatement(statement, List(company.name, company.placeCategory.name, searchMatch.toUpperCase + "%"))
+      logger.info(s"Updating ${company.id} for search match $searchMatch")
+      db.connectionPool.sendPreparedStatement(statement, List(company.id, company.parentCategoryId, searchMatch.toUpperCase + "%"))
     })
   }
 

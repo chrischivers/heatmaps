@@ -1,70 +1,106 @@
 {
-  "cities" : [
+  "cities": [
     {
-      "name" : "London",
-      "default-view" : {
-        "lat" : "51.505485",
-        "lng" : "-0.127889",
-        "zoom" : "14"
+      "name": "London",
+      "default-view": {
+        "lat": "51.505485",
+        "lng": "-0.127889",
+        "zoom": "14"
       }
     },
     {
-      "name" : "New York",
-      "default-view" : {
-        "lat" : "40.730610",
-        "lng" : "-73.935242",
-        "zoom" : "14"
+      "name": "New York",
+      "default-view": {
+        "lat": "40.730610",
+        "lng": "-73.935242",
+        "zoom": "14"
       }
     }
   ],
-  "place-groups" : [
+  "categories": [
     {
-      "type" : "RESTAURANT",
-      "sub-type" : ["MCDONALDS", "BURGERKING"]
+      "id": "RESTAURANT",
+      "friendly-name": "Restaurants"
     },
     {
-      "type" : "CAFE",
-      "sub-type" : ["STARBUCKS"]
+      "id": "CAFE",
+      "friendly-name": "Cafes"
     },
     {
-      "type" : "UNIVERSITY",
-      "sub-type" : []
+      "id": "UNIVERSITY",
+      "friendly-name": "Universities"
     },
     {
-      "type" : "TRAIN_STATION",
-      "sub-type" : []
+      "id": "TRAIN_STATION",
+      "friendly-name": "Train Stations"
     },
     {
-      "type" : "SHOPPING_MALL",
-      "sub-type" : []
+      "id": "SHOPPING_MALL",
+      "friendly-name": "Shopping Malls"
     },
     {
-      "type" : "LODGING",
-      "sub-type" : ["TRAVELODGE"]
+      "id": "LODGING",
+      "friendly-name": "Lodging"
     },
     {
-      "type" : "STORE",
-      "sub-type" : []
+      "id": "STORE",
+      "friendly-name": "Stores"
     },
     {
-      "type" : "SCHOOL",
-      "sub-type" : []
+      "id": "SCHOOL",
+      "friendly-name": "Schools"
     },
     {
-      "type" : "PARK",
-      "sub-type" : []
+      "id": "PARK",
+      "friendly-name": "Parks"
     },
     {
-      "type" : "MUSEUM",
-      "sub-type" : []
+      "id": "MUSEUM",
+      "friendly-name": "Museums"
     },
     {
-      "type" : "BAR",
-      "sub-type" : []
+      "id": "BAR",
+      "friendly-name": "Bars"
     },
     {
-      "type": "BANK",
-      "sub-type": []
+      "id": "BANK",
+      "friendly-name": "Banks"
+    }
+  ],
+  "companies": [
+    {
+      "id": "MCDONALDS",
+      "friendly-name": "McDonald's",
+      "parent-category": "RESTAURANT",
+      "search-matches": [
+        "McDonalds",
+        "McDonald's"
+      ]
+    },
+    {
+      "id": "BURGERKING",
+      "friendly-name": "Burger King",
+      "parent-category": "RESTAURANT",
+      "search-matches": [
+        "Burger King",
+        "BurgerKing"
+      ]
+    },
+    {
+      "id": "STARBUCKS",
+      "friendly-name": "Starbucks",
+      "parent-category": "CAFE",
+      "search-matches": [
+        "Starbuck"
+      ]
+    },
+    {
+      "id": "TRAVELODGE",
+      "friendly-name": "Travelodge",
+      "parent-category": "LODGING",
+      "search-matches": [
+        "Travelodge"
+      ]
     }
   ]
 }

@@ -197,7 +197,7 @@
 
           function setCategoryMenu() {
               for (var i in placeGroupData) {
-                  var dropDownTypeItem = createCategoryDropDownElement(placeGroupData[i].category.name);
+                  var dropDownTypeItem = createCategoryDropDownElement(placeGroupData[i].category.id, placeGroupData[i].category.friendlyName);
                   categoryDropDownMenu.append(dropDownTypeItem);
               }
           }
@@ -205,10 +205,11 @@
           function setCompanyMenuForParent(parentId) {
 
               for (var j in placeGroupData) {
-                  if (placeGroupData[j].category.name === parentId) {
+                  if (placeGroupData[j].category.id === parentId) {
                       for (var k in placeGroupData[j].companies) {
-                          var company = placeGroupData[j].companies[k].name;
-                          var dropDownItem = createCompanyDropDownElement(company, parentId);
+                          var companyId = placeGroupData[j].companies[k].id;
+                          var companyFriendlyName =  placeGroupData[j].companies[k].friendlyName;
+                          var dropDownItem = createCompanyDropDownElement(companyId, companyFriendlyName, parentId);
                           companyDropDownMenu.append(dropDownItem);
                       }
                   }
@@ -217,11 +218,11 @@
               clearMarkers();
           }
 
-          function createCategoryDropDownElement(categoryName) {
+          function createCategoryDropDownElement(categoryId, categoryFriendlyName) {
               var a = document.createElement('a');
               a.className = "dropdown-item";
-              a.id = categoryName;
-              a.text = toTitleCase(categoryName);
+              a.id = categoryId;
+              a.text = categoryFriendlyName;
               a.addEventListener("click", function () {
                   category = this.id;
                   plotCategory(map.getBounds(), this.id, map.getZoom());
@@ -229,9 +230,9 @@
                   categoryDropDownMenu.children().remove();
 
                   if (category !== "None") {
-                      categoryDropDownMenu.append(createCategoryDropDownElement("None"));
+                      categoryDropDownMenu.append(createCategoryDropDownElement("None", "None"));
                       setCategoryMenu();
-                      categoryDropDownMenu.closest(".btn-group").find('.btn').text(toTitleCase(this.id));
+                      categoryDropDownMenu.closest(".btn-group").find('.btn').text(categoryFriendlyName);
                       setCompanyMenuForParent(this.id);
                   } else {
                       categoryDropDownMenu.closest(".btn-group").find('.btn').html("<i>Categories</i>");
@@ -241,24 +242,24 @@
               return a;
           }
 
-          function createCompanyDropDownElement(companyName, parentName) {
+          function createCompanyDropDownElement(companyId, companyFriendlyName, parentId) {
               var b = document.createElement('a');
               b.className = "dropdown-item";
-              b.parentCategory = parentName;
-              b.id = companyName;
-              b.text = toTitleCase(companyName);
+              b.parentCategory = parentId;
+              b.id = companyId;
+              b.text = companyFriendlyName;
               b.addEventListener("click", function () {
                   company = this.id;
                   plotCompany(map.getBounds(), this.id, map.getZoom());
                   companyDropDownMenu.children().remove();
 
                   if (company !== "None") {
-                      companyDropDownMenu.append(createCompanyDropDownElement("None", parentName));
-                      setCompanyMenuForParent(parentName);
-                      companyDropDownMenu.closest(".btn-group").find('.btn').text(toTitleCase(this.id));
+                      companyDropDownMenu.append(createCompanyDropDownElement("None", "None", parentId));
+                      setCompanyMenuForParent(parentId);
+                      companyDropDownMenu.closest(".btn-group").find('.btn').text(companyFriendlyName);
                   } else {
                       companyDropDownMenu.closest(".btn-group").find('.btn').html("<i>Companies</i>");
-                      setCompanyMenuForParent(parentName);
+                      setCompanyMenuForParent(parentId);
                   }
               });
               return b;
@@ -274,13 +275,6 @@
               };
               xmlhttp.open("GET", "/placegroups", true);
               xmlhttp.send();
-          }
-
-
-          function toTitleCase(str) {
-              return str.replace(/\w\S*/g, function (txt) {
-                  return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-              });
           }
 
         </script>

@@ -13,10 +13,8 @@ object CompanySetter extends App with StrictLogging {
   val db = new PostgresDB(config.dBConfig)
   val placesTable = new PlacesTable(db, PlaceTableSchema(), createNewTable = false)
 
-  Definitions.placeGroups.foreach { placeGroup =>
-    placeGroup.companies.foreach { company =>
-      Await.result(placesTable.updateCompany(company), 10 minutes)
-    }
+  Definitions.companies.foreach { company =>
+    Await.result(placesTable.updateCompany(company), 10 minutes)
   }
   logger.info("Company update finished")
 }

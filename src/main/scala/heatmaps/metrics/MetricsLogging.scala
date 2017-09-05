@@ -15,20 +15,22 @@ object MetricsLogging extends StrictLogging with DefaultInstrumented {
   val metricsConfig: MetricsConfig = ConfigLoader.defaultConfig.metricsConfig
 
   def setUpReporter = {
-    logger.info("Setting up metrics reporter")
-    InfluxdbReporter.forRegistry(metricRegistry)
-      .protocol(new HttpInfluxdbProtocol(metricsConfig.host, metricsConfig.port, metricsConfig.dbName))
-      .tag("hostname", InetAddress.getLocalHost.getHostName)
-      .convertRatesTo(TimeUnit.MINUTES)
-      .build().start(10, TimeUnit.SECONDS)
+    if (metricsConfig.enabled) {
+      logger.info("Setting up metrics reporter")
+      InfluxdbReporter.forRegistry(metricRegistry)
+        .protocol(new HttpInfluxdbProtocol(metricsConfig.host, metricsConfig.port, metricsConfig.dbName))
+        .tag("hostname", InetAddress.getLocalHost.getHostName)
+        .convertRatesTo(TimeUnit.MINUTES)
+        .build().start(10, TimeUnit.SECONDS)
+    }
   }
 
   setUpReporter
 
 
   val radarSearchRequestsMeter: Meter = metrics.meter("radar-search-requests")
-  def incrRadarSearchRequests = radarSearchRequestsMeter.mark()
+  def incrRadarSearchRequests = if (metricsConfig.enabled) radarSearchRequestsMeter.mark()
 
   val detailsSearchRequestsMeter: Meter = metrics.meter("details-search-requests")
-  def incrDetailsSearchRequests = detailsSearchRequestsMeter.mark()
+  def incrDetailsSearchRequests =  if (metricsConfig.enabled) detailsSearchRequestsMeter.mark()
 }

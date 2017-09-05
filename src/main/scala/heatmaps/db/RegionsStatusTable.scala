@@ -2,6 +2,7 @@ package heatmaps.db
 
 import com.github.mauricio.async.db.QueryResult
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
+import heatmaps.config.Definitions
 import heatmaps.models.{Category, LatLngRegion}
 
 import scala.concurrent.duration._
@@ -55,7 +56,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, category.name))
+    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, category.id))
   }
 
   def getRegionsFor(category: Category): Future[List[LatLngRegion]] = {
@@ -65,7 +66,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
         s"WHERE ${schema.category} = ?"
     for {
       _ <- db.connectToDB
-      queryResult <- db.connectionPool.sendPreparedStatement(query, List(category.name))
+      queryResult <- db.connectionPool.sendPreparedStatement(query, List(category.id))
     } yield {
       queryResult.rows match {
         case Some(resultSet) => resultSet.map(res => {
@@ -89,7 +90,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
          |
       """.stripMargin
 
-    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, category.name))
+    db.connectionPool.sendPreparedStatement(statement, List(latLngRegion.toString, category.id))
   }
 
   def updateRegionScanCompleted(latLngRegion: LatLngRegion, category: Category, numberPlaces: Int) = {
@@ -131,7 +132,7 @@ class RegionsStatusTable(val db: DB[PostgreSQLConnection], val schema: RegionsSt
         case Some(resultSet) => resultSet.map(res => {
           val latLngRegion = res.apply(schema.regionName).asInstanceOf[String].split(",")
           val category = res.apply(schema.category).asInstanceOf[String]
-          (LatLngRegion(latLngRegion(0).toInt, latLngRegion(1).toInt), Category.fromString(category)
+          (LatLngRegion(latLngRegion(0).toInt, latLngRegion(1).toInt), Definitions.categories.find(_.id == category)
             .getOrElse(throw new RuntimeException("Unable to get category from $category")))
         })
         case None => throw new RuntimeException("Unable to get next region to process. Empty results set returned")

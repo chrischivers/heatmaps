@@ -17,19 +17,19 @@ class PlacesRetriever(placesTable: PlacesTable, cacheConfig: heatmaps.config.Cac
 
   private def storeInCache(latLngRegion: LatLngRegion, category: Category, placeList: List[Place], zoom: Int): Future[Unit] = {
     logger.info(s"Adding to cache $latLngRegion for category $category, zoom $zoom and with ${placeList.size} places")
-    put(latLngRegion.toString, category.name, zoom)(placeList, ttl = Some(cacheConfig.timeToLive))
+    put(latLngRegion.toString, category.id, zoom)(placeList, ttl = Some(cacheConfig.timeToLive))
   }
 
   private def getFromCache(latLngRegion: LatLngRegion, placeType: PlaceType, zoomOpt: Option[Int]): Future[Option[List[Place]]] = {
-    logger.info(s"Attempting to get region $latLngRegion from cache (placetype: ${placeType.name},  zoom: $zoomOpt)")
+    logger.info(s"Attempting to get region $latLngRegion from cache (placetype: ${placeType.id},  zoom: $zoomOpt)")
 
     def getRecordsForZoomRange(fromZoom: Int, toZoom: Int): Future[Option[List[Place]]] = {
       logger.info(s"Getting cached records for region $latLngRegion and zoom range $fromZoom -> $toZoom")
       Future.sequence((fromZoom to toZoom).toList.map(zoom => {
         placeType match {
-          case category: Category => get[List[Place], NoSerialization](latLngRegion.toString, category.name, zoom)
-          case company: Company => get[List[Place], NoSerialization](latLngRegion.toString, company.placeCategory.name, zoom)
-            .map(_.map(list => list.filter(place => place.company.contains(company.name))))
+          case category: Category => get[List[Place], NoSerialization](latLngRegion.toString, category.id, zoom)
+          case company: Company => get[List[Place], NoSerialization](latLngRegion.toString, company.parentCategoryId, zoom)
+            .map(_.map(list => list.filter(place => place.company.contains(company.id))))
         }
       })
       )

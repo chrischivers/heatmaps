@@ -36,10 +36,10 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
       (u.latLng.lat, u.latLng.lng, u.zoom))
 
   implicit val placeCategoryEncoder: Encoder[Category] =
-    Encoder.forProduct1("name")(u => u.name)
+    Encoder.forProduct2("id", "friendlyName")(u => (u.id, u.friendlyName))
 
   implicit val companyEncoder: Encoder[Company] =
-    Encoder.forProduct1("name")(u => u.name)
+    Encoder.forProduct2("id", "friendlyName")(u => (u.id, u.friendlyName))
 
   implicit val placeGroupEncoder: Encoder[PlaceGroup] = deriveEncoder[PlaceGroup]
 
@@ -74,7 +74,7 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
       :? ZoomQueryParamMatcher(zoom) =>
       logger.info(s"Servlet handling category points request for bounds $bounds, category $category and zoom $zoom")
       val boundsConverted = getBounds(bounds)
-      val categoryConverted = Category.fromString(category)
+      val categoryConverted = Definitions.categories.find(_.id == category)
       val normalisedZoom = normaliseZoom(zoom.toInt, mapsConfig)
       if (zoomTooLow(normalisedZoom)) {
         logger.info(s"Zoom level too low $normalisedZoom. Ignoring request")
@@ -83,7 +83,7 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
       else {
         categoryConverted.fold(NotFound()) { category =>
           val latLngRegionsInFocus: List[LatLngRegion] = Definitions.getLatLngRegionsForLatLngBounds(boundsConverted)
-          val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(normalisedZoom)) //Ignoring density for now
+          val jsonStr = placesDBRetriever.getPlaces(latLngRegionsInFocus, category, Some(getBounds(bounds)), Some(normalisedZoom))
             .map(x => x.toSet[Place].map(place => place.latLng).asJson.noSpaces)
           Ok(jsonStr)
         }
@@ -95,7 +95,7 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
       :? ZoomQueryParamMatcher(zoom) =>
       logger.info(s"Servlet handling company points request for bounds $bounds, company $company and zoom $zoom")
       val boundsConverted = getBounds(bounds)
-      val companyConverted = Company.fromString(company)
+      val companyConverted = Definitions.companies.find(_.id == company)
       val normalisedZoom = normaliseZoom(zoom.toInt, mapsConfig)
 //      if (zoomTooLow(normalisedZoom)) {
 //        logger.info(s"Zoom level too low $normalisedZoom. Ignoring request")
