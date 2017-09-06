@@ -22,7 +22,7 @@ object NullNameUpdater extends App with StrictLogging {
     iterator
 
     def iterator: Unit = {
-      val regionsWithNulPlaceName = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(placeGroup.category), 5 minutes)
+      val regionsWithNulPlaceName = Await.result(placesTable.getLatLngRegionsContainingNullPlaceNames(placeGroup.category), 20 minutes)
       regionsWithNulPlaceName match {
         case Some(regions) =>
           val randomRegion = Random.shuffle(regions).headOption.getOrElse(throw new RuntimeException("Regions list is empty"))

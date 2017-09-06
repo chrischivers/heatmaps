@@ -32,7 +32,7 @@ object ScannerApp extends App with StrictLogging {
       _ = logger.info(s"Recorded $latLngRegion region as scan complete with ${scanResults.size} places")
       _ <- Future.sequence(scanResults.map(result => {
           placesApiRetriever.getNameForPlaceId(result.placeId).flatMap(name => {
-            logger.info(s"Names fetched Will now update")
+            logger.info(s"Names fetched Will now update for place ID ${result.placeId}")
             val zoomLevel = config.mapsConfig.minZoom + Random.nextInt((config.mapsConfig.maxZoom - config.mapsConfig.minZoom) + 1)
             placesTable.updatePlace(result.placeId, category, name, zoomLevel)
           })
