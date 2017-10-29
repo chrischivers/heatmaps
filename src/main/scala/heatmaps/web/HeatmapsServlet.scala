@@ -44,7 +44,7 @@ class HeatmapsServlet(placesDBRetriever: PlacesRetriever, mapsConfig: MapsConfig
   implicit val placeGroupEncoder: Encoder[PlaceGroup] = deriveEncoder[PlaceGroup]
 
   val service = HttpService {
-    case _@GET -> Root / "map" =>
+    case _@GET -> Root =>
       logger.info(s"Servlet handling map request")
       Ok(html.map())
 
